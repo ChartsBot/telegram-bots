@@ -73,7 +73,7 @@ def get_biz_no_meme(update: Update, context: CallbackContext, re_4chan):
         context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True)
 
 
-def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, decimals):
+def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, decimals, uni_wrapper):
     print("getting price contract: " + str(contract))
     (derivedETH_7d, token_price_7d_usd, derivedETH_1d, token_price_1d_usd, derivedETH_now,
      token_price_now_usd) = requests_util.get_price_raw(graphclient_eth, graphclient_uni, contract)
@@ -82,7 +82,16 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
     supply_cat_pretty = str(util.number_to_beautiful(round(supply_cap_token)))
     market_cap = util.number_to_beautiful(int(float(supply_cap_token) * token_price_now_usd))
 
-    vol_24h = requests_util.get_volume_24h(graphclient_uni, contract)
+    if pair_contract == "" or pair_contract is None:
+        pair = web3_util.does_pair_token_eth_exist(contract, uni_wrapper)
+        if pair is not None:
+            vol_24h = requests_util.get_volume_24h(graphclient_uni, pair)
+        else:
+            vol_24h = 0
+    else:
+        pair = pair_contract
+        vol_24h = requests_util.get_volume_24h(graphclient_uni, pair)
+
     if token_price_7d_usd is not None and token_price_7d_usd != 0.0:
         var_7d = - int(((token_price_7d_usd - token_price_now_usd) / token_price_7d_usd) * 100) if token_price_7d_usd > token_price_now_usd else int(((token_price_now_usd - token_price_7d_usd) / token_price_7d_usd) * 100)
         var_7d_str = "+" + str(var_7d) + "%" if var_7d > 0 else str(var_7d) + "%"

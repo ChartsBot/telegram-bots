@@ -142,8 +142,8 @@ def get_price_token(update: Update, context: CallbackContext):
             button_list_price = [
                 [InlineKeyboardButton('refresh', callback_data='r_p_' + contract_from_ticker + "_t_" + ticker)]]
             reply_markup_price = InlineKeyboardMarkup(button_list_price)
-            message = general_end_functions.get_price(contract_from_ticker, pair_contract, graphql_client_eth,
-                                                      graphql_client_uni, ticker.upper(), decimals)
+            message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
+                                                      graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
             context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price,
                                      disable_web_page_preview=True)
     elif len(query_received) == 1:  # TODO: merge all those duplicate things
@@ -156,8 +156,8 @@ def get_price_token(update: Update, context: CallbackContext):
                 button_list_price = [
                     [InlineKeyboardButton('refresh', callback_data='r_p_' + addr + "_t_" + ticker)]]
                 reply_markup_price = InlineKeyboardMarkup(button_list_price)
-                message = general_end_functions.get_price(addr, pair_contract, graphql_client_eth,
-                                                          graphql_client_uni, ticker.upper(), decimals)
+                message = general_end_functions.get_price(addr, "", graphql_client_eth,
+                                                          graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
                 context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price,
                                          disable_web_page_preview=True)
         else:
@@ -188,9 +188,9 @@ def refresh_price(update: Update, context: CallbackContext):
     query = update.callback_query.data
     contract_from_ticker = query.split('r_p_')[1].split('_t')[0]
     token_name = query.split('_t_')[1]
-    message = general_end_functions.get_price(contract_from_ticker, pair_contract, graphql_client_eth,
+    message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
                                               graphql_client_uni,
-                                              token_name.upper(), decimals)
+                                              token_name.upper(), decimals, uni_wrapper)
     button_list_price = [[InlineKeyboardButton('refresh', callback_data='refresh_price_' + contract_from_ticker)]]
     reply_markup_price = InlineKeyboardMarkup(button_list_price)
     update.callback_query.edit_message_text(text=message, parse_mode='html', reply_markup=reply_markup_price,
