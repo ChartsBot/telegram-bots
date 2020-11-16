@@ -219,23 +219,24 @@ def refresh_chart(update: Update, context: CallbackContext):
 
     t_to = int(time.time())
     ok = True
-    if token_chat_id not in charts_time_refresh:
-        charts_time_refresh[token_chat_id] = t_to
-    else:
-        last_time = charts_time_refresh[token_chat_id]
-        if t_to - last_time < 30:
-            print("requesting chart refresh too early")
-            ok = False
-        else:
+    members_count = context.bot.get_chat_members_count(chat_id)
+    pprint.pprint("members count: " + str(members_count))
+    if members_count >= 100:
+        if token_chat_id not in charts_time_refresh:
             charts_time_refresh[token_chat_id] = t_to
+        else:
+            last_time = charts_time_refresh[token_chat_id]
+            if t_to - last_time < 30:
+                print("requesting chart refresh too early")
+                ok = False
+            else:
+                charts_time_refresh[token_chat_id] = t_to
 
     if ok:
         t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
 
         message_id = update.callback_query.message.message_id
-
         trending = util.get_banner_txt(zerorpc_client_data_aggregator)
-
         (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
                                                                                             k_hours, t_from, t_to,
                                                                                             txt=trending)
@@ -526,7 +527,7 @@ def get_chart_supply(update: Update, context: CallbackContext):
 
 
 def main():
-    updater = Updater(TELEGRAM_KEY, use_context=True)
+    updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('start', get_start_message))
     dp.add_handler(CommandHandler('charts', get_candlestick))
