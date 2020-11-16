@@ -130,6 +130,7 @@ def get_candlestick(update: Update, context: CallbackContext):
 
 @run_async
 def get_price_token(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "price")
     chat_id = update.message.chat_id
 
     query_received = update.message.text.split(' ')
