@@ -162,7 +162,53 @@ def strp_date(raw_date):
     return datetime.datetime.strptime(raw_date, '%m/%d/%Y,%H:%M:%S')
 
 
-def print_chart_supply(dates_raw, supply_t1, name_t1, supply_t2, name_t2, chart_path):
+def print_chart_supply_single_token(dates_raw, supply, name, chart_path):
+    dates = matplotlib.dates.date2num(dates_raw)
+    cb91_green = '#47DBCD'
+    plt.style.use('dark_background')
+
+    matplotlib.rcParams.update({'font.size': 22})
+    f = plt.figure(figsize=(16, 9))
+
+    ax = f.add_subplot(111)
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+    plot1 = ax.plot_date(dates, supply, 'r', label=name)
+
+    ax.set_ylabel(name)
+
+    plots = plot1
+    labs = [l.get_label() for l in plots]
+    ax.legend(plots, labs, bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
+              ncol=2, mode="expand", borderaxespad=0.)
+
+    plt.gcf().autofmt_xdate()
+    plt.savefig(chart_path, bbox_inches='tight', dpi=300)
+    plt.close(f)
+
+
+def send_supply_single_pyplot(supply_file_path, k_days, k_hours, name, chart_path):
+
+    list_time_supply = []
+
+    with open(supply_file_path, newline='') as csv_file:
+        reader = csv.reader(csv_file, delimiter=' ', quotechar='|')
+        for row in reader:
+            list_time_supply.append((row[0], row[1]))
+
+    now = datetime.datetime.utcnow()
+
+    filtered_values = [x for x in list_time_supply if
+                       now - strp_date(x[0]) < datetime.timedelta(days=k_days, hours=k_hours)]
+
+    dates_pure = keep_dates(filtered_values)
+    supply = [int(round(float(value[1]))) for value in filtered_values]
+
+    print_chart_supply_single_token(dates_pure, supply, name, chart_path)
+    current_supply_str = supply[-1]
+    return current_supply_str
+
+
+def print_chart_supply_two_tokens(dates_raw, supply_t1, name_t1, supply_t2, name_t2, chart_path):
     dates = matplotlib.dates.date2num(dates_raw)
     cb91_green = '#47DBCD'
     plt.style.use('dark_background')
@@ -209,7 +255,7 @@ def send_supply_two_pyplot(supply_file_path, k_days, k_hours, name_t1, name_t2, 
     supply_t1 = [int(round(float(value[1]))) for value in filtered_values]
     supply_t2 = [int(round(float(value[2]))) for value in filtered_values]
 
-    print_chart_supply(dates_pure, supply_t1, name_t1, supply_t2, name_t2, chart_path)
+    print_chart_supply_two_tokens(dates_pure, supply_t1, name_t1, supply_t2, name_t2, chart_path)
     current_t1_str = supply_t1[-1]
     current_t2_str = supply_t2[-1]
     return current_t1_str, current_t2_str

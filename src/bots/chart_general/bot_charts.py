@@ -55,6 +55,8 @@ TELEGRAM_KEY = os.environ.get('CHART_TELEGRAM_KEY')
 pair_contract = "0x5a265315520696299fa1ece0701c3a1ba961b888"
 decimals = 1000000000000000000  # that's 18
 TMP_FOLDER = BASE_PATH + 'tmp/'
+supply_file_path = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
+supply_chart_path = BASE_PATH + 'log_files/boo_bot/supply_chart_$TICKER.png'
 
 
 # web3
@@ -480,6 +482,41 @@ def print_last_times(context, update):
     pprint.pprint(charts_time_refresh)
 
 
+def get_chart_supply(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+
+    query_received = update.message.text.split(' ')
+    default_ticker_channel, addr = __get_default_token_channel(chat_id)
+    ok = True
+    if len(query_received) == 1 and (default_ticker_channel is None or default_ticker_channel == "null"):
+        ok = False
+    if default_ticker_channel is None or default_ticker_channel == "":
+        default_ticker_channel = ""
+    if ok:
+
+        time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_ticker_channel)
+
+        if isinstance(tokens, list):
+            tokens = tokens[0]
+
+        current_token_nbr = general_end_functions.send_supply_single_pyplot(supply_file_path,
+                                                                                          k_days,
+                                                                                          k_hours,
+                                                                                          tokens,
+                                                                                          supply_chart_path)
+
+        current_token_str = util.number_to_beautiful(current_token_nbr)
+
+        msg_time = " " + str(k_days) + " day(s) " if k_days > 0 else " last " + str(k_hours) + " hour(s) "
+
+        caption = "Supply of the last " + msg_time + ".\nCurrent supply: \n<b>" + tokens + ":</b> <pre>" + current_token_str + "</pre>"
+
+        context.bot.send_photo(chat_id=chat_id,
+                               photo=open(supply_chart_path, 'rb'),
+                               caption=caption,
+                               parse_mode="html")
+
+
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True)
     dp = updater.dispatcher
@@ -503,6 +540,7 @@ def main():
     dp.add_handler(CommandHandler('get_default_token', get_default_token))
     dp.add_handler(CommandHandler('set_faq', set_faq))
     dp.add_handler(CommandHandler('faq', get_the_faq))
+    dp.add_handler(CommandHandler('chart_supply', get_chart_supply))
     dp.add_handler(CommandHandler('print_last_times_chart', print_last_times))
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
