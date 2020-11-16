@@ -92,7 +92,7 @@ def get_banner_txt(rpc_client):
         return rpc_client.view_trending_simple()
 
 
-def write_supple_cap(supply_cap: int, token_name: str):
+def write_supply_cap(supply_cap: int, token_name: str):
     path = supply_file_path.replace("$TICKER", token_name)
     with open(path, "a") as supply_file:
         time_now = datetime.now()
