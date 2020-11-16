@@ -84,6 +84,7 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
 
     if pair_contract == "" or pair_contract is None:
         pair = web3_util.does_pair_token_eth_exist(contract, uni_wrapper)
+        print("pair found = " + str(pair))
         if pair is not None:
             vol_24h = requests_util.get_volume_24h(graphclient_uni, pair)
         else:
