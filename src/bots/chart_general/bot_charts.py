@@ -189,7 +189,6 @@ def __send_message_if_ocr(update, context):
 
 
 def refresh_price(update: Update, context: CallbackContext):
-    __log_channel(update.message.chat, "refresh_price")
     print("refreshing price")
     query = update.callback_query.data
     contract_from_ticker = query.split('r_p_')[1].split('_t')[0]
@@ -211,7 +210,6 @@ def delete_message(update: Update, context: CallbackContext):
 
 
 def refresh_chart(update: Update, context: CallbackContext):
-    __log_channel(update.message.chat, "refresh_chart")
     global charts_time_refresh
     print("refreshing chart")
     query = update.callback_query.data
