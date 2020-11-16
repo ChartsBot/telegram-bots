@@ -86,12 +86,12 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
         pair = web3_util.does_pair_token_eth_exist(contract, uni_wrapper)
         print("pair found = " + str(pair))
         if pair is not None:
-            vol_24h = requests_util.get_volume_24h(graphclient_uni, pair)
+            vol_24h = requests_util.get_volume_24h(graphclient_uni, pair.lower())
         else:
             vol_24h = 0
     else:
         pair = pair_contract
-        vol_24h = requests_util.get_volume_24h(graphclient_uni, pair)
+        vol_24h = requests_util.get_volume_24h(graphclient_uni, pair.lower())
 
     if token_price_7d_usd is not None and token_price_7d_usd != 0.0:
         var_7d = - int(((token_price_7d_usd - token_price_now_usd) / token_price_7d_usd) * 100) if token_price_7d_usd > token_price_now_usd else int(((token_price_now_usd - token_price_7d_usd) / token_price_7d_usd) * 100)
