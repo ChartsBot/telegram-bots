@@ -34,6 +34,9 @@ import zerorpc
 import random
 
 
+# charts delete
+charts_time_refresh = {}
+
 # ZERORPC
 zerorpc_client_data_aggregator = zerorpc.Client()
 zerorpc_client_data_aggregator.connect("tcp://127.0.0.1:4243")  # TODO: change port to env variable
@@ -190,6 +193,7 @@ def delete_message(update: Update, context: CallbackContext):
 
 
 def refresh_chart(update: Update, context: CallbackContext):
+    global charts_time_refresh
     print("refreshing chart")
     query = update.callback_query.data
 
@@ -198,19 +202,31 @@ def refresh_chart(update: Update, context: CallbackContext):
     token = query.split('t:')[1]
 
     t_to = int(time.time())
-    t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
+    ok = True
+    if token not in charts_time_refresh:
+        charts_time_refresh[token] = t_to
+    else:
+        last_time = charts_time_refresh[token]
+        if t_to - last_time < 30:
+            print("requesting chart refresh too early")
+            ok = False
+        else:
+            charts_time_refresh[token] = t_to
 
-    chat_id = update.callback_query.message.chat_id
-    message_id = update.callback_query.message.message_id
+    if ok:
+        t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
 
-    trending = util.get_banner_txt(zerorpc_client_data_aggregator)
+        chat_id = update.callback_query.message.chat_id
+        message_id = update.callback_query.message.message_id
 
-    (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
-                                                                                        k_hours, t_from, t_to,
-                                                                                        txt=trending)
-    context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
-                           reply_markup=reply_markup_chart)
-    context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+        trending = util.get_banner_txt(zerorpc_client_data_aggregator)
+
+        (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
+                                                                                            k_hours, t_from, t_to,
+                                                                                            txt=trending)
+        context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
+                               reply_markup=reply_markup_chart)
+        context.bot.delete_message(chat_id=chat_id, message_id=message_id)
 
 
 # sends the current biz threads
@@ -445,6 +461,10 @@ def __is_user_admin(context, update):
     return status == 'administrator' or status == 'creator'
 
 
+def print_last_times(context, update):
+    pprint.pprint(charts_time_refresh)
+
+
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True)
     dp = updater.dispatcher
@@ -467,10 +487,12 @@ def main():
     dp.add_handler(CommandHandler('get_default_token', get_default_token))
     dp.add_handler(CommandHandler('set_faq', set_faq))
     dp.add_handler(CommandHandler('faq', get_the_faq))
+    dp.add_handler(CommandHandler('print_last_times_chart', print_last_times))
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image))
+
     updater.start_polling()
     updater.idle()
 
