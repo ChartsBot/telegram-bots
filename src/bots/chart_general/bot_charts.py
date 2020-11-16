@@ -489,12 +489,14 @@ def get_chart_supply(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
 
     query_received = update.message.text.split(' ')
-    default_ticker_channel, addr = __get_default_token_channel(chat_id)
+    default_ticker_channel = __get_default_token_channel(chat_id)
     ok = True
     if len(query_received) == 1 and (default_ticker_channel is None or default_ticker_channel == "null"):
         ok = False
     if default_ticker_channel is None or default_ticker_channel == "":
         default_ticker_channel = ""
+    else:
+        default_ticker_channel = default_ticker_channel[0]
     if ok:
 
         time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_ticker_channel)
