@@ -196,27 +196,28 @@ def refresh_chart(update: Update, context: CallbackContext):
     global charts_time_refresh
     print("refreshing chart")
     query = update.callback_query.data
+    chat_id = update.callback_query.message.chat_id
 
     k_hours = int(re.search(r'\d+', query.split('h:')[1]).group())
     k_days = int(re.search(r'\d+', query.split('d:')[1]).group())
     token = query.split('t:')[1]
+    token_chat_id = str(chat_id) + "_" + token
 
     t_to = int(time.time())
     ok = True
-    if token not in charts_time_refresh:
-        charts_time_refresh[token] = t_to
+    if token_chat_id not in charts_time_refresh:
+        charts_time_refresh[token_chat_id] = t_to
     else:
-        last_time = charts_time_refresh[token]
+        last_time = charts_time_refresh[token_chat_id]
         if t_to - last_time < 30:
             print("requesting chart refresh too early")
             ok = False
         else:
-            charts_time_refresh[token] = t_to
+            charts_time_refresh[token_chat_id] = t_to
 
     if ok:
         t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
 
-        chat_id = update.callback_query.message.chat_id
         message_id = update.callback_query.message.message_id
 
         trending = util.get_banner_txt(zerorpc_client_data_aggregator)
