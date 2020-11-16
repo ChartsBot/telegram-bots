@@ -79,6 +79,7 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
      token_price_now_usd) = requests_util.get_price_raw(graphclient_eth, graphclient_uni, contract)
 
     supply_cap_token = requests_util.get_supply_cap_raw(contract, decimals)
+    util.write_supply_cap(round(supply_cap_token), name)
     supply_cat_pretty = str(util.number_to_beautiful(round(supply_cap_token)))
     market_cap = util.number_to_beautiful(int(float(supply_cap_token) * token_price_now_usd))
 

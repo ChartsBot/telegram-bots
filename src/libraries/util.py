@@ -9,6 +9,8 @@ BASE_PATH = os.environ.get('BASE_PATH')
 
 from datetime import datetime
 
+supply_file_path = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
+
 # convert int to nice string: 1234567 => 1 234 567
 def number_to_beautiful(nbr):
     return locale.format_string("%d", nbr, grouping=True).replace(",", " ")
@@ -88,3 +90,12 @@ def get_banner_txt(rpc_client):
         return get_ad()
     else:
         return rpc_client.view_trending_simple()
+
+
+def write_supple_cap(supply_cap: int, token_name: str):
+    path = supply_file_path.replace("$TICKER", token_name)
+    with open(path, "a") as supply_file:
+        time_now = datetime.now()
+        date_time_str = time_now.strftime("%m/%d/%Y,%H:%M:%S")
+        message_to_write = date_time_str + " " + str(supply_cap) + "\n"
+        supply_file.write(message_to_write)
