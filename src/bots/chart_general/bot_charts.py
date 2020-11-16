@@ -28,7 +28,7 @@ import libraries.time_util as time_util
 import libraries.util as util
 import libraries.scrap_websites_util as scrap_websites_util
 from libraries.uniswap import Uniswap
-from bots.chart_general.bot_charts_values import start_message
+from bots.chart_general.bot_charts_values import start_message, message_faq_empty
 from libraries.common_values import *
 from web3 import Web3
 import zerorpc
@@ -424,6 +424,8 @@ def set_faq(update: Update, context: CallbackContext):
 def get_the_faq(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     res = __get_faq_channel(chat_id)
+    if res == "null" or res is None:
+        res = message_faq_empty
     context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
 
 

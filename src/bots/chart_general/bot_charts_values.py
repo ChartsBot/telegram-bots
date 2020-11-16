@@ -18,3 +18,5 @@ This bot is designed to help channels and individuals navigate in the defi world
 * If you make the bot admin, it'll scan through all the images sent to the chat, detect with OCR when someone is having trouble buying due to slippage issues, and send a message telling them how to solve this. 
 <code>/trending</code> -> Show what is trending based on queries made in this bot. There are anti cheat functionnalities in place, so spamming /price token won't help making the token appear here
 """
+
+message_faq_empty = "No faq defined for this channel (yet). Any admin can add one with <code>/set_faq message</code>"
