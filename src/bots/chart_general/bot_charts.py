@@ -526,6 +526,15 @@ def get_chart_supply(update: Update, context: CallbackContext):
                                parse_mode="html")
 
 
+def __log_channel(chat, method):
+    chat_id = chat.id
+    channel_type = chat.type
+    chat_name = chat.title
+    print("chat_id = " + str(chat_id) + " - type = " + str(channel_type) + " - chat_name =  " + str(chat_name) + " - method " + method)
+    # zerorpc_client_data_aggregator.log_action(chat_id, channel_type, chat_name, method)
+    #channel_id, type, name, method
+
+
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
