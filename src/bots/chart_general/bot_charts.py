@@ -104,7 +104,8 @@ def get_candlestick(update: Update, context: CallbackContext):
                                                                                                 k_days, k_hours, t_from,
                                                                                                 t_to, txt=trending)
             util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
-            charts_time_refresh[chat_id] = t_to
+            token_chat_id = str(chat_id) + "_" + token
+            charts_time_refresh[token_chat_id] = t_to
             context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
                                    reply_markup=reply_markup_chart)
     else:
@@ -112,7 +113,8 @@ def get_candlestick(update: Update, context: CallbackContext):
                                                                                             k_hours, t_from,
                                                                                             t_to, txt=trending)
         util.create_and_send_vote(tokens, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
-        charts_time_refresh[chat_id] = t_to
+        token_chat_id = str(chat_id) + "_" + tokens
+        charts_time_refresh[token_chat_id] = t_to
         context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
                                reply_markup=reply_markup_chart)
 
