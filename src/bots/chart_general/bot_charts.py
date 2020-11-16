@@ -504,11 +504,14 @@ def get_chart_supply(update: Update, context: CallbackContext):
         if isinstance(tokens, list):
             tokens = tokens[0]
 
-        current_token_nbr = general_end_functions.send_supply_single_pyplot(supply_file_path,
-                                                                                          k_days,
-                                                                                          k_hours,
-                                                                                          tokens,
-                                                                                          supply_chart_path)
+        ticker_supply_file_path = supply_file_path.replace("$TICKER", tokens)
+        ticker_supply_chart_path = supply_chart_path.replace("$TICKER", tokens)
+
+        current_token_nbr = general_end_functions.send_supply_single_pyplot(ticker_supply_file_path,
+                                                                            k_days,
+                                                                            k_hours,
+                                                                            tokens,
+                                                                            ticker_supply_chart_path)
 
         current_token_str = util.number_to_beautiful(current_token_nbr)
 
