@@ -520,7 +520,7 @@ def get_chart_supply(update: Update, context: CallbackContext):
         caption = "Supply of the last " + msg_time + ".\nCurrent supply: \n<b>" + tokens + ":</b> <pre>" + current_token_str + "</pre>"
 
         context.bot.send_photo(chat_id=chat_id,
-                               photo=open(supply_chart_path, 'rb'),
+                               photo=open(ticker_supply_chart_path, 'rb'),
                                caption=caption,
                                parse_mode="html")
 
