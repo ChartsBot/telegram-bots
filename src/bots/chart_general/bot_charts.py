@@ -533,7 +533,7 @@ def __log_channel(chat, method):
     channel_type = chat.type
     chat_name = chat.title
     print("chat_id = " + str(chat_id) + " - type = " + str(channel_type) + " - chat_name =  " + str(chat_name) + " - method " + method)
-    zerorpc_client_data_aggregator.log_action(chat_id, channel_type, str(chat_name), date, method)  # casting chat name to str in case it's None
+    zerorpc_client_data_aggregator.log_action(chat_id, channel_type, str(chat_name), today, method)  # casting chat name to str in case it's None
     #channel_id, type, name, method
 
 
