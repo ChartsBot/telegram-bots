@@ -28,6 +28,7 @@ import libraries.time_util as time_util
 import libraries.util as util
 import libraries.scrap_websites_util as scrap_websites_util
 from libraries.uniswap import Uniswap
+from bots.chart_general.bot_charts_values import start_message
 from libraries.common_values import *
 from web3 import Web3
 import zerorpc
@@ -75,6 +76,12 @@ graphql_client_uni = GraphQLClient('https://api.thegraph.com/subgraphs/name/unis
 graphql_client_eth = GraphQLClient('https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks')
 
 rejection_no_default_ticker_message = "No default token found for this chat. Please ask an admin to add one with /set_default_token <TICKER>"
+
+
+@run_async
+def get_start_message(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    context.bot.send_message(chat_id=chat_id, text=start_message, parse_mode='html', disable_web_page_preview=True)
 
 
 # button refresh: h:int-d:int-t:token
@@ -474,6 +481,7 @@ def print_last_times(context, update):
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True)
     dp = updater.dispatcher
+    dp.add_handler(CommandHandler('start', get_start_message))
     dp.add_handler(CommandHandler('charts', get_candlestick))
     dp.add_handler(CommandHandler('chart', get_candlestick))
     dp.add_handler(CommandHandler('c', get_candlestick))
