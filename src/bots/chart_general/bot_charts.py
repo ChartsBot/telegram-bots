@@ -82,6 +82,7 @@ rejection_no_default_ticker_message = "No default token found for this chat. Ple
 
 @run_async
 def get_start_message(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "start")
     chat_id = update.message.chat_id
     context.bot.send_message(chat_id=chat_id, text=start_message, parse_mode='html', disable_web_page_preview=True)
 
@@ -89,6 +90,7 @@ def get_start_message(update: Update, context: CallbackContext):
 # button refresh: h:int-d:int-t:token
 @run_async
 def get_candlestick(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "chart")
     global charts_time_refresh
     chat_id = update.message.chat_id
 
@@ -187,6 +189,7 @@ def __send_message_if_ocr(update, context):
 
 
 def refresh_price(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "refresh_price")
     print("refreshing price")
     query = update.callback_query.data
     contract_from_ticker = query.split('r_p_')[1].split('_t')[0]
@@ -208,6 +211,7 @@ def delete_message(update: Update, context: CallbackContext):
 
 
 def refresh_chart(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "refresh_chart")
     global charts_time_refresh
     print("refreshing chart")
     query = update.callback_query.data
@@ -249,6 +253,7 @@ def refresh_chart(update: Update, context: CallbackContext):
 # sends the current biz threads
 @run_async
 def get_biz(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "biz")
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')
     base_url = "boards.4channel.org/biz/thread/"
@@ -292,6 +297,7 @@ def get_biz(update: Update, context: CallbackContext):
 
 @run_async
 def get_twitter(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "twitter")
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')
     if len(query_received) == 2:
@@ -311,6 +317,7 @@ def get_twitter(update: Update, context: CallbackContext):
 
 
 def do_convert(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "convert")
     query_received = update.message.text.split(' ')
     chat_id = update.message.chat_id
     message = general_end_functions.convert_to_something(query_received, graphql_client_uni, graphql_client_eth)
@@ -319,6 +326,7 @@ def do_convert(update: Update, context: CallbackContext):
 
 @run_async
 def balance_token_in_wallet(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "balance")
     query_received = update.message.text.split(' ')
     chat_id = update.message.chat_id
     if len(query_received) == 3:
@@ -344,6 +352,7 @@ def balance_token_in_wallet(update: Update, context: CallbackContext):
 
 @run_async
 def get_gas_average(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "gas")
     chat_id = update.message.chat_id
     asap, fast, average, low = general_end_functions.get_gas_price()
     message = "<b>Gas price:</b><code>" + \
@@ -356,6 +365,7 @@ def get_gas_average(update: Update, context: CallbackContext):
 
 @run_async
 def get_time_to(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "timeto")
     chat_id = update.message.chat_id
     query_received = update.message.text[7:]
     if query_received == "jackpot" or query_received == " jackpot":
@@ -371,6 +381,7 @@ def get_time_to(update: Update, context: CallbackContext):
 
 @run_async
 def get_latest_actions(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "set_faq")
     chat_id = update.message.chat_id
     query_received = update.message.text.split('/set_faq')
     if len(query_received) == 1:
@@ -392,6 +403,7 @@ def get_latest_actions(update: Update, context: CallbackContext):
 
 @run_async
 def get_trending(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "trending")
     chat_id = update.message.chat_id
     res = zerorpc_client_data_aggregator.view_trending()
     context.bot.send_message(chat_id=chat_id, text=res)
@@ -399,6 +411,7 @@ def get_trending(update: Update, context: CallbackContext):
 
 @run_async
 def get_gas_spent(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "gas_spent")
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')
     if len(query_received) == 2:
@@ -411,6 +424,7 @@ def get_gas_spent(update: Update, context: CallbackContext):
 
 # ADMIN STUFF
 def set_faq(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "set_faq")
     chat_id = update.message.chat_id
     query_received = update.message.text[8:]
     if __is_user_admin(context, update):
@@ -426,6 +440,7 @@ def set_faq(update: Update, context: CallbackContext):
 
 
 def get_the_faq(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "faq")
     chat_id = update.message.chat_id
     res = __get_faq_channel(chat_id)
     if res == "null" or res is None:
@@ -440,6 +455,7 @@ def __get_faq_channel(channel_id: int):
 
 
 def set_default_token(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "set_default_token")
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')
     if __is_user_admin(context, update):
@@ -463,6 +479,7 @@ def set_default_token(update: Update, context: CallbackContext):
 
 
 def get_default_token(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "default_token")
     chat_id = update.message.chat_id
     ticker, addr = __get_default_token_channel(chat_id)
     context.bot.send_message(chat_id=chat_id, text="ticker: " + str(ticker) + " - addr: " + str(addr))
@@ -488,6 +505,7 @@ def print_last_times(context, update):
 
 
 def get_chart_supply(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "chart_supply")
     chat_id = update.message.chat_id
 
     query_received = update.message.text.split(' ')
