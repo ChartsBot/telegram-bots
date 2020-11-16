@@ -468,7 +468,10 @@ def get_default_token(update: Update, context: CallbackContext):
 
 def __get_default_token_channel(channel_id: int):
     res = zerorpc_client_data_aggregator.get_default_token(channel_id)
-    pprint.pprint("Default token channel " + str(channel_id) + " is " + str(res[0]) + " - " + str(res[1]))
+    if res is not None:
+        pprint.pprint("Default token channel " + str(channel_id) + " is " + str(res[0]) + " - " + str(res[1]))
+    else:
+        pprint.pprint("Default token channel " + str(channel_id) + " is None")
     return res
 
 
