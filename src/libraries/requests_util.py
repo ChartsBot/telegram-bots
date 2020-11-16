@@ -348,6 +348,7 @@ def get_supply_cap_raw(contract_addr, decimals):
 def get_volume_24h(graphclient_uni, pair_contract):
     now = int(time.time())
     yesterday = now - 3600 * 24
+    print("yesterday = " + str(yesterday))
     updated_req = req_graphql_vol24h_rot.replace("TIMESTAMP_MINUS_24_H", str(yesterday)).replace("PAIR_CHANGE",
                                                                                                  pair_contract)
     res = graphclient_uni.execute(updated_req)
