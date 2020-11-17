@@ -546,7 +546,7 @@ def get_chart_supply(update: Update, context: CallbackContext):
 
 
 def __log_channel(chat, method):
-    now = datetime.now().strftime('%Y-%m-%d, %H:%M:%S')
+    now = datetime.now().strftime('%Y-%m-%d, %H')
     # today = datetime.today().strftime('%Y-%m-%d')
     chat_id = chat.id
     channel_type = chat.type
