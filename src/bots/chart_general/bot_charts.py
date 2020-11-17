@@ -546,13 +546,13 @@ def get_chart_supply(update: Update, context: CallbackContext):
 
 
 def __log_channel(chat, method):
-    today = datetime.today().strftime('%Y-%m-%d')
+    now = datetime.now().strftime('%Y-%m-%d, %H:%M:%S')
+    # today = datetime.today().strftime('%Y-%m-%d')
     chat_id = chat.id
     channel_type = chat.type
     chat_name = chat.title
     print("chat_id = " + str(chat_id) + " - type = " + str(channel_type) + " - chat_name =  " + str(chat_name) + " - method " + method)
-    zerorpc_client_data_aggregator.log_action(chat_id, channel_type, str(chat_name), today, method)  # casting chat name to str in case it's None
-    #channel_id, type, name, method
+    zerorpc_client_data_aggregator.log_action(chat_id, channel_type, str(chat_name), now, method)  # casting chat name to str in case it's None
 
 
 def main():
