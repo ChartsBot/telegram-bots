@@ -383,7 +383,7 @@ def get_time_to(update: Update, context: CallbackContext):
 def get_latest_actions(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "set_faq")
     chat_id = update.message.chat_id
-    query_received = update.message.text.split('/set_faq')
+    query_received = update.message.text.split(' ')
     if len(query_received) == 1:
         ticker, addr = __get_default_token_channel(chat_id)
         if ticker is not None:
