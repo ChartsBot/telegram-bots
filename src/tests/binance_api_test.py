@@ -17,7 +17,7 @@ new_to = 1604746752000
 
 Client.KLINE_INTERVAL_30MINUTE
 
-candles = client.get_klines(symbol='BTCUSDT', interval="1h", startTime=t_from, endTime=new_to)
+candles = client.get_klines(symbol='XRPUSDT', interval="1h", startTime=t_from, endTime=new_to)
 
 pprint(candles)
 
@@ -40,5 +40,5 @@ def datteeesss(t_from, t_to):
 
 
 if __name__ == '__main__':
-    pass
-    # datteeesss(t_from, to)
+    # pass
+    datteeesss(t_from, to)

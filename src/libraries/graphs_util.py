@@ -265,14 +265,14 @@ def __get_concat_v(im1, im2):
 def print_candlestick(token, t_from, t_to, file_path, txt: str = None):
     resolution = __calculate_resolution_from_time(t_from, t_to)
 
-    if token == "btc" or token == "BTC":
+    if token.upper() == "BTC":
         values = requests_util.get_binance_chart_data("BTCUSDT", t_from, t_to)
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
-    elif token == "eth" or token == "ETH" or token == "weth" or token == "WETH" or token == "ethereum" or token == "Ethereum":
+    elif token.upper() == "ETH" or token == "weth" or token == "WETH" or token == "ethereum" or token == "Ethereum":
         values = requests_util.get_binance_chart_data("ETHUSDT", t_from, t_to)
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
-    elif token.upper() == "xrp" or token.lower() == "ripple":
-        values = requests_util.get_binance_chart_data("XRP_USDT", t_from, t_to)
+    elif token.upper() == "XRP" or token.lower() == "ripple":
+        values = requests_util.get_binance_chart_data("XRPUSDT", t_from, t_to)
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
 
     else:
