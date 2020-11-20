@@ -25,9 +25,9 @@ def __generate_upper_barrier(txt, options=None):
     unicode_font = ImageFont.truetype("DejaVuSans.ttf", font_size, encoding="unic")
 
     font = unicode_font
-    dark_theme = False
+    dark_theme = True
     if options:
-        dark_theme = True if 'dark' in options else False
+        dark_theme = False if 'white' in options else True
     img_color = (255, 255, 255) if not dark_theme else (36, 36, 36)
     txt_color = (0, 0, 0) if not dark_theme else (255, 255, 255)
 
