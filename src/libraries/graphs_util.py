@@ -63,8 +63,28 @@ def __bbands(price, window_size=10, num_of_std=5):
     return rolling_mean, upper_band, lower_band
 
 
+def fibonnaci_bands(closes):
+    highest = max(closes)
+    lowest = min(closes)
+    line = dict(color='rgb(169,169,169,0.5)', width=2)
+    line_main = dict(color='rgb(0,0,0,1)', width=4)
+    top = highest - lowest
+    l = []
+    percent_23 = top * (1 - 0.236) + lowest
+    percent_38 = top * (1 - 0.382) + lowest
+    percent_50 = top * (1 - 0.5) + lowest
+    percent_62 = top * (1 - 0.618) + lowest
+    l.append((pd.DataFrame(np.full(len(closes), lowest)), line_main, "lowest: " + util.pretty_number(lowest)))
+    l.append((pd.DataFrame(np.full(len(closes), percent_23)), line, "23%: " + util.pretty_number(percent_23)))
+    l.append((pd.DataFrame(np.full(len(closes), percent_38)), line, "38%: " + util.pretty_number(percent_38)))
+    l.append((pd.DataFrame(np.full(len(closes), percent_50)), line, "50%: " + util.pretty_number(percent_50)))
+    l.append((pd.DataFrame(np.full(len(closes), percent_62)), line, "62%: " + util.pretty_number(percent_62)))
+    l.append((pd.DataFrame(np.full(len(closes), top * 1 + lowest)), line_main, "top: " + util.pretty_number(highest)))
+    print(l)
+    return l
 
-def fibonacci_bollinger_bands(highs, lows, closes, n=20, m=3):
+
+def bollinger_bands(highs, lows, closes, n=20, m=3):
     tp = (pd.DataFrame(highs) + pd.DataFrame(lows) + pd.DataFrame(closes)) / 3
     pprint.pprint(tp)
     ma = tp.rolling(n).mean()
@@ -128,7 +148,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
 
     if options is not None:
         if "bband" in options:
-            ress = fibonacci_bollinger_bands(highs, lows, closes)
+            ress = bollinger_bands(highs, lows, closes)
             fig['layout']['showlegend'] = True
             for res in ress:
                 fig['data'].append(dict(x=dates, y=res[0][0].to_list(), type='scatter', yaxis='y2',
@@ -136,14 +156,26 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                                         marker=dict(color='#ccc'), hoverinfo='none',
                                         legendgroup='Bollinger Bands', showlegend=res[2]))
 
+        # cf https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/fibonacci-retracement and https://plotly.com/python/line-charts/
         if "fibo" in options:
-            ress = fibonacci_bollinger_bands(highs, lows, closes)
-            fig['layout']['showlegend'] = True
+            annotations = []
+            ress = fibonnaci_bands(closes)
+            # fig['layout']['showlegend'] = True
             for res in ress:
                 fig['data'].append(dict(x=dates, y=res[0][0].to_list(), type='scatter', yaxis='y2',
-                                        line=res[1], name=res[3],
+                                        line=res[1], name=res[2],
                                         marker=dict(color='#ccc'), hoverinfo='none',
-                                        legendgroup='Bollinger Bands', showlegend=res[2]))
+                                        legendgroup='Bollinger Bands', showlegend=False))
+                pprint.pprint(res[0][0].to_list()[0])
+                annotations.append(dict(xref='paper', x=0.0, y=res[0][0].to_list()[0], #fewrget=2435,
+                                        xanchor='right', yanchor='middle', yref='y2',
+                                        text=res[2],
+                                        font=dict(family='Arial',
+                                                              size=16),
+                                        showarrow=False))
+            fig['layout']['margin'] = dict(t=15, b=15, r=15, l=100)
+            fig['layout']['annotations'] = annotations
+
     else:
         # adding moving average
         mv_y = __moving_average(closes)
@@ -321,7 +353,6 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
     else:
         values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
-
     __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token, options)
     if txt is not None:
         pprint.pprint("Adding banner up")
@@ -347,11 +378,11 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
 
 
 def main():
-    token = "ROT"
+    token = "kp3r"
     t_to = int(time.time())
-    t_from = 0 #  int(time.time()) - 3600*24
+    t_from = int(time.time()) - 3600*24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
-    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["fibo", "bband"])
 
 
 if __name__ == '__main__':

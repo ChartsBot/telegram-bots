@@ -54,9 +54,9 @@ def pretty_number(num):
     if round(num) > 10:
         res = number_to_beautiful(round(num))
     elif 0.01 < num < 10.01:
-        res = float_to_str(num)[0:5]
+        res = str(keep_significant_number_float(num, 3))# [0:5]
     else:
-        res = float_to_str(num)[0:10]
+        res = str(keep_significant_number_float(num, 6)) #float_to_str(num)[0:10]
     return res
 
 
@@ -81,8 +81,9 @@ def create_and_send_vote(ticker, method, username, zerorpc_client):
 
 
 def keep_significant_number_float(float_to_keep: float, number: int):
+    a = round(float_to_keep, number)
     str_action = "{:.$AMOUNTf}".replace('$AMOUNT', str(number))
-    return float(str_action.format(float_to_keep))
+    return a# float(str_action.format(float_to_keep))
 
 
 def get_banner_txt(rpc_client):
