@@ -104,7 +104,7 @@ def get_candlestick(update: Update, context: CallbackContext):
     if len(query_received) == 1:
         if channel_token is None:
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
-            pass
+            return
 
     token, start_time, time_period, options = queries_parser.analyze_query(update.message.text, default_default_token)
 
@@ -120,7 +120,7 @@ def get_candlestick(update: Update, context: CallbackContext):
     #                                                                                             k_days, k_hours, t_from,
     #                                                                                             t_to, txt=trending)
     #         util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
-    #         token_chat_id = str(chat_id) + "_" + token
+    #         token_chat_id = str(chat_id) + "_" + tokenborbork
     #         charts_time_refresh[token_chat_id] = t_to
     #         context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
     #                                reply_markup=reply_markup_chart)
