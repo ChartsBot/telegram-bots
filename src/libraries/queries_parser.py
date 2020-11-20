@@ -7,7 +7,8 @@ def analyze_query(query, default_token, default_time_period='d', default_time_st
     print("parsed query: ")
     pprint(parsed_query)
     token, start_time, time_period, options = finalize_query(parsed_query[0], parsed_query[1], default_token, default_time_period, default_time_start, default_options)
-    return token, start_time, time_period, options.replace("-", "")
+    trimmed_options = [x.replace("-", "") for x in options]
+    return token, start_time, time_period, trimmed_options
 
 
 def preprocess_query(query):
