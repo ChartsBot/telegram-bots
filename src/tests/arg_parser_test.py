@@ -14,7 +14,7 @@ def preprocess_query(query):
     formatted_args = []
     for arg in individual_args:
         if not arg.isnumeric():
-            if arg[0] == "-":  # We already have an option
+            if arg[0] == "-" or arg[0] == "—":  # We already have an option
                 formatted_args.append(arg)
             elif len(arg) == 1:  # Type of date, like m, d, h, ...
                 formatted_args.append("--date_type")
@@ -85,7 +85,8 @@ def validate_preprocessor():
 
 if __name__ == '__main__':
     validate_preprocessor()
-
+    res = analyze_query("/c 5 d —fib")
+    pprint(res)
     pprint("done")
 
 # return TOKEN: OPTION, T_START: OPTION, T_TYPE: OPTION, OPTIONS: LIST(STRING)
