@@ -20,16 +20,21 @@ INCREASING_COLOR = '#228B22'
 DECREASING_COLOR = '#FF0000'
 
 
-def __generate_upper_barrier(txt):
+def __generate_upper_barrier(txt, options=None):
     font_size = 60
     unicode_font = ImageFont.truetype("DejaVuSans.ttf", font_size, encoding="unic")
 
     font = unicode_font
+    dark_theme = False
+    if options:
+        dark_theme = True if 'dark' in options else False
+    img_color = (255, 255, 255) if not dark_theme else (36, 36, 36)
+    txt_color = (0, 0, 0) if not dark_theme else (255, 255, 255)
 
     bounding_box = [0, 0, 4800, 150]
     x1, y1, x2, y2 = bounding_box  # For easy reading
 
-    img = Image.new('RGB', (x2, y2), color=(255, 255, 255))
+    img = Image.new('RGB', (x2, y2), color=img_color)
 
     d = ImageDraw.Draw(img)
 
@@ -41,7 +46,7 @@ def __generate_upper_barrier(txt):
     y = (y2 - y1 - h)/2 + y1
 
     # Write the text to the image, where (x,y) is the top left corner of the text
-    d.text((x, y), txt, align='center', font=font, fill=(0, 0, 0))
+    d.text((x, y), txt, align='center', font=font, fill=txt_color)
 
     # d.text((10,10), txt, font=unicode_font, fill=(0,0,0))
     # new_path = path + "trending.png"
@@ -155,7 +160,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                                         legendgroup='Bollinger Bands', showlegend=res[2]))
 
         # cf https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/fibonacci-retracement and https://plotly.com/python/line-charts/
-        if "fibo" in options:
+        if "fibo" in options or "fibonnaci" in options:
             annotations = []
             ress = fibonnaci_bands(closes)
             # fig['layout']['showlegend'] = True
@@ -172,6 +177,10 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                                         showarrow=False))
             fig['layout']['margin'] = dict(t=15, b=15, r=15, l=100)
             fig['layout']['annotations'] = annotations
+
+        if 'dark' in options:
+            fig['layout']['plot_bgcolor'] = None
+            fig['layout']['template'] = 'plotly_dark'
 
     else:
         # adding moving average
@@ -352,7 +361,7 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
     __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token, options)
     if txt is not None:
-        img_up = __generate_upper_barrier(txt)
+        img_up = __generate_upper_barrier(txt, options)
         img_down = Image.open(file_path)
         __get_concat_v(img_up, img_down).save(file_path)
     return closes[-1]
@@ -378,7 +387,7 @@ def main():
     t_to = int(time.time())
     t_from = int(time.time()) - 3600*24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
-    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["fibo", "bband"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["fibo", "bband", "dark"])
 
 
 if __name__ == '__main__':
