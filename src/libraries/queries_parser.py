@@ -1,9 +1,11 @@
 import argparse
-
+from pprint import pprint
 
 def analyze_query(query, default_token, default_time_period='d', default_time_start=1, default_options=None):
     preprocessed_query = preprocess_query(query)
     parsed_query = parse_query(preprocessed_query)
+    print("parsed query: ")
+    pprint(parsed_query)
     token, start_time, time_period, options = finalize_query(parsed_query[0], parsed_query[1], default_token, default_time_period, default_time_start, default_options)
     return token, start_time, time_period, options
 
