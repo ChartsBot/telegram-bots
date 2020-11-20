@@ -107,6 +107,10 @@ def get_candlestick(update: Update, context: CallbackContext):
             return
 
     token, start_time, time_period, options = queries_parser.analyze_query(update.message.text, default_default_token)
+    print("token = " + token)
+    print("start_time = " + str(start_time))
+    print("time_period = " + str(time_period))
+    print("options = " + str(options))
 
     # time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_default_token)
     time_type, k_hours, k_days = commands_util.get_time_query(start_time, time_period)
@@ -114,20 +118,10 @@ def get_candlestick(update: Update, context: CallbackContext):
     t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
     trending = util.get_banner_txt(zerorpc_client_data_aggregator)
 
-    # if isinstance(tokens, list):
-    #     for token in tokens:
-    #         (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path,
-    #                                                                                             k_days, k_hours, t_from,
-    #                                                                                             t_to, txt=trending)
-    #         util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
-    #         token_chat_id = str(chat_id) + "_" + tokenborbork
-    #         charts_time_refresh[token_chat_id] = t_to
-    #         context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
-    #                                reply_markup=reply_markup_chart)
-    # else:
     (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
                                                                                         k_hours, t_from,
-                                                                                        t_to, txt=trending)
+                                                                                        t_to, txt=trending, options=options)
+
     util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
     token_chat_id = str(chat_id) + "_" + token
     charts_time_refresh[token_chat_id] = t_to
