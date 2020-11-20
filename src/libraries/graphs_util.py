@@ -139,7 +139,9 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
     fig = dict(data=data, layout=layout)
 
     fig['layout'] = dict()
-    fig['layout']['plot_bgcolor'] = 'rgb(250, 250, 250)'
+    fig['layout']['plot_bgcolor'] = None
+    fig['layout']['template'] = 'plotly_dark'
+    # fig['layout']['plot_bgcolor'] = 'rgb(250, 250, 250)'
     fig['layout']['autosize'] = False
     fig['layout']['width'] = 1600
     fig['layout']['height'] = 900
@@ -182,9 +184,9 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
             fig['layout']['margin'] = dict(t=15, b=15, r=15, l=100)
             fig['layout']['annotations'] = annotations
 
-        if 'dark' in options:
-            fig['layout']['plot_bgcolor'] = None
-            fig['layout']['template'] = 'plotly_dark'
+        if 'white' in options:
+            fig['layout']['template'] = None
+            fig['layout']['plot_bgcolor'] = 'rgb(250, 250, 250)'
 
     if should_add_avg:
         # adding moving average
@@ -391,7 +393,7 @@ def main():
     t_to = int(time.time())
     t_from = int(time.time()) - 3600*24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
-    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["white"])
 
 
 if __name__ == '__main__':
