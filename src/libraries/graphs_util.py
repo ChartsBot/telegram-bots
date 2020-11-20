@@ -149,8 +149,11 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
     fig['layout']['showlegend'] = False
     fig['layout']['margin'] = dict(t=15, b=15, r=15, l=15)
 
+    should_add_avg = True
+
     if options is not None:
         if "bband" in options:
+            should_add_avg = False
             ress = bollinger_bands(highs, lows, closes)
             fig['layout']['showlegend'] = True
             for res in ress:
@@ -161,6 +164,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
 
         # cf https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/fibonacci-retracement and https://plotly.com/python/line-charts/
         if "fibo" in options or "fibonnaci" in options:
+            should_add_avg = False
             annotations = []
             ress = fibonnaci_bands(closes)
             # fig['layout']['showlegend'] = True
@@ -182,7 +186,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
             fig['layout']['plot_bgcolor'] = None
             fig['layout']['template'] = 'plotly_dark'
 
-    else:
+    if should_add_avg:
         # adding moving average
         mv_y = __moving_average(closes)
         mv_x = list(dates)
@@ -387,7 +391,7 @@ def main():
     t_to = int(time.time())
     t_from = int(time.time()) - 3600*24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
-    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["fibo", "bband", "dark"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark"])
 
 
 if __name__ == '__main__':
