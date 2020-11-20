@@ -111,6 +111,7 @@ def get_candlestick(update: Update, context: CallbackContext):
     print("start_time = " + str(start_time))
     print("time_period = " + str(time_period))
     print("options = " + str(options))
+    options = None if options == [] else options
 
     # time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_default_token)
     time_type, k_hours, k_days = commands_util.get_time_query(start_time, time_period)
