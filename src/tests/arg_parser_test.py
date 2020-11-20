@@ -48,7 +48,7 @@ def finalize_query(args, unknown_args, default_token, default_time_period='d', d
     time_period = args.date_type if args.date_type else default_time_period
     options = unknown_args if unknown_args is not [] else default_options
 
-    return token, start_time, time_period, options.replace("-", "")
+    return token, start_time, time_period, options
 
 
 # --start_time
