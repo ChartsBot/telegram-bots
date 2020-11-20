@@ -80,13 +80,11 @@ def fibonnaci_bands(closes):
     l.append((pd.DataFrame(np.full(len(closes), percent_50)), line, "50%: " + util.pretty_number(percent_50)))
     l.append((pd.DataFrame(np.full(len(closes), percent_62)), line, "62%: " + util.pretty_number(percent_62)))
     l.append((pd.DataFrame(np.full(len(closes), top * 1 + lowest)), line_main, "top: " + util.pretty_number(highest)))
-    print(l)
     return l
 
 
 def bollinger_bands(highs, lows, closes, n=20, m=3):
     tp = (pd.DataFrame(highs) + pd.DataFrame(lows) + pd.DataFrame(closes)) / 3
-    pprint.pprint(tp)
     ma = tp.rolling(n).mean()
     sd = m * tp.rolling(n).std()
     ls_up = dict(color='rgb(255, 0, 0, 0.5)')
@@ -166,7 +164,6 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                                         line=res[1], name=res[2],
                                         marker=dict(color='#ccc'), hoverinfo='none',
                                         legendgroup='Bollinger Bands', showlegend=False))
-                pprint.pprint(res[0][0].to_list()[0])
                 annotations.append(dict(xref='paper', x=0.0, y=res[0][0].to_list()[0], #fewrget=2435,
                                         xanchor='right', yanchor='middle', yref='y2',
                                         text=res[2],
@@ -355,7 +352,6 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
     __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token, options)
     if txt is not None:
-        pprint.pprint("Adding banner up")
         img_up = __generate_upper_barrier(txt)
         img_down = Image.open(file_path)
         __get_concat_v(img_up, img_down).save(file_path)
