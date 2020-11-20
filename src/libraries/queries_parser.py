@@ -32,6 +32,7 @@ def preprocess_query(query):
 
 
 def parse_query(query):
+    pprint(query)
     parser = argparse.ArgumentParser()
     parser.add_argument("--token")
     parser.add_argument("--date_type")
