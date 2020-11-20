@@ -21,11 +21,11 @@ from web3 import Web3
 last_time_checked_4chan = 0
 
 
-def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, txt: str = None):
+def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, txt: str = None, options=None):
     print("requesting coin " + token + " from " + str(k_days) + " days and " + str(k_hours) + " hours")
 
     path = charts_path + token + '.png'
-    last_price = graphs_util.print_candlestick(token, t_from, t_to, path, txt)
+    last_price = graphs_util.print_candlestick(token, t_from, t_to, path, txt, options)
 
     callback_message = 'refresh_chart_' + "h:" + str(k_hours) + "d:" + str(k_days) + "t:" + token
     callback_message_1_w = 'refresh_chart_' + "h:" + str(0) + "d:" + str(7) + "t:" + token
@@ -44,7 +44,6 @@ def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, t
                             InlineKeyboardButton('1 week', callback_data=callback_message_1_w),
                             InlineKeyboardButton('1 month', callback_data=callback_message_1_m)
                          ]]
-    # menu = util.build_menu(button_list_chart, 4, header_buttons=header)
     reply_markup_chart = InlineKeyboardMarkup(button_list_chart)
     msg_time = " " + str(k_days) + " day(s) " if k_days > 0 else " last " + str(k_hours) + " hour(s) "
     print(float_to_str(last_price))

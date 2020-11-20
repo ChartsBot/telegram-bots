@@ -1,6 +1,12 @@
 import datetime
 import time
 
+import os
+import sys
+
+BASE_PATH = os.environ.get('BASE_PATH')
+sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
+
 import pandas as pd
 import libraries.requests_util as requests_util
 import libraries.util as util
@@ -57,9 +63,36 @@ def __bbands(price, window_size=10, num_of_std=5):
     return rolling_mean, upper_band, lower_band
 
 
+
+def fibonacci_bollinger_bands(highs, lows, closes, n=20, m=3):
+    tp = (pd.DataFrame(highs) + pd.DataFrame(lows) + pd.DataFrame(closes)) / 3
+    pprint.pprint(tp)
+    ma = tp.rolling(n).mean()
+    sd = m * tp.rolling(n).std()
+    ls_up = dict(color='rgb(255, 0, 0, 0.5)')
+    ls_mid = dict(color='rgb(255,20,147, 0.5)')
+    ls_low = dict(color='rgb(34,139,34, 0.5)')
+    ls_fib = dict(color='rgb(169,169,169,0.5)', width=1)
+    l = []
+    l.append((ma, ls_mid, True, "Middle Band"))
+    l.append((ma + (0.236 * sd), ls_fib, False, "Fib band"))
+    l.append((ma + (0.382 * sd), ls_fib, False, "Fib band"))
+    l.append((ma + (0.5 * sd), ls_fib, False, "Fib band"))
+    l.append((ma + (0.618 * sd), ls_fib, False, "Fib band"))
+    l.append((ma + (0.764 * sd), ls_fib, False, "Fib band"))
+    l.append((ma + (1 * sd), ls_up, True, "Upper Band"))
+    l.append((ma - (0.236 * sd), ls_fib, False, "Fib band"))
+    l.append((ma - (0.382 * sd), ls_fib, False, "Fib band"))
+    l.append((ma - (0.5 * sd), ls_fib, False, "Fib band"))
+    l.append((ma - (0.618 * sd), ls_fib, False, "Fib band"))
+    l.append((ma - (0.764 * sd), ls_fib, False, "Fib band"))
+    l.append((ma - (1 * sd), ls_low, True, "Lower Band"))
+    return l
+
+
 # Visualisation inspired by https://chart-studio.plotly.com/~jackp/17421/plotly-candlestick-chart-in-python/#/
 # Huge thanks to the author!
-def __process_and_write_candlelight(dates, openings, closes, highs, lows, volumes, file_path, token_name):
+def __process_and_write_candlelight(dates, openings, closes, highs, lows, volumes, file_path, token_name, options=None):
     data = [dict(
         type='candlestick',
         open=openings,
@@ -68,7 +101,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
         close=closes,
         x=dates,
         yaxis='y2',
-        name='GS',
+        name='OHLC',
         increasing=dict(line=dict(color=INCREASING_COLOR)),
         decreasing=dict(line=dict(color=DECREASING_COLOR)),
     )]
@@ -93,30 +126,39 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
     fig['layout']['showlegend'] = False
     fig['layout']['margin'] = dict(t=15, b=15, r=15, l=15)
 
-    # bb_avg, bb_upper, bb_lower = __bbands(closes)
-    #
-    # fig['data'].append(dict(x=dates, y=bb_upper[0].to_list(), type='scatter', yaxis='y2',
-    #                         line=dict(width=1),
-    #                         marker=dict(color='#ccc'), hoverinfo='none',
-    #                         legendgroup='Bollinger Bands', name='Bollinger Bands'))
-    #
-    #
-    # fig['data'].append(dict(x=dates, y=bb_lower[0].to_list(), type='scatter', yaxis='y2',
-    #                         line=dict(width=1),
-    #                         marker=dict(color='#ccc'), hoverinfo='none',
-    #                         legendgroup='Bollinger Bands', showlegend=False))
+    if options is not None:
+        if "bband" in options:
+            ress = fibonacci_bollinger_bands(highs, lows, closes)
+            fig['layout']['showlegend'] = True
+            for res in ress:
+                fig['data'].append(dict(x=dates, y=res[0][0].to_list(), type='scatter', yaxis='y2',
+                                        line=res[1], name=res[3],
+                                        marker=dict(color='#ccc'), hoverinfo='none',
+                                        legendgroup='Bollinger Bands', showlegend=res[2]))
 
-    mv_y = __moving_average(closes)
-    mv_x = list(dates)
+        if "fibo" in options:
+            ress = fibonacci_bollinger_bands(highs, lows, closes)
+            fig['layout']['showlegend'] = True
+            for res in ress:
+                fig['data'].append(dict(x=dates, y=res[0][0].to_list(), type='scatter', yaxis='y2',
+                                        line=res[1], name=res[3],
+                                        marker=dict(color='#ccc'), hoverinfo='none',
+                                        legendgroup='Bollinger Bands', showlegend=res[2]))
+    else:
+        # adding moving average
+        mv_y = __moving_average(closes)
+        mv_x = list(dates)
 
-    # Clip the ends
-    mv_x = mv_x[5:-5]
-    mv_y = mv_y[5:-5]
+        # Clip the ends
+        mv_x = mv_x[5:-5]
+        mv_y = mv_y[5:-5]
 
-    fig['data'].append(dict(x=mv_x, y=mv_y, type='scatter', mode='lines',
-                            line=dict(width=2),
-                            marker=dict(color='#E377C2'),
-                            yaxis='y2', name='Moving Average'))
+        fig['data'].append(dict(x=mv_x, y=mv_y, type='scatter', mode='lines',
+                                line=dict(width=2),
+                                marker=dict(color='#E377C2'),
+                                yaxis='y2', name='Moving Average'))
+
+    # pprint.pprint(fig['data'])
 
     colors_volume = []
 
@@ -142,11 +184,11 @@ def __calculate_resolution_from_time(t_from, t_to):
     if delta < 6 * 3600:
         return 1
     elif delta < 13 * 3600:
-        return 5
+        return 1
     elif delta < 24 * 3600:
-        return 15
+        return 5
     elif delta < 24 * 3600 * 7 + 100:
-        return 30
+        return 15
     else:
         return 60
 
@@ -262,7 +304,8 @@ def __get_concat_v(im1, im2):
 
 # t_from and t_to should be int epoch second
 # return the last price
-def print_candlestick(token, t_from, t_to, file_path, txt: str = None):
+# options = TA stuff for example
+def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=None):
     resolution = __calculate_resolution_from_time(t_from, t_to)
 
     if token.upper() == "BTC":
@@ -279,7 +322,7 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None):
         values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
 
-    __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token)
+    __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token, options)
     if txt is not None:
         pprint.pprint("Adding banner up")
         img_up = __generate_upper_barrier(txt)
@@ -306,8 +349,9 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
 def main():
     token = "ROT"
     t_to = int(time.time())
-    t_from = 0
-    print_candlestick(token, t_from, t_to, "testaaa2.png")
+    t_from = 0 #  int(time.time()) - 3600*24
+    # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
 
 
 if __name__ == '__main__':

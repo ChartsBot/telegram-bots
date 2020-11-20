@@ -1,6 +1,21 @@
 import re
 
 
+def get_time_query(time_start, time_type):
+    k_hours = 0
+    k_days = 0
+    if time_type == 'h' or time_type == 'H':
+        k_hours = time_start
+    if time_type == 'd' or time_type == 'D':
+        k_days = time_start
+    if time_type == 'w' or time_type == 'W':
+        k_days = time_start * 7
+    if time_type == 'm' or time_type == 'M':
+        k_days = time_start * 30
+
+    return time_type, k_hours, k_days
+
+
 def get_from_query(query_received):
     time_type = query_received[2]
     try:
@@ -17,6 +32,11 @@ def get_from_query(query_received):
         k_hours = time_start
     if time_type == 'd' or time_type == 'D':
         k_days = time_start
+    if time_type == 'w' or time_type == 'W':
+        k_days = time_start * 7
+    if time_type == 'm' or time_type == 'M':
+        k_days = time_start * 30
+
     return time_type, k_hours, k_days
 
 

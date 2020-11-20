@@ -27,6 +27,7 @@ import libraries.requests_util as requests_util
 import libraries.time_util as time_util
 import libraries.util as util
 import libraries.scrap_websites_util as scrap_websites_util
+import libraries.queries_parser as queries_parser
 from libraries.uniswap import Uniswap
 from bots.chart_general.bot_charts_values import start_message, message_faq_empty
 from libraries.common_values import *
@@ -95,39 +96,43 @@ def get_candlestick(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
 
     query_received = update.message.text.split(' ')
-    default_default_token = default_token
+    channel_token = __get_default_token_channel(chat_id)
+    if channel_token is not None:
+        default_default_token = channel_token[0]
+    else:
+        default_default_token = "eth"
     if len(query_received) == 1:
-        channel_token = __get_default_token_channel(chat_id)
-        if channel_token is not None:
-            default_default_token = channel_token[0]
-        else:
+        if channel_token is None:
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
             pass
 
-    time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_default_token)
+    token, start_time, time_period, options = queries_parser.analyze_query(update.message.text, default_default_token)
+
+    # time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_default_token)
+    time_type, k_hours, k_days = commands_util.get_time_query(start_time, time_period)
     t_to = int(time.time())
     t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
     trending = util.get_banner_txt(zerorpc_client_data_aggregator)
 
-    if isinstance(tokens, list):
-        for token in tokens:
-            (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path,
-                                                                                                k_days, k_hours, t_from,
-                                                                                                t_to, txt=trending)
-            util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
-            token_chat_id = str(chat_id) + "_" + token
-            charts_time_refresh[token_chat_id] = t_to
-            context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
-                                   reply_markup=reply_markup_chart)
-    else:
-        (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(tokens, charts_path, k_days,
-                                                                                            k_hours, t_from,
-                                                                                            t_to, txt=trending)
-        util.create_and_send_vote(tokens, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
-        token_chat_id = str(chat_id) + "_" + tokens
-        charts_time_refresh[token_chat_id] = t_to
-        context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
-                               reply_markup=reply_markup_chart)
+    # if isinstance(tokens, list):
+    #     for token in tokens:
+    #         (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path,
+    #                                                                                             k_days, k_hours, t_from,
+    #                                                                                             t_to, txt=trending)
+    #         util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
+    #         token_chat_id = str(chat_id) + "_" + token
+    #         charts_time_refresh[token_chat_id] = t_to
+    #         context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
+    #                                reply_markup=reply_markup_chart)
+    # else:
+    (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
+                                                                                        k_hours, t_from,
+                                                                                        t_to, txt=trending)
+    util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
+    token_chat_id = str(chat_id) + "_" + token
+    charts_time_refresh[token_chat_id] = t_to
+    context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
+                           reply_markup=reply_markup_chart)
 
 
 @run_async
