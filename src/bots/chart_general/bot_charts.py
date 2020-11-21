@@ -33,7 +33,7 @@ from bots.chart_general.bot_charts_values import start_message, message_faq_empt
 from libraries.common_values import *
 from web3 import Web3
 import zerorpc
-import random
+import html
 
 
 # charts delete
@@ -264,8 +264,9 @@ def get_biz(update: Update, context: CallbackContext):
         word_regex_friendly = word.replace('$', '\\$')
         threads_ids = scrap_websites_util.get_biz_threads(re.compile(word_regex_friendly))
         for thread_id in threads_ids:
-            excerpt = thread_id[2] + " | " + thread_id[1]
-            message += base_url + str(thread_id[0]) + " -- " + excerpt[0: 100] + "[...] \n"
+            excerpt = (thread_id[2] + " | " + thread_id[1]).replace("<br>", "")
+            parsed_excerpt = html.unescape(excerpt)
+            message += base_url + str(thread_id[0]) + " -- " + parsed_excerpt[0: 100] + "[...] \n"
         if not threads_ids:
             meme_caption = "No current /biz/ thread containing the word $WORD. Go make one https://boards.4channel.org/biz/.".replace(
                 "$WORD", word)
