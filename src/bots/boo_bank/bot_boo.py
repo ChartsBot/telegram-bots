@@ -222,7 +222,7 @@ def get_biz(update: Update, context: CallbackContext):
         message = """Plz go bump the /biz/ threads:
 """
         for thread_id in threads_ids:
-            excerpt = thread_id[2] + " | " + thread_id[1]
+            excerpt = (thread_id[2] + " | " + thread_id[1]).replace("<br>", "").replace("&#039;", "'")
             message += base_url + str(thread_id[0]) + " -- " + excerpt[0: 100] + "[...] \n"
         if not threads_ids:
             meme_url = git_handler.get_url_meme()
