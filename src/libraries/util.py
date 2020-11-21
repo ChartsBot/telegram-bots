@@ -4,12 +4,17 @@ import random
 import decimal
 import hashlib
 from binascii import hexlify
+import re
+import html
+
 
 BASE_PATH = os.environ.get('BASE_PATH')
 
 from datetime import datetime
 
 supply_file_path = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
+cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+
 
 # convert int to nice string: 1234567 => 1 234 567
 def number_to_beautiful(nbr):
@@ -54,9 +59,9 @@ def pretty_number(num):
     if round(num) > 10:
         res = number_to_beautiful(round(num))
     elif 0.01 < num < 10.01:
-        res = str(keep_significant_number_float(num, 3))# [0:5]
+        res = str(keep_significant_number_float(num, 3))  # [0:5]
     else:
-        res = str(keep_significant_number_float(num, 6)) #float_to_str(num)[0:10]
+        res = str(keep_significant_number_float(num, 6))  # float_to_str(num)[0:10]
     return res
 
 
@@ -83,7 +88,7 @@ def create_and_send_vote(ticker, method, username, zerorpc_client):
 def keep_significant_number_float(float_to_keep: float, number: int):
     a = round(float_to_keep, number)
     str_action = "{:.$AMOUNTf}".replace('$AMOUNT', str(number))
-    return a# float(str_action.format(float_to_keep))
+    return a  # float(str_action.format(float_to_keep))
 
 
 def get_banner_txt(rpc_client):
@@ -100,3 +105,8 @@ def write_supply_cap(supply_cap: int, token_name: str):
         date_time_str = time_now.strftime("%m/%d/%Y,%H:%M:%S")
         message_to_write = date_time_str + " " + str(supply_cap) + "\n"
         supply_file.write(message_to_write)
+
+
+def cleanhtml(raw_html):
+    cleantext = re.sub(cleanr, '', raw_html)
+    return html.unescape(cleantext)
