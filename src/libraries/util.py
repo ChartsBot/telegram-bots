@@ -92,10 +92,10 @@ def keep_significant_number_float(float_to_keep: float, number: int):
 
 
 def get_banner_txt(rpc_client):
-    if random.randrange(10) > 7:
-        return get_ad()
-    else:
-        return rpc_client.view_trending_simple()
+    # if random.randrange(10) > 7:
+    #     return get_ad()
+    # else:
+    return rpc_client.view_trending_simple()
 
 
 def write_supply_cap(supply_cap: int, token_name: str):

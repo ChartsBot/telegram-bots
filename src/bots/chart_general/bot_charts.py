@@ -106,10 +106,6 @@ def get_candlestick(update: Update, context: CallbackContext):
             return
 
     token, start_time, time_period, options = queries_parser.analyze_query_charts(update.message.text, default_default_token)
-    print("token = " + token)
-    print("start_time = " + str(start_time))
-    print("time_period = " + str(time_period))
-    print("options = " + str(options))
     options = None if options == [] else options
 
     # time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_default_token)
