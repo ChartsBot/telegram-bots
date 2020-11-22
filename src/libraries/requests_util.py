@@ -553,8 +553,7 @@ def parse_pair(pair):
     return token0, token1
 
 
-# TODO: stuff will need to be moved from here
-def pretty_print_last_actions(pair, graphql_client_uni, options=None):
+def get_last_actions(pair, graphql_client_uni, options=None):
     eth_price = get_eth_price_now()
     last_actions = get_latest_actions(pair.lower(), graphql_client_uni, options)
 
@@ -585,6 +584,13 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
         all_actions = to_keep_if_whales
 
     all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
+    return all_actions_sorted, start_message, eth_price
+
+
+# TODO: stuff will need to be moved from here
+def pretty_print_last_actions(pair, graphql_client_uni, options=None):
+    all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options)
+
     all_actions_light = all_actions_sorted[0:5]
     if "address" in options or "addr" in options or "a" in options:
         strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
@@ -592,6 +598,17 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
         strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
     string = '\n'.join(strings)
     return start_message + string
+
+
+def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, options=["whale"]):
+
+    all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options)
+    all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts]
+    strings = list(map(lambda x: x.to_string(eth_price), all_actions_kept))
+    if len(strings) == 0:
+        return None
+    else:
+        return strings
 
 
 @dataclass(frozen=True)

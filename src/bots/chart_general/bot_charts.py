@@ -83,6 +83,10 @@ graphql_client_eth = GraphQLClient('https://api.thegraph.com/subgraphs/name/bloc
 rejection_no_default_ticker_message = "No default token found for this chat. Please ask an admin to add one with /set_default_token <TICKER>"
 
 
+# CONFIG OPTION repeated task
+check_big_buys_interval_seconds = 60
+
+
 @run_async
 def get_start_message(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "start")
@@ -569,9 +573,20 @@ def callback_minute(context: CallbackContext):
     channels_to_check = zerorpc_client_data_aggregator.get_all_monitors()
     print("checking channels: ")
     pprint.pprint(channels_to_check)
-    for channel in channels_to_check:
-        pprint.pprint("checking channel:")
-        pprint.pprint(channel)
+    now = round(time.time())
+    last_min = now - 60
+    for channel_mon in channels_to_check:
+        channel = channel_mon[0]
+        coin = channel_mon[1]
+        monitor_type = channel_mon[2]
+        options = [monitor_type, "whale"]
+        latest_actions_pretty = general_end_functions.requests_util(last_min, coin.lower(), uni_wrapper, graphql_client_uni, options)
+        pprint.pprint(latest_actions_pretty)
+        if latest_actions_pretty is not None:
+            message = "New HOT actions happend in the last minute: \n" + latest_actions_pretty
+            context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
+
+
     # context.bot.send_message(chat_id='@examplechannel',
     #                          text='One message every minute')
 
@@ -613,7 +628,7 @@ def main():
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
 
     j = updater.job_queue
-    job_minute = j.run_repeating(callback_minute, interval=60, first=15)
+    job_minute = j.run_repeating(callback_minute, interval=check_big_buys_interval_seconds, first=15)
 
     updater.start_polling()
     updater.idle()
