@@ -517,15 +517,15 @@ def set_monitor(update: Update, context: CallbackContext):
         if len(query_received) == 2:
             ticker = query_received[1].upper()
             token_addr = requests_util.get_token_contract_address(ticker)
-            pprint.pprint("setting watcher for token actions (buys > 10eth) with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS")
+            message = "setting watcher for token actions (buys > 10eth) with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS"
             res = zerorpc_client_data_aggregator.add_monitor(chat_id, token_addr, "buy")
-            context.bot.send_message(chat_id=chat_id, text=res)
+            context.bot.send_message(chat_id=chat_id, text=message)
         elif len(query_received) == 3:
             ticker = query_received[1].upper()
             token_addr = query_received[2].lower()
-            pprint.pprint("setting watcher for token actions (buys > 10eth) with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS")
+            message = "setting watcher for token actions (buys > 10eth) with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS"
             res = zerorpc_client_data_aggregator.add_monitor(chat_id, token_addr, "buy")
-            context.bot.send_message(chat_id=chat_id, text=res)
+            context.bot.send_message(chat_id=chat_id, text=message)
     else:
         context.bot.send_message(chat_id=chat_id, text="Only admins can do that you silly")
 
