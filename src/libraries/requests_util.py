@@ -612,7 +612,7 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
     if len(strings) == 0:
         return None
     else:
-        return strings
+        return '\n'.join(strings)
 
 
 @dataclass(frozen=True)
