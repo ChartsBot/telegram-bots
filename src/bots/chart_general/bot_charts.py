@@ -565,6 +565,14 @@ def __log_channel(chat, method):
     zerorpc_client_data_aggregator.log_action(chat_id, channel_type, str(chat_name), now, method)  # casting chat name to str in case it's None
 
 
+def callback_minute(context: CallbackContext):
+    channels_to_check = zerorpc_client_data_aggregator.get_all_monitors()
+    print("checking channels: ")
+    pprint.pprint(channels_to_check)
+    # context.bot.send_message(chat_id='@examplechannel',
+    #                          text='One message every minute')
+
+
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
@@ -600,7 +608,10 @@ def main():
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image, run_async=True))
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
-    # RepeatedTimer(120, log_current_price_rot_per_usd)
+
+    j = updater.job_queue
+    job_minute = j.run_repeating(callback_minute, interval=60, first=30)
+
     updater.start_polling()
     updater.idle()
 
