@@ -565,7 +565,7 @@ def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('start', get_start_message))
-    dp.add_handler(CommandHandler(['charts', 'chart', 'c'], get_candlestick))
+    dp.add_handler(CommandHandler(['charts', 'chart', 'c'], get_candlestick, run_async=True))
     dp.add_handler(CommandHandler(['price', 'p'], get_price_token))
     dp.add_handler(CommandHandler('gas', get_gas_average))
     dp.add_handler(CommandHandler(['twitter', 't'], get_twitter))
