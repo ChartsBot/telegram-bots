@@ -605,6 +605,7 @@ def callback_minute(context: CallbackContext):
         monitor_type = channel_mon[2]
         options = [monitor_type, "whale"]
         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, coin.lower(), graphql_client_uni, options)
+        pprint.pprint("latest actions for chat " + str(channel))
         pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
             message = "New HOT stuff that took place in the last minute: \n" + latest_actions_pretty
@@ -646,6 +647,7 @@ def main():
     dp.add_handler(CommandHandler('faq', get_the_faq, run_async=True))
     dp.add_handler(CommandHandler('chart_supply', get_chart_supply, run_async=True))
     dp.add_handler(CommandHandler('set_monitor', set_monitor, run_async=False))
+    # dp.add_handler(CommandHandler('stop_monitor', stop_monitor, run_async=False))
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
