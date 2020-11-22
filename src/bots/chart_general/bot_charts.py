@@ -19,6 +19,8 @@ import re
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler
 from telegram.ext.dispatcher import run_async
+import libraries.web3_calls as web3_util
+
 
 import libraries.graphs_util as graphs_util
 import libraries.general_end_functions as general_end_functions
@@ -604,7 +606,8 @@ def callback_minute(context: CallbackContext):
         coin = channel_mon[1]
         monitor_type = channel_mon[2]
         options = [monitor_type, "whale"]
-        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, coin.lower(), graphql_client_uni, None)
+        pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
+        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, None)
         pprint.pprint("latest actions for chat " + str(channel))
         pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
