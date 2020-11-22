@@ -621,7 +621,7 @@ def callback_minute(context: CallbackContext):
         pprint.pprint("latest actions for chat " + str(channel))
         pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
-            message = "New HOT stuff that took place in the last minute: \n" + latest_actions_pretty
+            message = "🚀🌕New HOT stuff that took place in the last minute: \n" + latest_actions_pretty
             context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
 
 

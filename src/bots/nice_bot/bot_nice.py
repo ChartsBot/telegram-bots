@@ -997,7 +997,7 @@ def get_random_message_mahmoud(update: Update, context: CallbackContext):
 def get_random_message_david(update: Update, context: CallbackContext):
     with open(david_logs_file_path) as f:
         msgs = [line.rstrip().split('///))()') for line in f]
-    selected_message = random.choice(msgs)
+    selected_message = random.choice(msgs).replace("nigger", "idiot").replace("Nigger", "Idiot").replace("NIGGER", "idiot")
     context.bot.send_message(text="David says: \n" + selected_message[1],
                              chat_id=update.message.chat_id,
                              disable_web_page_preview=True)
@@ -1024,7 +1024,7 @@ def get_random_message_schizo(update: Update, context: CallbackContext):
 
 
 def generate_random_david(update: Update, context: CallbackContext):
-    res = generate_random_message_raw(david_logs_file_path)
+    res = generate_random_message_raw(david_logs_file_path).replace("nigger", "idiot").replace("Nigger", "Idiot").replace("NIGGER", "idiot")
     if random.randrange(10) == 5:
         res = '<a href="https://app.rarible.com/token/0xd07dc4262bcdbf85190c01c996b4c06a461d2430:37562:0xd08517cd0372cd12b710a554f5025cfd419b43ff">' + res + '</a>'
     context.bot.send_message(text=res,
