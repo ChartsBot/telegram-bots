@@ -566,17 +566,17 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
     start_message = "Last 5 actions for pair: " + str(pair)[0:5] + "[...]\n"
 
     if "buy" in options or "buys" in options:
-        start_message = "Last 5 buys for pair: " + str(pair)[0:5] + "[...]\n"
+        start_message = start_message.replace("actions", "buys")
         all_actions = [x for x in parsed_swaps if x.is_positif()]
     elif "sell" in options or "sells" in options:
-        start_message = "Last 5 sells for pair: " + str(pair)[0:5] + "[...]\n"
+        start_message = start_message.replace("actions", "sells")
         all_actions = [x for x in parsed_swaps if not x.is_positif()]
     elif "liq" in options or "liqs" in options or "liquidity" in options:
-        start_message = "Last 5 liqs for pair: " + str(pair)[0:5] + "[...]\n"
+        start_message = start_message.replace("actions", "liquidity actions")
         all_actions = parsed_mints + parsed_burns
 
     if "whale" in options or "whales" in options:
-        start_message = start_message + "Showing only actions > 10 Eth:\n"
+        start_message = start_message + "Showing only actions <b>> 10 Eth:</b>\n"
         to_keep_if_whales = []
         for action in all_actions:
             if action.amount_eth() > 10:
