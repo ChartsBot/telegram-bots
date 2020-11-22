@@ -78,5 +78,8 @@ def filter_tweets(all_tweets):
 
 
 def query_tweets(twitter, token):
-    return twitter.search(q='$' + token)
+    if token[0] == '@':  # actually searching for a user
+        return twitter.search(q=token)
+    else:
+        return twitter.search(q='$' + token)
 

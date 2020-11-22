@@ -271,7 +271,7 @@ def get_biz(update: Update, context: CallbackContext):
     elif len(query_received) == 1:  # TODO: merge all that
         word, addr = __get_default_token_channel(chat_id)
         if word is None or word.lower() == "null":
-            context.bot.send_message(chat_id=chat_id, text='No default ticker set up for this channel. An admin can add one with the /set_default_token command. In the meantime, you can use /twitter by doing /twitter TOKEN')
+            context.bot.send_message(chat_id=chat_id, text='No default ticker set up for this channel. An admin can add one with the /set_default_token command. In the meantime, you can use /biz by doing /biz KEYWORD')
         else:
             word_regex_friendly = word.replace('$', '\\$')
             threads_ids = scrap_websites_util.get_biz_threads(re.compile(word_regex_friendly))
