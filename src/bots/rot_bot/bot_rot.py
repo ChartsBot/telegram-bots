@@ -850,12 +850,16 @@ def get_chart_supply_pyplot(update: Update, context: CallbackContext):
 
             print_chart_supply(dates_pure, supply_rot, supply_maggot)
             current_rot_str = number_to_beautiful(supply_rot[-1])
+            current_rot = supply_rot[-1]
+            current_maggot = supply_maggot[-1]
+            deflation = (float(current_maggot)) / (float(current_maggot) + float(current_rot))
             current_maggot_str = number_to_beautiful(supply_maggot[-1])
             if simple_query:
                 caption = "Chart since the bot starting logging the supply.\nCurrent supply: \n<b>ROT:</b> <pre>" + current_rot_str + "</pre> \n<b>MAGGOT:</b> <pre>" + current_maggot_str + "</pre>"
             else:
                 caption = "Supply of the last " + str(time_start) + str(
                     time_type) + ".\nCurrent supply: \n<b>ROT:</b> <pre>" + current_rot_str + "</pre> \n<b>MAGGOT:</b> <pre>" + current_maggot_str + "</pre>"
+            caption += "\n deflation = " + str(deflation)
             if random.randrange(10) > 8:
                 ad = get_ad()
                 caption = caption + "\n" + ad
