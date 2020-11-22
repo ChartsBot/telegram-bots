@@ -604,7 +604,7 @@ def callback_minute(context: CallbackContext):
         coin = channel_mon[1]
         monitor_type = channel_mon[2]
         options = [monitor_type, "whale"]
-        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, coin.lower(), uni_wrapper, graphql_client_uni, options)
+        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, coin.lower(), graphql_client_uni, options)
         pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
             message = "New HOT stuff that took place in the last minute: \n" + latest_actions_pretty
