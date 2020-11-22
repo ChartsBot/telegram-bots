@@ -600,6 +600,16 @@ def callback_minute(context: CallbackContext):
     pprint.pprint(channels_to_check)
     now = round(time.time())
     last_min = now - 80
+
+    # if channels_to_check is not None:
+    #     coins = [c[1].lower() for c in channels_to_check]
+    #     for coin in list(dict.fromkeys(coins)):
+    #         pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
+    #         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, ["whale", "buy"])
+    #         if latest_actions_pretty is not None:
+    #             for channel in channels_to_check[0]:
+    #                 if coin
+
     for channel_mon in channels_to_check:
         pprint.pprint(channel_mon)
         channel = channel_mon[0]

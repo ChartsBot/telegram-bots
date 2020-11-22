@@ -421,17 +421,19 @@ class Swap:
         else:
             return self.sell[1]
 
-    def to_string(self, eth_price):
+    def to_string(self, eth_price, custom_emoji=None):
         message = ""
         time_since = time_util.get_minute_diff(self.timestamp)
         if self.is_positif():
             price_usd = pretty_number(self.buy[1] * eth_price)
-            message += "🟢 Buy  " + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + " for " \
+            emoji = "🟢" if custom_emoji is None else custom_emoji
+            message += emoji + " Buy  " + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + " for " \
                        + pretty_number(self.buy[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
                        + str(time_since) + " mins ago."
         else:
+            emoji = "🔴" if custom_emoji is None else custom_emoji
             price_usd = pretty_number(self.sell[1] * eth_price)
-            message += "🔴 Sell " + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + " for " \
+            message += emoji + " Sell " + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + " for " \
                        + pretty_number(self.sell[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
                        + str(time_since) + " mins ago."
         message += " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
@@ -455,10 +457,11 @@ class Mint:
             amount_eth = self.token_1[1] * 2
         return amount_eth
 
-    def to_string(self, eth_price):
+    def to_string(self, eth_price, custom_emoji=None):
+        emoji = "💚" if custom_emoji is None else custom_emoji
         price_usd = pretty_number(self.price_usd(eth_price))
         time_since = time_util.get_minute_diff(self.timestamp)
-        message = "💚 Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " +\
+        message = emoji + " Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " +\
                   pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
                   + " <code>($" + price_usd[0:6] + ")</code> " \
                   + str(time_since) + " mins ago."
@@ -483,10 +486,11 @@ class Burn:
             amount_eth = self.token_1[1] * 2
         return amount_eth
 
-    def to_string(self, eth_price):
+    def to_string(self, eth_price, custom_emoji=None):
+        emoji = "💔" if custom_emoji is None else custom_emoji
         price_usd = pretty_number(self.price_usd(eth_price))
         time_since = time_util.get_minute_diff(self.timestamp)
-        message = "💔 Removed " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " \
+        message = emoji + " Removed " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " \
                   + pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
                   + " <code>($" + price_usd[0:6] + ")</code> "\
                   + str(time_since) + " mins ago."
@@ -608,7 +612,7 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
         return None
     all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options)
     all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts]
-    strings = list(map(lambda x: x.to_string(eth_price), all_actions_kept))
+    strings = list(map(lambda x: x.to_string(eth_price, '🐋'), all_actions_kept))
     if len(strings) == 0:
         return None
     else:
