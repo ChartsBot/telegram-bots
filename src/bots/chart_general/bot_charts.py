@@ -32,7 +32,9 @@ from libraries.uniswap import Uniswap
 from bots.chart_general.bot_charts_values import start_message, message_faq_empty
 from libraries.common_values import *
 from web3 import Web3
+from libraries.timer_util import RepeatedTimer
 import zerorpc
+
 
 
 # charts delete
@@ -375,6 +377,7 @@ def get_time_to(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True)
 
 
+# TODO: fix stuff with default token not being fully used
 @run_async
 def get_latest_actions(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "last_actions")
@@ -383,7 +386,7 @@ def get_latest_actions(update: Update, context: CallbackContext):
     if len(query_received) == 1:
         default_token = __get_default_token_channel(chat_id)
         if default_token is not None:
-            latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(default_token[0], uni_wrapper, graphql_client_uni, default_token[1])
+            latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(default_token[0], uni_wrapper, graphql_client_uni)
             util.create_and_send_vote(default_token[0], "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
             context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
         else:
@@ -399,7 +402,7 @@ def get_latest_actions(update: Update, context: CallbackContext):
         token, options = queries_parser.analyze_query_last_actions(update.message.text, ticker)
         if token is not None:
             if addr is not None:
-                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, addr, options)
+                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, None, options)
             else:
                 latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, None, options)
             util.create_and_send_vote(token, "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
@@ -585,7 +588,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image, run_async=True))
-
+    # RepeatedTimer(120, log_current_price_rot_per_usd)
     updater.start_polling()
     updater.idle()
 
