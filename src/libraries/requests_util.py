@@ -580,6 +580,7 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
         to_keep_if_whales = []
         for action in all_actions:
             if action.amount_eth() > 10:
+                print("keeping it cause swap value eth = " + str(action.amount_eth()))
                 to_keep_if_whales.append(action)
         all_actions = to_keep_if_whales
 
@@ -590,7 +591,7 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
     else:
         strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
     string = '\n'.join(strings)
-    return string
+    return start_message + string
 
 
 @dataclass(frozen=True)
