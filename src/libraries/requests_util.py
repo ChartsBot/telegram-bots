@@ -495,10 +495,11 @@ class Burn:
 
 
 def get_latest_actions(pair, graphql_client_uni, options=None):
-
-    updated_eth_query = query_get_latest.replace("$PAIR", '["' + pair + '"]').replace("$AMOUNT", "30")
+    amount = 30
+    updated_eth_query = query_get_latest.replace("$PAIR", '["' + pair + '"]').replace("$AMOUNT", str(amount))
     res_eth_query = graphql_client_uni.execute(updated_eth_query)
     json_resp_eth = json.loads(res_eth_query)
+    pprint.pprint(json_resp_eth)
     return json_resp_eth
 
 
@@ -565,17 +566,17 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
 
     start_message = "Last 5 actions for pair: " + str(pair)[0:5] + "[...]\n"
 
-    if "buy" in options or "buys" in options:
+    if "buy" in options or "buys" in options or "b" in options:
         start_message = start_message.replace("actions", "buys")
         all_actions = [x for x in parsed_swaps if x.is_positif()]
-    elif "sell" in options or "sells" in options:
+    elif "sell" in options or "sells" in options or "s" in options:
         start_message = start_message.replace("actions", "sells")
         all_actions = [x for x in parsed_swaps if not x.is_positif()]
-    elif "liq" in options or "liqs" in options or "liquidity" in options:
+    elif "liq" in options or "liqs" in options or "liquidity" in options or "l" in options:
         start_message = start_message.replace("actions", "liquidity actions")
         all_actions = parsed_mints + parsed_burns
 
-    if "whale" in options or "whales" in options:
+    if "whale" in options or "whales" in options or "w" in options:
         start_message = start_message + "Showing only actions <b>> 10 Eth:</b>\n"
         to_keep_if_whales = []
         for action in all_actions:
@@ -586,7 +587,7 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
 
     all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
     all_actions_light = all_actions_sorted[0:5]
-    if "address" in options or "addr" in options:
+    if "address" in options or "addr" in options or "a" in options:
         strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
     else:
         strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
