@@ -644,7 +644,7 @@ def main():
     dp.add_handler(CommandHandler('set_faq', set_faq))
     dp.add_handler(CommandHandler('faq', get_the_faq, run_async=True))
     dp.add_handler(CommandHandler('chart_supply', get_chart_supply, run_async=True))
-    dp.add_handler(CommandHandler('set_monitor', get_chart_supply, run_async=False))
+    dp.add_handler(CommandHandler('set_monitor', set_monitor, run_async=False))
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
