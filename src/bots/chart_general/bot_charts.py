@@ -569,6 +569,9 @@ def callback_minute(context: CallbackContext):
     channels_to_check = zerorpc_client_data_aggregator.get_all_monitors()
     print("checking channels: ")
     pprint.pprint(channels_to_check)
+    for channel in channels_to_check:
+        pprint.pprint("checking channel:")
+        pprint.pprint(channel)
     # context.bot.send_message(chat_id='@examplechannel',
     #                          text='One message every minute')
 
@@ -610,7 +613,7 @@ def main():
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
 
     j = updater.job_queue
-    job_minute = j.run_repeating(callback_minute, interval=60, first=30)
+    job_minute = j.run_repeating(callback_minute, interval=60, first=15)
 
     updater.start_polling()
     updater.idle()
