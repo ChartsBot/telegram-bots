@@ -607,7 +607,7 @@ def callback_minute(context: CallbackContext):
         monitor_type = channel_mon[2]
         options = [monitor_type, "whale"]
         pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
-        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, None)
+        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options)
         pprint.pprint("latest actions for chat " + str(channel))
         pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
