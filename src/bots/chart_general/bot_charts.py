@@ -597,7 +597,7 @@ def callback_minute(context: CallbackContext):
     print("checking channels: ")
     pprint.pprint(channels_to_check)
     now = round(time.time())
-    last_min = now - 60
+    last_min = now - 80
     for channel_mon in channels_to_check:
         pprint.pprint(channel_mon)
         channel = channel_mon[0]
