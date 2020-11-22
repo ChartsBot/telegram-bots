@@ -33,6 +33,7 @@ from bots.chart_general.bot_charts_values import start_message, message_faq_empt
 from libraries.common_values import *
 from web3 import Web3
 from libraries.timer_util import RepeatedTimer
+from threading import Thread
 import zerorpc
 
 
@@ -567,6 +568,16 @@ def __log_channel(chat, method):
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
+
+    def stop_and_restart():
+        """Gracefully stop the Updater and replace the current process with a new one"""
+        updater.stop()
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
+    def restart(update, context):
+        update.message.reply_text('Bot is restarting...')
+        Thread(target=stop_and_restart).start()
+
     dp.add_handler(CommandHandler('start', get_start_message))
     dp.add_handler(CommandHandler(['charts', 'chart', 'c'], get_candlestick, run_async=True))
     dp.add_handler(CommandHandler(['price', 'p'], get_price_token, run_async=True))
@@ -588,6 +599,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image, run_async=True))
+    dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
     # RepeatedTimer(120, log_current_price_rot_per_usd)
     updater.start_polling()
     updater.idle()
