@@ -417,9 +417,9 @@ class Swap:
 
     def amount_eth(self):
         if self.is_positif():
-            return self.sell[1]
-        else:
             return self.buy[1]
+        else:
+            return self.sell[1]
 
     def to_string(self, eth_price):
         message = ""
