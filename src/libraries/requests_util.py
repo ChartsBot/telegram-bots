@@ -499,7 +499,6 @@ def get_latest_actions(pair, graphql_client_uni, options=None):
     updated_eth_query = query_get_latest.replace("$PAIR", '["' + pair + '"]').replace("$AMOUNT", str(amount))
     res_eth_query = graphql_client_uni.execute(updated_eth_query)
     json_resp_eth = json.loads(res_eth_query)
-    pprint.pprint(json_resp_eth)
     return json_resp_eth
 
 
