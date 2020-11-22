@@ -599,6 +599,7 @@ def callback_minute(context: CallbackContext):
     now = round(time.time())
     last_min = now - 60
     for channel_mon in channels_to_check:
+        pprint.pprint(channel_mon)
         channel = channel_mon[0]
         coin = channel_mon[1]
         monitor_type = channel_mon[2]
