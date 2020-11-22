@@ -16,6 +16,7 @@ import matplotlib
 import matplotlib.dates
 import matplotlib.pyplot as plt
 from web3 import Web3
+from pprint import pprint
 
 
 last_time_checked_4chan = 0
@@ -333,6 +334,8 @@ def get_gas_price():
 
 
 def get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client_uni, contract: str = None, options = None):
+    print("options: ")
+    pprint(options)
     token_contract = contract if contract is not None else requests_util.get_token_contract_address(token_ticker)
     pair = web3_util.does_pair_token_eth_exist(token_contract, uni_wrapper)
     print("pair: " + str(pair))
