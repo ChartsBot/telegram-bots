@@ -859,7 +859,7 @@ def get_chart_supply_pyplot(update: Update, context: CallbackContext):
             else:
                 caption = "Supply of the last " + str(time_start) + str(
                     time_type) + ".\nCurrent supply: \n<b>ROT:</b> <pre>" + current_rot_str + "</pre> \n<b>MAGGOT:</b> <pre>" + current_maggot_str + "</pre>"
-            caption += "\n deflation = " + str(deflation)
+            caption += "\n deflation = " + str(deflation * 100)[:5] + "%"
             if random.randrange(10) > 8:
                 ad = get_ad()
                 caption = caption + "\n" + ad
