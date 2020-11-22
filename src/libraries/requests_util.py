@@ -565,28 +565,27 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
 
     start_message = "Last 5 actions for pair: " + str(pair)[0:5] + "[...]\n"
 
-    if "-buy" in options or "-buys" in options:
+    if "buy" in options or "buys" in options:
         start_message = "Last 5 buys for pair: " + str(pair)[0:5] + "[...]\n"
         all_actions = [x for x in parsed_swaps if x.is_positif()]
-    elif "-sell" in options or "-sells" in options:
+    elif "sell" in options or "sells" in options:
         start_message = "Last 5 sells for pair: " + str(pair)[0:5] + "[...]\n"
         all_actions = [x for x in parsed_swaps if not x.is_positif()]
-    elif "-liq" in options or "-liqs" in options or "-liquidity" in options:
+    elif "liq" in options or "liqs" in options or "liquidity" in options:
         start_message = "Last 5 liqs for pair: " + str(pair)[0:5] + "[...]\n"
         all_actions = parsed_mints + parsed_burns
 
-    if "-whale" in options or "-whales" in options:
+    if "whale" in options or "whales" in options:
         start_message = start_message + "Showing only actions > 10 Eth:\n"
         to_keep_if_whales = []
         for action in all_actions:
-            if "-whale" in options or "-whales" in options:
-                if action.amount_eth() > 10:
-                    to_keep_if_whales.append(action)
+            if action.amount_eth() > 10:
+                to_keep_if_whales.append(action)
         all_actions = to_keep_if_whales
 
     all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
     all_actions_light = all_actions_sorted[0:5]
-    if "-address" in options or "-addr" in options:
+    if "address" in options or "addr" in options:
         strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
     else:
         strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
