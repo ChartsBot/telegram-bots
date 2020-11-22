@@ -508,6 +508,29 @@ def __get_default_token_channel(channel_id: int):
     return res
 
 
+def set_monitor(update: Update, context: CallbackContext):
+    channel_type = update.message.chat.type
+    __log_channel(update.message.chat, "set_monitor")
+    chat_id = update.message.chat_id
+    query_received = update.message.text.split(' ')
+    if __is_user_admin(context, update) or channel_type == "private":
+        if len(query_received) == 2:
+            ticker = query_received[1].upper()
+            token_addr = requests_util.get_token_contract_address(ticker)
+            pprint.pprint("setting watcher for token actions (buys > 10eth) with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS")
+            res = zerorpc_client_data_aggregator.add_monitor(chat_id, token_addr, "buy")
+            context.bot.send_message(chat_id=chat_id, text=res)
+        elif len(query_received) == 3:
+            ticker = query_received[1].upper()
+            token_addr = query_received[2].lower()
+            pprint.pprint("setting watcher for token actions (buys > 10eth) with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS")
+            res = zerorpc_client_data_aggregator.add_monitor(chat_id, token_addr, "buy")
+            context.bot.send_message(chat_id=chat_id, text=res)
+    else:
+        context.bot.send_message(chat_id=chat_id, text="Only admins can do that you silly")
+
+
+
 def __is_user_admin(context, update):
     status = context.bot.get_chat_member(update.effective_chat.id, update.message.from_user.id).status
     pprint.pprint(status)
@@ -583,7 +606,7 @@ def callback_minute(context: CallbackContext):
         latest_actions_pretty = general_end_functions.requests_util(last_min, coin.lower(), uni_wrapper, graphql_client_uni, options)
         pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
-            message = "New HOT actions happend in the last minute: \n" + latest_actions_pretty
+            message = "New HOT stuff that took place in the last minute: \n" + latest_actions_pretty
             context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
@@ -621,6 +644,7 @@ def main():
     dp.add_handler(CommandHandler('set_faq', set_faq))
     dp.add_handler(CommandHandler('faq', get_the_faq, run_async=True))
     dp.add_handler(CommandHandler('chart_supply', get_chart_supply, run_async=True))
+    dp.add_handler(CommandHandler('set_monitor', get_chart_supply, run_async=False))
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
