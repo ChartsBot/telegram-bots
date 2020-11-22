@@ -165,7 +165,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                                         legendgroup='Bollinger Bands', showlegend=res[2]))
 
         # cf https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/fibonacci-retracement and https://plotly.com/python/line-charts/
-        if "fibo" in options or "fibonnaci" in options:
+        if "fibo" in options or "fibonnaci" in options or "fib" in options:
             should_add_avg = False
             annotations = []
             ress = fibonnaci_bands(closes)

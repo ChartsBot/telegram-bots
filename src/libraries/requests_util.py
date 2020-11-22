@@ -15,7 +15,7 @@ from libraries.util import float_to_str, pretty_number, keep_significant_number_
 import libraries.time_util as time_util
 
 query_get_latest = """
-query {  mints(first: 20, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
+query {  mints(first: $AMOUNT, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
     transaction {
       id
       timestamp
@@ -41,7 +41,7 @@ query {  mints(first: 20, where: {pair_in: $PAIR}, orderBy: timestamp, orderDire
     amountUSD
     __typename
   }
-  burns(first: 20, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
+  burns(first: $AMOUNT, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
     transaction {
       id
       timestamp
@@ -67,7 +67,7 @@ query {  mints(first: 20, where: {pair_in: $PAIR}, orderBy: timestamp, orderDire
     amountUSD
     __typename
   }
-  swaps(first: 30, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
+  swaps(first: $AMOUNT, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
     transaction {
       id
       timestamp
@@ -415,6 +415,12 @@ class Swap:
     def is_positif(self):
         return self.buy[0] == 'WETH'
 
+    def amount_eth(self):
+        if self.is_positif():
+            return self.sell[1]
+        else:
+            return self.buy[1]
+
     def to_string(self, eth_price):
         message = ""
         time_since = time_util.get_minute_diff(self.timestamp)
@@ -439,11 +445,18 @@ class Mint:
     id: str
     timestamp: int
 
-    def to_string(self, eth_price):
+    def price_usd(self, eth_price):
+        return self.amount_eth() *  eth_price
+
+    def amount_eth(self):
         if self.token_0[0] == 'WETH':
-            price_usd = pretty_number(self.token_0[1] * eth_price)
+            amount_eth = self.token_0[1] * 2
         else:
-            price_usd = pretty_number(self.token_1[1] * eth_price)
+            amount_eth = self.token_1[1] * 2
+        return amount_eth
+
+    def to_string(self, eth_price):
+        price_usd = pretty_number(self.price_usd(eth_price))
         time_since = time_util.get_minute_diff(self.timestamp)
         message = "💚 Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " +\
                   pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
@@ -460,11 +473,18 @@ class Burn:
     id: str
     timestamp: int
 
-    def to_string(self, eth_price):
+    def price_usd(self, eth_price):
+        return self.amount_eth() *  eth_price
+
+    def amount_eth(self):
         if self.token_0[0] == 'WETH':
-            price_usd = pretty_number(self.token_0[1] * eth_price)
+            amount_eth = self.token_0[1] * 2
         else:
-            price_usd = pretty_number(self.token_1[1] * eth_price)
+            amount_eth = self.token_1[1] * 2
+        return amount_eth
+
+    def to_string(self, eth_price):
+        price_usd = pretty_number(self.price_usd(eth_price))
         time_since = time_util.get_minute_diff(self.timestamp)
         message = "💔 Removed " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " \
                   + pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
@@ -474,8 +494,9 @@ class Burn:
         return message
 
 
-def get_latest_actions(pair, graphql_client_uni):
-    updated_eth_query = query_get_latest.replace("$PAIR", '["' + pair + '"]')
+def get_latest_actions(pair, graphql_client_uni, options=None):
+
+    updated_eth_query = query_get_latest.replace("$PAIR", '["' + pair + '"]').replace("$AMOUNT", "30")
     res_eth_query = graphql_client_uni.execute(updated_eth_query)
     json_resp_eth = json.loads(res_eth_query)
     return json_resp_eth
@@ -533,16 +554,42 @@ def parse_pair(pair):
 
 
 # TODO: stuff will need to be moved from here
-def pretty_print(pair, graphql_client_uni):
+def pretty_print_last_actions(pair, graphql_client_uni, options=None):
     eth_price = get_eth_price_now()
-    last_actions = get_latest_actions(pair.lower(), graphql_client_uni)
+    last_actions = get_latest_actions(pair.lower(), graphql_client_uni, options)
+
     parsed_swaps = parse_swaps(last_actions)
     parsed_mints = parse_mint(last_actions)
     parsed_burns = parse_burns(last_actions)
     all_actions = parsed_burns + parsed_mints + parsed_swaps
+
+    start_message = "Last 5 actions for pair: " + str(pair)[0:5] + "[...]\n"
+
+    if "-buy" in options or "-buys" in options:
+        start_message = "Last 5 buys for pair: " + str(pair)[0:5] + "[...]\n"
+        all_actions = [x for x in parsed_swaps if x.is_positif()]
+    elif "-sell" in options or "-sells" in options:
+        start_message = "Last 5 sells for pair: " + str(pair)[0:5] + "[...]\n"
+        all_actions = [x for x in parsed_swaps if not x.is_positif()]
+    elif "-liq" in options or "-liqs" in options or "-liquidity" in options:
+        start_message = "Last 5 liqs for pair: " + str(pair)[0:5] + "[...]\n"
+        all_actions = parsed_mints + parsed_burns
+
+    if "-whale" in options or "-whales" in options:
+        start_message = start_message + "Showing only actions > 10 Eth:\n"
+        to_keep_if_whales = []
+        for action in all_actions:
+            if "-whale" in options or "-whales" in options:
+                if action.amount_eth() > 10:
+                    to_keep_if_whales.append(action)
+        all_actions = to_keep_if_whales
+
     all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
     all_actions_light = all_actions_sorted[0:5]
-    strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
+    if "-address" in options or "-addr" in options:
+        strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
+    else:
+        strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
     string = '\n'.join(strings)
     return string
 

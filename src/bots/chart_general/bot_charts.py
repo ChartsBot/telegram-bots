@@ -105,7 +105,7 @@ def get_candlestick(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
             return
 
-    token, start_time, time_period, options = queries_parser.analyze_query(update.message.text, default_default_token)
+    token, start_time, time_period, options = queries_parser.analyze_query_charts(update.message.text, default_default_token)
     print("token = " + token)
     print("start_time = " + str(start_time))
     print("time_period = " + str(time_period))
@@ -381,7 +381,7 @@ def get_time_to(update: Update, context: CallbackContext):
 
 @run_async
 def get_latest_actions(update: Update, context: CallbackContext):
-    __log_channel(update.message.chat, "set_faq")
+    __log_channel(update.message.chat, "last_actions")
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')
     if len(query_received) == 1:
@@ -392,14 +392,15 @@ def get_latest_actions(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
         else:
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
-    elif len(query_received) == 2:
-        token_ticker = query_received[1]
-        latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client_uni)
-        util.create_and_send_vote(token_ticker, "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
-        context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
     else:
-        context.bot.send_message(chat_id=chat_id, text="Please use the format /last_actions TOKEN_TICKER")
-
+        ticker, addr = __get_default_token_channel(chat_id)
+        token, options = queries_parser.analyze_query_last_actions(update.message.text, ticker)
+        if token is not None:
+            latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, options)
+            util.create_and_send_vote(token, "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
+            context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
+        else:
+            context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
 
 @run_async
 def get_trending(update: Update, context: CallbackContext):
