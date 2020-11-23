@@ -69,7 +69,7 @@ def get_last_tweets(twitter, ticker):
         for tweet in results:
             tweets.append(format_tweet(tweet))
         pprint(tweets)
-        return message + ''.join(results)
+        return message + ''.join(tweets)
     else:
         try:
             results = query_tweets(twitter, ticker)
