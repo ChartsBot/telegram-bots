@@ -390,10 +390,8 @@ def get_time_to(update: Update, context: CallbackContext):
     query_received = update.message.text[7:]
     if query_received == "jackpot" or query_received == " jackpot":
         query_received = "7 pm CST"
-    pprint.pprint(query_received)
 
     higher, time_to = time_util.get_time_diff(query_received)
-    pprint.pprint(time_to)
     word = ' is ' if higher else ' was '
     message = str(query_received) + word + str(time_to) + " from now."
     context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True)
@@ -464,7 +462,6 @@ def set_faq(update: Update, context: CallbackContext):
     if __is_user_admin(context, update):
         if query_received != "":
             faq = query_received
-            pprint.pprint("setting faq for channel " + str(chat_id) + " - " + str(faq))
             res = zerorpc_client_data_aggregator.set_faq(chat_id, faq)
             context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
         else:
@@ -484,7 +481,6 @@ def get_the_faq(update: Update, context: CallbackContext):
 
 def __get_faq_channel(channel_id: int):
     res = zerorpc_client_data_aggregator.get_faq(channel_id)
-    pprint.pprint("Default faq channel " + str(channel_id) + " is " + str(res))
     return res
 
 
@@ -553,7 +549,6 @@ def set_monitor(update: Update, context: CallbackContext):
 
 def __is_user_admin(context, update):
     status = context.bot.get_chat_member(update.effective_chat.id, update.message.from_user.id).status
-    pprint.pprint(status)
     return status == 'administrator' or status == 'creator'
 
 
@@ -676,9 +671,6 @@ def translate_text(update: Update, context: CallbackContext):
     query_received = update.message.text.split(' ')
     # check if quoted message
     if update.message.reply_to_message is not None:
-        pprint.pprint(update.message.reply_to_message)
-        pprint.pprint(update.message.reply_to_message.text)
-        pprint.pprint("quoted message = " + str(update.message.reply_to_message.text))
         original_message = update.message.reply_to_message.text
         if len(query_received) == 1:
             language_to = "en"
