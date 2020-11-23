@@ -52,17 +52,30 @@ def format_tweet(tweet):
 
 
 def get_last_tweets(twitter, ticker):
-    try:
-        results = query_tweets(twitter, ticker)
-    except TwythonError:
-        time.sleep(0.5)
-        results = query_tweets(twitter, ticker)
-    message = "<b>Last tweets:</b>\n"
-    rest_message = filter_tweets(results)
-    if rest_message == "":
-        print("empty tweets, fallback")
-        rest_message = "Unable to find tweets right now."
-    return message + rest_message
+    if ticker[0] == "@":
+        try:
+            results = query_tweets(twitter, ticker[1:], True)
+        except TwythonError:
+            time.sleep(0.5)
+            results = query_tweets(twitter, ticker[1:], True)
+        tweets = []
+        for tweet in results:
+            pprint(tweet)
+            tweets.append(tweet['text'])
+        pprint(tweets)
+    else:
+
+        try:
+            results = query_tweets(twitter, ticker)
+        except TwythonError:
+            time.sleep(0.5)
+            results = query_tweets(twitter, ticker)
+        message = "<b>Last tweets:</b>\n"
+        rest_message = filter_tweets(results)
+        if rest_message == "":
+            print("empty tweets, fallback")
+            rest_message = "Unable to find tweets right now."
+        return message + rest_message
 
 
 def filter_tweets(all_tweets):
@@ -78,11 +91,10 @@ def filter_tweets(all_tweets):
     return message
 
 
-def query_tweets(twitter, token):
-    if token[0] == '@':  # actually searching for a user
+def query_tweets(twitter, token, is_user: bool = False):
+    if is_user:  # actually searching for a user
         print("showing user tweets: " + token)
-        tweets = twitter.get_user_timeline(screen_name=token[1:], count=20)
-        pprint(tweets)
+        tweets = twitter.get_user_timeline(screen_name=token, count=how_many_tweets)
         return tweets
         # return twitter.show_user(screen_name=token[1:])
     else:
