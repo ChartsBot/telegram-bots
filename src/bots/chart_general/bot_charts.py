@@ -631,6 +631,7 @@ def translate_text(update: Update, context: CallbackContext):
     query_received = update.message.text.split(' ')
     # check if quoted message
     if update.message.reply_to_message is not None:
+        pprint.pprint("quoted message = " + str(query_received.message.reply_to_message.text))
         original_message = query_received.message.reply_to_message.text
         if len(query_received) == 1:
             language_to = "en"
