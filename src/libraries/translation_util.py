@@ -1,11 +1,13 @@
 import translators as ts
 
+from pprint import pprint
 
 def translate_text_to(text_to_translate: str, language_to: str, language_from: str = None):
     if language_from:
         translation = ts.google(query_text=text_to_translate, from_language=language_from, to_language=language_to, is_detail_result=True)
     else:
         translation = ts.google(query_text=text_to_translate, to_language=language_to, is_detail_result=True)
+    pprint(translation)
     return translation
 
 
