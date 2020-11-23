@@ -1,4 +1,5 @@
 import translators as ts
+from TextToOwO.owo import text_to_owo
 
 
 def translate_text_to(text_to_translate: str, language_to: str, language_from: str = None):
@@ -15,6 +16,8 @@ def translate_text_to(text_to_translate: str, language_to: str, language_from: s
 
 
 def pretty_translate(text_to_translate: str, language_to: str, language_from: str = None):
+    if language_to.lower() == "owo" or language_to.lower() == "uwu":
+        return text_to_owo(text_to_translate)
     translation = translate_text_to(text_to_translate, language_to, language_from)
     txt = translation[0][0][0]
     language_src = language_from if language_from is not None else translation[2]
@@ -23,7 +26,7 @@ def pretty_translate(text_to_translate: str, language_to: str, language_from: st
 
 
 if __name__ == '__main__':
-    language = "cn"
+    language = "uwu"
     text_to_translate = "Oh darling isn't it wonderful?"
     translation = pretty_translate(text_to_translate, language)
     # translation = pretty_translate(text_to_translate, language)
