@@ -19,6 +19,7 @@ import re
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler
 from telegram.ext.dispatcher import run_async
+from telegram.error import ChatMigrated
 import libraries.web3_calls as web3_util
 
 
@@ -40,7 +41,7 @@ from threading import Thread
 import zerorpc
 
 
-announcement_channel_id = 874532847
+announcement_channel_id = -1001478326834
 
 # charts delete
 charts_time_refresh = {}
@@ -639,7 +640,11 @@ def callback_minute(context: CallbackContext):
             message = "🚀🌕New HOT stuff that took place in the last minute: \n" + latest_actions_pretty
             for channel in new_list[coin]:
                 pprint.pprint("sent message to channel: " + str(channel))
-                context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
+                try:
+                    context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
+                except ChatMigrated as err:
+                    print("CHANNEL ID CHANGED: ", err)
+                    pass
             context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
     # if channels_to_check is not None:
