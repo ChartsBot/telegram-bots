@@ -30,7 +30,7 @@ import libraries.time_util as time_util
 import libraries.util as util
 import libraries.scrap_websites_util as scrap_websites_util
 import libraries.queries_parser as queries_parser
-import libraries.transaltion_util.py as translation_util
+import libraries.translation_util.py as translation_util
 from libraries.uniswap import Uniswap
 from bots.chart_general.bot_charts_values import start_message, message_faq_empty
 from libraries.common_values import *
