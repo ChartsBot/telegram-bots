@@ -348,7 +348,6 @@ def do_convert(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
-@run_async
 def balance_token_in_wallet(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "balance")
     query_received = update.message.text.split(' ')
@@ -358,9 +357,9 @@ def balance_token_in_wallet(update: Update, context: CallbackContext):
         ticker = query_received[2]
         amount, amount_usd = general_end_functions.get_balance_token_wallet(w3, wallet, ticker, graphql_client_uni,
                                                                             graphql_client_eth)
-        message = "wallet " + str(wallet) + " contains " + str(amount) + " " + ticker + " = " + str(
-            amount_usd) + " usd."
-        context.bot.send_message(chat_id=chat_id, text=message)
+        message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(util.pretty_number(amount)) + " " + ticker + " = " + str(
+            util.pretty_number(amount_usd)) + " usd</b>."
+        context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
         # res = con
     elif len(query_received) == 2 and query_received[1] == "jackpot":
         wallet = "0x9284b7fb2c842666dae4e87ddb49106b72820d26"
@@ -370,6 +369,16 @@ def balance_token_in_wallet(update: Update, context: CallbackContext):
         message = "<b>🍀 Lucky Daily Jackpot Balance</b>," + str(amount) + " " + ticker + " = <b>" + str(
             amount_usd) + " usd</b>."
         context.bot.send_message(chat_id=chat_id, text=message, parse_mode="html")
+    elif len(query_received) == 2:
+        wallet = query_received[1]
+        channel_token = __get_default_token_channel(chat_id)
+        if channel_token is not None:
+            ticker = channel_token[0]
+            amount, amount_usd = general_end_functions.get_balance_token_wallet(w3, wallet, ticker, graphql_client_uni,
+                                                                                graphql_client_eth)
+            message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(util.pretty_number(amount)) + " " + ticker + " = " + str(
+                util.pretty_number(amount_usd)) + " usd</b>."
+            context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
     else:
         context.bot.send_message(chat_id=chat_id, text="Wrong arguments. Please use /balance WALLET TOKEN")
 
