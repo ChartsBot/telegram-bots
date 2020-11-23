@@ -1,26 +1,36 @@
-from googletrans import Translator
+import translators as ts
 
-translator = Translator()
 
 def translate_text_to(text_to_translate: str, language_to: str, language_from: str = None):
     if language_from:
-        translation = translator.translate(text_to_translate, dest=language_to, src=language_from)
+        translation = ts.google(query_text=text_to_translate, from_language=language_from, to_language=language_to, is_detail_result=True)
     else:
-        translation = translator.translate(text_to_translate, dest=language_to)
+        translation = ts.google(query_text=text_to_translate, to_language=language_to, is_detail_result=True)
     return translation
 
 
 def pretty_translate(text_to_translate: str, language_to: str, language_from: str = None):
     translation = translate_text_to(text_to_translate, language_to, language_from)
-    text = translation.text
-    language_src = language_from if language_from is not None else translation.src
-    message = "From <b>" + language_src + "</b>:\n" + text
+    txt = translation[0][0][1]
+    language_src = language_from if language_from is not None else translation[2]
+    message = "From <b>" + language_src + "</b>:\n" + txt
     return message
 
 
 if __name__ == '__main__':
-    language = "en"
-    text_to_translate = "J'espère que ça va marcher !"
+    language = "fr"
+    text_to_translate = "Oh darling isn't it wonderful?"
     translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
+    # translation = pretty_translate(text_to_translate, language)
     print(translation)
 
