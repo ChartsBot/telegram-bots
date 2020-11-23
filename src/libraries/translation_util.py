@@ -13,7 +13,7 @@ def translate_text_to(text_to_translate: str, language_to: str, language_from: s
 
 def pretty_translate(text_to_translate: str, language_to: str, language_from: str = None):
     translation = translate_text_to(text_to_translate, language_to, language_from)
-    txt = translation[0][0][1]
+    txt = translation[0][0][0]
     language_src = language_from if language_from is not None else translation[2]
     message = "From <b>" + language_src + "</b>:\n" + txt
     return message
