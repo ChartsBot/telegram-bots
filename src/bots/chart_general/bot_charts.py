@@ -612,7 +612,7 @@ def __log_channel(chat, method):
 
 def __did_user_vote_too_much(username, method, token):
     hashed_uname = util.get_hashed_uname(username)
-    return zerorpc_client_data_aggregator.did_user_vote_too_much(hashed_uname, method, token)
+    return zerorpc_client_data_aggregator.did_user_vote_too_much(hashed_uname, method, token.upper())
 
 
 def callback_minute(context: CallbackContext):
