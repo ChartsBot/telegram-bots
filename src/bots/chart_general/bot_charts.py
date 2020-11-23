@@ -261,7 +261,6 @@ def refresh_chart(update: Update, context: CallbackContext):
         context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
                                reply_markup=reply_markup_chart)
         context.bot.delete_message(chat_id=chat_id, message_id=message_id)
-        context.bot.send_photo(chat_id=announcement_channel_id, photo=open(path, 'rb'), caption=message, parse_mode="html")
 
 
 # sends the current biz threads
