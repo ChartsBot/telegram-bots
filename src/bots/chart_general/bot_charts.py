@@ -30,6 +30,7 @@ import libraries.time_util as time_util
 import libraries.util as util
 import libraries.scrap_websites_util as scrap_websites_util
 import libraries.queries_parser as queries_parser
+import libraries.transaltion_util.py as translation_util
 from libraries.uniswap import Uniswap
 from bots.chart_general.bot_charts_values import start_message, message_faq_empty
 from libraries.common_values import *
@@ -625,8 +626,27 @@ def callback_minute(context: CallbackContext):
             context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
-    # context.bot.send_message(chat_id='@examplechannel',
-    #                          text='One message every minute')
+def translate_text(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    query_received = update.message.text.split(' ')
+    # check if quoted message
+    if update.message.reply_to_message is not None:
+        original_message = query_received.message.reply_to_message.text
+        if len(query_received) == 1:
+            language_to = "en"
+        else:
+            language_to = query_received[1]
+        translation = translation_util.pretty_translate(original_message, language_to)
+        context.bot.send_message(chat_id=chat_id, text=translation, parse_mode='html', disable_web_page_preview=True)
+    else:
+        if len(query_received) <= 2:
+            message = "To use this endpoint, either quote a message that you wish to translate, or do /translate LANGUAGE TEXT"
+            context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
+        else:
+            language_to = query_received[1]
+            original_message = ' '.join(query_received[2:])
+            translation = translation_util.pretty_translate(original_message, language_to)
+            context.bot.send_message(chat_id=chat_id, text=translation, parse_mode='html', disable_web_page_preview=True)
 
 
 def main():
@@ -654,6 +674,8 @@ def main():
     dp.add_handler(CommandHandler(['last_actions', 'l'], get_latest_actions, run_async=True))
     dp.add_handler(CommandHandler('trending', get_trending, run_async=True))
     dp.add_handler(CommandHandler('gas_spent', get_gas_spent, run_async=True))
+    dp.add_handler(CommandHandler(['tr', 'translate'], translate_text, run_async=True))
+    # customoization stuff
     dp.add_handler(CommandHandler('set_default_token', set_default_token))
     dp.add_handler(CommandHandler('get_default_token', get_default_token))
     dp.add_handler(CommandHandler('set_faq', set_faq))
@@ -661,10 +683,13 @@ def main():
     dp.add_handler(CommandHandler('chart_supply', get_chart_supply, run_async=True))
     dp.add_handler(CommandHandler('set_monitor', set_monitor, run_async=False))
     # dp.add_handler(CommandHandler('stop_monitor', stop_monitor, run_async=False))
+    # callbacks queries
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
+
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image, run_async=True))
+    # admin stuff
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
 
     j = updater.job_queue
