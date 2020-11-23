@@ -80,7 +80,8 @@ def filter_tweets(all_tweets):
 def query_tweets(twitter, token):
     if token[0] == '@':  # actually searching for a user
         print("showing user tweets: " + token)
-        return twitter.show_user(screen_name=token[1:])
+        return twitter.get_user_timeline(screen_name=token[1:])
+        # return twitter.show_user(screen_name=token[1:])
     else:
         return twitter.search(q='$' + token)
 
