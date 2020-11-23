@@ -2,10 +2,15 @@ import translators as ts
 
 
 def translate_text_to(text_to_translate: str, language_to: str, language_from: str = None):
+
+    correct_language_to = language_to
+    if language_to == "cn":
+        correct_language_to = "zh-CN"
+
     if language_from:
-        translation = ts.google(query_text=text_to_translate, from_language=language_from, to_language=language_to, is_detail_result=True)
+        translation = ts.google(query_text=text_to_translate, from_language=language_from, to_language=correct_language_to, is_detail_result=True)
     else:
-        translation = ts.google(query_text=text_to_translate, to_language=language_to, is_detail_result=True)
+        translation = ts.google(query_text=text_to_translate, to_language=correct_language_to, is_detail_result=True)
     return translation
 
 
@@ -18,7 +23,7 @@ def pretty_translate(text_to_translate: str, language_to: str, language_from: st
 
 
 if __name__ == '__main__':
-    language = "fr"
+    language = "cn"
     text_to_translate = "Oh darling isn't it wonderful?"
     translation = pretty_translate(text_to_translate, language)
     # translation = pretty_translate(text_to_translate, language)
