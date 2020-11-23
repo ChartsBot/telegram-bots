@@ -320,6 +320,7 @@ def get_twitter(update: Update, context: CallbackContext):
         ticker = query_received[-1]
         res = scrap_websites_util.get_last_tweets(twitter, ticker)
         context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
+        context.bot.send_message(chat_id=announcement_channel_id, text=res, parse_mode='html', disable_web_page_preview=True)
     elif len(query_received) == 1:
         ticker, addr = __get_default_token_channel(chat_id)
         if ticker is None or ticker.lower() == "null":
