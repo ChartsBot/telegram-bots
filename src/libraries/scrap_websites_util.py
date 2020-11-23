@@ -34,25 +34,32 @@ def get_biz_threads(re_4chan):
     return threads_ids
 
 
-def format_tweet(tweet):
+def format_tweet(tweet, is_user_tweet: bool = False):
+    current_time = datetime.utcnow()
+    # if is_user_tweet:
+    #     message = tweet['text']
+    #     id = tweet['id']
+    #     pass
+    #
+    # else:
     tweet_id = tweet['id_str']
     url = "twitter.com/anyuser/status/" + tweet_id
     message = tweet['text'].replace("\n", "").split('https')[0].replace('#', '').replace('@', '')
 
     time_tweet_creation = tweet['created_at']
     new_datetime = datetime.strptime(time_tweet_creation, '%a %b %d %H:%M:%S +0000 %Y')
-    current_time = datetime.utcnow()
     diff_time = current_time - new_datetime
     minutessince = int(diff_time.total_seconds() / 60)
 
     user = tweet['user']['screen_name']
-    message_final = "<a href=\"" + url + "\"><b>" + str(
-        minutessince) + " mins ago</b> | " + user + "</a> -- " + message + "\n"
+    message_final = "<a href=\"" + url + "\"><b>" + str(minutessince) + \
+                    " mins ago</b> | " + user + "</a> -- " + message + "\n"
     return message_final
 
 
 def get_last_tweets(twitter, ticker):
     if ticker[0] == "@":
+        message = "<b>Last tweets by " + ticker + ":</b>\n"
         try:
             results = query_tweets(twitter, ticker[1:], True)
         except TwythonError:
@@ -60,17 +67,16 @@ def get_last_tweets(twitter, ticker):
             results = query_tweets(twitter, ticker[1:], True)
         tweets = []
         for tweet in results:
-            pprint(tweet)
-            tweets.append(tweet['text'])
+            tweets.append(format_tweet(tweet))
         pprint(tweets)
+        return message + ''.join(results)
     else:
-
         try:
             results = query_tweets(twitter, ticker)
         except TwythonError:
             time.sleep(0.5)
             results = query_tweets(twitter, ticker)
-        message = "<b>Last tweets:</b>\n"
+        message = "<b>Last tweets for " + ticker.upper() + ":</b>\n"
         rest_message = filter_tweets(results)
         if rest_message == "":
             print("empty tweets, fallback")
