@@ -162,6 +162,8 @@ def get_price_token(update: Update, context: CallbackContext):
             if not __did_user_vote_too_much(update.message.from_user.name, "price", ticker):
                 context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
                                          disable_web_page_preview=True)
+            else:
+                print("user " + update.message.from_user.name +" voted too much" )
 
     elif len(query_received) == 1:  # TODO: merge all those duplicate things
         ticker, addr = __get_default_token_channel(chat_id)
