@@ -357,8 +357,7 @@ def balance_token_in_wallet(update: Update, context: CallbackContext):
         ticker = query_received[2]
         amount, amount_usd = general_end_functions.get_balance_token_wallet(w3, wallet, ticker, graphql_client_uni,
                                                                             graphql_client_eth)
-        message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(util.pretty_number(amount)) + " " + ticker + " = " + str(
-            util.pretty_number(amount_usd)) + " usd</b>."
+        message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(util.pretty_number(amount)) + " " + ticker + " = " + str(amount_usd) + " usd</b>."
         context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
         # res = con
     elif len(query_received) == 2 and query_received[1] == "jackpot":
@@ -376,8 +375,7 @@ def balance_token_in_wallet(update: Update, context: CallbackContext):
             ticker = channel_token[0]
             amount, amount_usd = general_end_functions.get_balance_token_wallet(w3, wallet, ticker, graphql_client_uni,
                                                                                 graphql_client_eth)
-            message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(util.pretty_number(amount)) + " " + ticker + " = " + str(
-                util.pretty_number(amount_usd)) + " usd</b>."
+            message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(util.pretty_number(amount)) + " " + ticker + " = " + str(amount_usd) + " usd</b>."
             context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
     else:
         context.bot.send_message(chat_id=chat_id, text="Wrong arguments. Please use /balance WALLET TOKEN")
