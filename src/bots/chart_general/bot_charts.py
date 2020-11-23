@@ -40,6 +40,7 @@ from threading import Thread
 import zerorpc
 
 
+announcement_channel_id = 143993342
 
 # charts delete
 charts_time_refresh = {}
@@ -133,9 +134,10 @@ def get_candlestick(update: Update, context: CallbackContext):
     charts_time_refresh[token_chat_id] = t_to
     context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
                            reply_markup=reply_markup_chart)
+    context.bot.send_photo(chat_id=announcement_channel_id, photo=open(path, 'rb'), caption=message, parse_mode="html")
 
 
-@run_async
+
 def get_price_token(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "price")
     chat_id = update.message.chat_id
@@ -156,6 +158,9 @@ def get_price_token(update: Update, context: CallbackContext):
                                                       graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
             context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price,
                                      disable_web_page_preview=True)
+            context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
+                                     disable_web_page_preview=True)
+
     elif len(query_received) == 1:  # TODO: merge all those duplicate things
         ticker, addr = __get_default_token_channel(chat_id)
         if ticker is not None:
@@ -168,7 +173,9 @@ def get_price_token(update: Update, context: CallbackContext):
                 reply_markup_price = InlineKeyboardMarkup(button_list_price)
                 message = general_end_functions.get_price(addr, "", graphql_client_eth,
                                                           graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
-                context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price,
+                context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html',
+                                         reply_markup=reply_markup_price, disable_web_page_preview=True)
+                context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
                                          disable_web_page_preview=True)
         else:
             message = rejection_no_default_ticker_message
@@ -253,6 +260,7 @@ def refresh_chart(update: Update, context: CallbackContext):
         context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
                                reply_markup=reply_markup_chart)
         context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+        context.bot.send_photo(chat_id=announcement_channel_id, photo=open(path, 'rb'), caption=message, parse_mode="html")
 
 
 # sends the current biz threads
@@ -278,6 +286,7 @@ def get_biz(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text=meme_caption, disable_web_page_preview=True)
         else:
             context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True)
+            context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True)
     elif len(query_received) == 1:  # TODO: merge all that
         word, addr = __get_default_token_channel(chat_id)
         if word is None or word.lower() == "null":
@@ -294,6 +303,7 @@ def get_biz(update: Update, context: CallbackContext):
                 context.bot.send_message(chat_id=chat_id, text=meme_caption, disable_web_page_preview=True)
             else:
                 context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True)
+                context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True)
 
 
     else:
@@ -317,6 +327,7 @@ def get_twitter(update: Update, context: CallbackContext):
         else:
             res = scrap_websites_util.get_last_tweets(twitter, ticker)
             context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
+            context.bot.send_message(chat_id=announcement_channel_id, text=res, parse_mode='html', disable_web_page_preview=True)
     else:
         context.bot.send_message(chat_id=chat_id, text="Please use the format /twitter TOKEN_TICKER.",
                                  parse_mode='html', disable_web_page_preview=True)
@@ -328,6 +339,7 @@ def do_convert(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     message = general_end_functions.convert_to_something(query_received, graphql_client_uni, graphql_client_eth)
     context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True, parse_mode='html')
+    context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
 @run_async
@@ -367,6 +379,7 @@ def get_gas_average(update: Update, context: CallbackContext):
               "\nAvg : " + str(average) + \
               "\nSlow: " + str(low) + "</code>"
     context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True, parse_mode='html')
+    context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
 @run_async
@@ -397,6 +410,7 @@ def get_latest_actions(update: Update, context: CallbackContext):
             latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(default_token[0], uni_wrapper, graphql_client_uni)
             util.create_and_send_vote(default_token[0], "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
             context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
+            context.bot.send_message(chat_id=announcement_channel_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
         else:
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
     else:
@@ -415,6 +429,7 @@ def get_latest_actions(update: Update, context: CallbackContext):
                 latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, None, options)
             util.create_and_send_vote(token, "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
             context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
+            context.bot.send_message(chat_id=announcement_channel_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
         else:
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
 
@@ -424,6 +439,7 @@ def get_trending(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     res = zerorpc_client_data_aggregator.view_trending()
     context.bot.send_message(chat_id=chat_id, text=res)
+    context.bot.send_message(chat_id=announcement_channel_id, text=res)
 
 
 @run_async
@@ -622,10 +638,11 @@ def callback_minute(context: CallbackContext):
         pprint.pprint("latest actions for coin " + str(coin))
         pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
+            message = "🚀🌕New HOT stuff that took place in the last minute: \n" + latest_actions_pretty
             for channel in new_list[coin]:
                 pprint.pprint("sent message to channel: " + str(channel))
-                message = "🚀🌕New HOT stuff that took place in the last minute: \n" + latest_actions_pretty
                 context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
+            context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
     # if channels_to_check is not None:
     #     coins = [c[1].lower() for c in channels_to_check]
@@ -675,6 +692,7 @@ def translate_text(update: Update, context: CallbackContext):
             original_message = ' '.join(query_received[2:])
             translation = translation_util.pretty_translate(original_message, language_to)
             context.bot.send_message(chat_id=chat_id, text=translation, parse_mode='html', disable_web_page_preview=True)
+
 
 
 def main():
