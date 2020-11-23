@@ -59,7 +59,7 @@ def format_tweet(tweet, is_user_tweet: bool = False):
 
 def get_last_tweets(twitter, ticker):
     if ticker[0] == "@":
-        message = '<b>Last tweets by @ <a href="twitter.com/"' + ticker + '">' + ticker[1:] + "</a>:</b>\n"
+        message = '<b>Last tweets by <a href="twitter.com/' + ticker + '">' + ticker[1:] + "</a>:</b>\n"
         try:
             results = query_tweets(twitter, ticker[1:], True)
         except TwythonError:
