@@ -605,6 +605,7 @@ def callback_minute(context: CallbackContext):
     if channels_to_check is not None:
         new_list = dict()
         for c in channels_to_check:
+            pprint.pprint(new_list)
             if c[1].lower() in new_list:
                 new_list[c[1].lower()] = new_list.get(c[1].lower()) + c[0]
             else:
