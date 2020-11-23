@@ -344,7 +344,8 @@ def do_convert(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     message = general_end_functions.convert_to_something(query_received, graphql_client_uni, graphql_client_eth)
     context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True, parse_mode='html')
-    context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
+    if not 'Wrong format.' in message:  # TODO: Oh god that's ugly
+        context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
 @run_async
