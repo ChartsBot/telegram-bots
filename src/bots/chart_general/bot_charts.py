@@ -40,7 +40,7 @@ from threading import Thread
 import zerorpc
 
 
-announcement_channel_id = 143993342
+announcement_channel_id = 874532847
 
 # charts delete
 charts_time_refresh = {}
@@ -613,8 +613,7 @@ def __log_channel(chat, method):
 
 def callback_minute(context: CallbackContext):
     channels_to_check = zerorpc_client_data_aggregator.get_all_monitors()
-    print("checking channels: ")
-    pprint.pprint(channels_to_check)
+    print("checking monitors")
     now = round(time.time())
     last_min = now - 80
 
@@ -625,7 +624,6 @@ def callback_minute(context: CallbackContext):
                 new_list[c[1].lower()] = new_list.get(c[1].lower()) + [c[0]]
             else:
                 new_list[c[1].lower()] = [c[0]]
-        pprint.pprint(new_list)
 
     for coin in new_list:
         # pprint.pprint(channel_mon)
