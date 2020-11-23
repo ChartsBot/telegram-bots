@@ -239,7 +239,7 @@ def get_graphex_data(token, resolution, t_from, t_to):
     return resp
 
 
-def get_price_raw_now(graphql_client_eth, graphql_client_uni, token_contract):
+def get_price_raw_now(graphql_client_eth, graphql_client_uni, token_contract):  # TODO: use infura for it to be faster
     now = int(time.time())
 
     updated_eth_query = query_eth_now % now

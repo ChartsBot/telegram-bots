@@ -22,12 +22,15 @@ def number_to_beautiful(nbr):
 
 
 def get_ad():
-    ads_file_path = BASE_PATH + "ads/chart_ads.txt"
-    with open(ads_file_path) as f:
-        content = f.readlines()
-    # you may also want to remove whitespace characters like `\n` at the end of each line
-    content = [x.strip() for x in content]
-    return random.choice(content)
+    if random.randint(0, 100) > 92:
+        ads_file_path = BASE_PATH + "ads/chart_ads.txt"
+        with open(ads_file_path) as f:
+            content = f.readlines()
+        # you may also want to remove whitespace characters like `\n` at the end of each line
+        content = [x.strip() for x in content]
+        return random.choice(content)
+    else:
+        return ""
 
 
 def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
