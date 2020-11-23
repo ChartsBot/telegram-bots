@@ -159,8 +159,9 @@ def get_price_token(update: Update, context: CallbackContext):
                                                       graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
             context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price,
                                      disable_web_page_preview=True)
-            context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
-                                     disable_web_page_preview=True)
+            if not __did_user_vote_too_much(update.message.from_user.name, "price", ticker):
+                context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
+                                         disable_web_page_preview=True)
 
     elif len(query_received) == 1:  # TODO: merge all those duplicate things
         ticker, addr = __get_default_token_channel(chat_id)
@@ -176,8 +177,9 @@ def get_price_token(update: Update, context: CallbackContext):
                                                           graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
                 context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html',
                                          reply_markup=reply_markup_price, disable_web_page_preview=True)
-                context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
-                                         disable_web_page_preview=True)
+                if not __did_user_vote_too_much(update.message.from_user.name, "price", ticker):
+                    context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
+                                             disable_web_page_preview=True)
         else:
             message = rejection_no_default_ticker_message
             context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
@@ -432,7 +434,7 @@ def get_latest_actions(update: Update, context: CallbackContext):
         else:
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
 
-@run_async
+
 def get_trending(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "trending")
     chat_id = update.message.chat_id
@@ -441,7 +443,6 @@ def get_trending(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=announcement_channel_id, text=res)
 
 
-@run_async
 def get_gas_spent(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "gas_spent")
     chat_id = update.message.chat_id
@@ -605,6 +606,11 @@ def __log_channel(chat, method):
     chat_name = chat.title
     print("chat_id = " + str(chat_id) + " - type = " + str(channel_type) + " - chat_name =  " + str(chat_name) + " - method " + method)
     zerorpc_client_data_aggregator.log_action(chat_id, channel_type, str(chat_name), now, method)  # casting chat name to str in case it's None
+
+
+def __did_user_vote_too_much(username, method, token):
+    hashed_uname = util.get_hashed_uname(username)
+    return zerorpc_client_data_aggregator.did_user_vote_too_much(hashed_uname, method, token)
 
 
 def callback_minute(context: CallbackContext):

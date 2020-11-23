@@ -79,10 +79,14 @@ def get_random_string(length):
 def create_and_send_vote(ticker, method, username, zerorpc_client):
     now_ts = round(datetime.now().timestamp())
     id_vote = random.randint(0, 1000000000000)
-    hex_username = hexlify(username.encode())
-    hashed_username = hashlib.sha512(hex_username + hex_username).hexdigest()
+    hashed_username = get_hashed_uname(username)
     vote = (id_vote, hashed_username, now_ts, ticker.upper(), method)
     zerorpc_client.add_vote(vote)
+
+
+def get_hashed_uname(username):
+    hex_username = hexlify(username.encode())
+    return hashlib.sha512(hex_username + hex_username).hexdigest()
 
 
 def keep_significant_number_float(float_to_keep: float, number: int):
