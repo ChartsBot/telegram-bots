@@ -722,6 +722,8 @@ def ask_wolfram(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text="To use this method, please use /ask YOUR QUESTION")
     else:
         query = ' '.join(query_received[1:])
+        pprint.pprint(query_received)
+        pprint.pprint(query)
         res = wolfram_queries.ask_wolfram_raw(query, wolfram_client)
         context.bot.send_message(chat_id=chat_id, text=res)
 
