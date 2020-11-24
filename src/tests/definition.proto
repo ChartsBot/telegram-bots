@@ -1,0 +1,39 @@
+//#service-request-reply
+syntax = "proto3";
+
+// The greeting service definition.
+service FileHandlerAkkaService {
+  // Sends a greeting
+  rpc UploadFile (FileUploadRequest) returns (FileUploadResponse) {}
+  rpc Greet (SayHelloMessage) returns (SayHelloMessage) {}
+  //#service-request-reply
+  //#service-stream
+  // The stream of incoming HelloRequest messages are
+  // sent out as corresponding HelloReply. From
+  // all clients to all clients, like a chat room.
+  // rpc SayHelloToAll (stream FileUploadRequest) returns (stream FileUploadResponse) {}
+  //#service-stream
+  //#service-request-reply
+}
+
+// The request message containing the file to upload info.
+message FileUploadRequest {
+  int32 chatId = 1;
+  string chatTitle = 2;
+  string fileClassification = 3;
+  string fileType = 4;
+  string author = 5;
+  uint32 timeCreation = 6;
+  string pathOnDisk = 7;
+}
+
+// The response message containing the greetings
+message FileUploadResponse {
+  bool status = 1;
+  string message = 2;
+}
+//#service-request-reply
+
+message SayHelloMessage {
+  string message = 1;
+}
