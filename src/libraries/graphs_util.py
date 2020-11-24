@@ -361,7 +361,9 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
     elif token.upper() == "XRP" or token.lower() == "ripple":
         values = requests_util.get_binance_chart_data("XRPUSDT", t_from, t_to)
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
-
+    elif token.upper() == "LTC" or token.lower() == "litecoin":
+        values = requests_util.get_binance_chart_data("LTCUSDT", t_from, t_to)
+        (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
     else:
         values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)

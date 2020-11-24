@@ -410,7 +410,6 @@ def get_time_to(update: Update, context: CallbackContext):
 
 
 # TODO: fix stuff with default token not being fully used
-@run_async
 def get_latest_actions(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "last_actions")
     chat_id = update.message.chat_id
