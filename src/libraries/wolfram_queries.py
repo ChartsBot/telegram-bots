@@ -16,5 +16,8 @@ def ask_wolfram_raw(query, client):
     if found_match is None:
         found_match = ""
         for pod in res.pods:
-            found_match += pod['subpod']['plaintext'] + ' - '
+            try:
+                found_match += pod['subpod']['plaintext'] + ' - '
+            except TypeError:
+                pass
     return found_match if found_match is not None else 'error'
