@@ -27,6 +27,7 @@ import libraries.graphs_util as graphs_util
 import libraries.general_end_functions as general_end_functions
 import libraries.commands_util as commands_util
 import libraries.requests_util as requests_util
+import libraries.wolfram_queries as wolfram_queries
 import libraries.time_util as time_util
 import libraries.util as util
 import libraries.scrap_websites_util as scrap_websites_util
@@ -39,6 +40,16 @@ from web3 import Web3
 from libraries.timer_util import RepeatedTimer
 from threading import Thread
 import zerorpc
+
+import wolframalpha
+
+APP_KEY_WOLFRAM = os.environ.get('WOLFRAM_API')
+
+try:
+    wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
+except Exception:
+    pprint.pprint("Worlfram struggling to connect, trying again")
+    wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
 
 
 announcement_channel_id = -1001478326834
@@ -704,6 +715,16 @@ def translate_text(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text=translation, parse_mode='html', disable_web_page_preview=True)
 
 
+def ask_wolfram(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    query_received = update.message.text.split(' ')
+    if len(query_received) == 1:
+        context.bot.send_message(chat_id=chat_id, text="To use this method, please use /ask YOUR QUESTION")
+    else:
+        query = ' '.join(query_received[1:])
+        res = wolfram_queries.ask_wolfram_raw(query, wolfram_client)
+        context.bot.send_message(chat_id=chat_id, text=res)
+
 
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
@@ -731,6 +752,7 @@ def main():
     dp.add_handler(CommandHandler('trending', get_trending, run_async=True))
     dp.add_handler(CommandHandler('gas_spent', get_gas_spent, run_async=True))
     dp.add_handler(CommandHandler(['tr', 'translate'], translate_text, run_async=True))
+    dp.add_handler(CommandHandler(['ask'], ask_wolfram, run_async=True))
     # customoization stuff
     dp.add_handler(CommandHandler('set_default_token', set_default_token))
     dp.add_handler(CommandHandler('get_default_token', get_default_token))
