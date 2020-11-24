@@ -17,7 +17,7 @@ def ask_wolfram_raw(query, client):
         found_match = ""
         for pod in res.pods:
             try:
-                found_match += '<b>' + pod['@title'] + '</b>' + pod['subpod']['plaintext'] + '\n'
+                found_match += '<b>' + pod['@title'] + '</b>: ' + pod['subpod']['plaintext'] + '\n'
             except TypeError:
                 pass
     return found_match if found_match is not None else 'error'

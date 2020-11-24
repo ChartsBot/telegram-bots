@@ -726,7 +726,7 @@ def ask_wolfram(update: Update, context: CallbackContext):
         pprint.pprint(query)
         res = wolfram_queries.ask_wolfram_raw(query, wolfram_client)
         pprint.pprint(res)
-        context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
+        context.bot.send_message(chat_id=chat_id, text=res[:4055], parse_mode='html', disable_web_page_preview=True)
 
 
 def main():
