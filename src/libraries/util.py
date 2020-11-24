@@ -22,7 +22,7 @@ def number_to_beautiful(nbr):
 
 
 def get_ad():
-    if random.randint(0, 100) > 92:
+    if random.randint(0, 100) > 65:
         ads_file_path = BASE_PATH + "ads/chart_ads.txt"
         with open(ads_file_path) as f:
             content = f.readlines()

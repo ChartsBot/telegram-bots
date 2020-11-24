@@ -149,7 +149,6 @@ def get_candlestick(update: Update, context: CallbackContext):
     context.bot.send_photo(chat_id=announcement_channel_id, photo=open(path, 'rb'), caption=message, parse_mode="html")
 
 
-
 def get_price_token(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "price")
     chat_id = update.message.chat_id
@@ -174,7 +173,7 @@ def get_price_token(update: Update, context: CallbackContext):
                 context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
                                          disable_web_page_preview=True)
             else:
-                print("user " + update.message.from_user.name +" voted too much" )
+                print("user " + update.message.from_user.name + " voted too much")
 
     elif len(query_received) == 1:  # TODO: merge all those duplicate things
         ticker, addr = __get_default_token_channel(chat_id)
