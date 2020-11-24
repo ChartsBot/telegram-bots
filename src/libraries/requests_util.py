@@ -14,6 +14,10 @@ sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
 from libraries.util import float_to_str, pretty_number, keep_significant_number_float
 import libraries.time_util as time_util
 
+
+jwt = os.environ.get('JWT')
+
+
 query_get_latest = """
 query {  mints(first: $AMOUNT, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
     transaction {
@@ -114,7 +118,9 @@ gecko_chart_url = "https://api.coingecko.com/api/v3/coins/$TOKEN/market_chart/ra
 
 symbol_chartex = {
     'ROT': 'ROT.5AE9E2',
-    'SAV3': 'SAV3'
+    'SAV3': 'SAV3',
+    'HOT': 'HOT.4D5DDC',
+    '7ADD': '7ADD.A2DF92'
 }
 
 # Graph QL requests
@@ -235,7 +241,10 @@ def get_graphex_data(token, resolution, t_from, t_to):
     else:
         symbol = token
     url = create_url_request_graphex(symbol, resolution, t_from, t_to)
-    resp = requests.get(url)
+    name = 'cookie'
+    header = {name: jwt}
+    pprint.pprint(header)
+    resp = requests.get(url, headers=header)
     return resp
 
 
@@ -676,14 +685,17 @@ def get_gas_spent(address):
 
 def main():
     pass
-    # token = "WBTC"
+    # token = "HOT.4D5DDC"
     # k_hours = 0
     # k_days = 1
     # t_to = int(time.time())
     # t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
     # resolution = 5
-    # res = get_graphex_data(token, resolution, t_from, t_to).json()
-    # pprint.pprint(res)
+    # res = get_graphex_data(token, resolution, t_from, t_to)
+    # pprint.pprint(res.text)
+    # pprint.pprint(res.status_code)
+    # res2 = res.json()
+    # pprint.pprint(res2)
 
 
 if __name__ == '__main__':
