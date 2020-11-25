@@ -348,6 +348,7 @@ def get_price_raw(graphql_client_eth, graphql_client_uni, token_contract):
         token_price_now_usd)
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=60))
 def get_supply_cap_raw(contract_addr, decimals):
     base_addr = 'https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=' + contract_addr + '&apikey=' + etherscan_api_key
     supply_cap = float(requests.post(base_addr).json()['result']) / decimals
@@ -355,6 +356,7 @@ def get_supply_cap_raw(contract_addr, decimals):
 
 
 # return price 7 days ago, price 1 day ago, volume last 24h
+@cached(cache=TTLCache(maxsize=1024, ttl=60))
 def get_volume_24h(graphclient_uni, pair_contract):
     now = int(time.time())
     yesterday = now - 3600 * 24

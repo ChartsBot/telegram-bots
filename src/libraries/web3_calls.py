@@ -2,6 +2,7 @@ import os
 import json
 from pprint import pprint
 from web3 import Web3
+from cachetools import cached, TTLCache
 
 BASE_PATH = os.environ.get('BASE_PATH')
 
@@ -26,6 +27,7 @@ def __get_pair_tokens(token0, token1, uni_wrapper):
     return uni_wrapper.get_pair(t0_checksum, t1_checksum)
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=60))
 def does_pair_token_eth_exist(token, uni_wrapper):
     res1 = __get_pair_tokens(weth_checksum, token, uni_wrapper)
     if res1 != '0x0000000000000000000000000000000000000000':
