@@ -133,6 +133,24 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
     return message
 
 
+def get_price_gecko(name):
+    price_usd_now, change_percentage, volume_24_usd, mcap_usd = requests_util.get_price_now_full(name)
+    price_usd_7_d = requests_util.get_price_at(name, 7)
+    ad = util.get_ad()
+
+    var_7d = - int(((price_usd_7_d - price_usd_now) / price_usd_7_d) * 100) if price_usd_7_d > price_usd_now else int(((price_usd_now - price_usd_7_d) / price_usd_7_d) * 100)
+    var_7d_str = "+" + str(var_7d) + "%" if var_7d > 0 else str(var_7d) + "%"
+    message = "<code>" + name \
+              + "\nUSD: $" + util.pretty_number(price_usd_now) \
+              + "\n24H:  " + str(change_percentage)[0:5] + "%"  \
+              + "\n7D :  " + var_7d_str \
+              + "\n" \
+              + "\nVol 24H = $" + util.number_to_beautiful(volume_24_usd) \
+              + "\nM.  Cap = $" + util.number_to_beautiful(mcap_usd) \
+              + "\n" + ad
+    return message
+
+
 def get_help(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     message = """<b>How to use the bot:</b>

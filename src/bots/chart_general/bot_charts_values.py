@@ -20,3 +20,9 @@ This bot is designed to help channels and individuals navigate in the defi world
 """
 
 message_faq_empty = "No faq defined for this channel (yet). Any admin can add one with <code>/set_faq message</code>"
+
+symbol_gecko = {
+    'BTC': 'bitcoin',
+    'ETH': 'ethereum',
+    'xrp': 'ripple'
+}

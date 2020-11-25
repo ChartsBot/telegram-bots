@@ -16,10 +16,10 @@ new_from = 1602154752000
 new_to = 1604746752000
 
 Client.KLINE_INTERVAL_30MINUTE
-
-candles = client.get_klines(symbol='XRPUSDT', interval="1h", startTime=t_from, endTime=new_to)
-
-pprint(candles)
+#
+# candles = client.get_klines(symbol='XRPUSDT', interval="1h", startTime=t_from, endTime=new_to)
+#
+# pprint(candles)
 
 import pandas as pd
 
@@ -39,6 +39,10 @@ def datteeesss(t_from, t_to):
     pprint(date_list)
 
 
+def get_price(ticker, client):
+    return client.get_ticker(symbol=ticker)
+
 if __name__ == '__main__':
     # pass
-    datteeesss(t_from, to)
+    res = get_price("btcusdt".upper(), client)
+    pprint(res)

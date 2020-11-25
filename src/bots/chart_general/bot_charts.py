@@ -34,7 +34,7 @@ import libraries.scrap_websites_util as scrap_websites_util
 import libraries.queries_parser as queries_parser
 import libraries.translation_util as translation_util
 from libraries.uniswap import Uniswap
-from bots.chart_general.bot_charts_values import start_message, message_faq_empty
+from bots.chart_general.bot_charts_values import start_message, message_faq_empty, symbol_gecko
 from libraries.common_values import *
 from web3 import Web3
 from libraries.timer_util import RepeatedTimer
@@ -750,7 +750,11 @@ def get_price_direct(update: Update, context: CallbackContext):
             if not __did_user_vote_too_much(update.message.from_user.name, "price", ticker):
                 context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
                                          disable_web_page_preview=True)
-
+        else:
+            if ticker.upper() in symbol_gecko:
+                value = symbol_gecko.get(ticker)
+                message = general_end_functions.get_price_gecko(value)
+                context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
