@@ -242,7 +242,7 @@ def refresh_price(update: Update, context: CallbackContext):
                                                   token_name.upper(), decimals, uni_wrapper)
         button_list_price = [[InlineKeyboardButton('refresh', callback_data='refresh_price_' + contract_from_ticker)]]
         reply_markup_price = InlineKeyboardMarkup(button_list_price)
-    if query != message:
+    if update.callback_query.message.text != message:
         update.callback_query.edit_message_text(text=message, parse_mode='html', reply_markup=reply_markup_price,
                                                 disable_web_page_preview=True)
 
