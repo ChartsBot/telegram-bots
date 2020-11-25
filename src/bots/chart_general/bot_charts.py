@@ -738,7 +738,7 @@ def get_price_direct(update: Update, context: CallbackContext):
     if ticker not in command_list:  # should not be needed but keeping it just in case
         __log_channel(update.message.chat, "price_direct")
         if ticker.upper() in symbol_gecko:
-            value = symbol_gecko.get(ticker)
+            value = symbol_gecko.get(ticker.upper())
             message = general_end_functions.get_price_gecko(value)
             context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
         else:
