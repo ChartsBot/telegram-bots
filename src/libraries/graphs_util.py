@@ -151,11 +151,9 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
     fig['layout']['showlegend'] = False
     fig['layout']['margin'] = dict(t=15, b=15, r=15, l=15)
 
-    should_add_avg = True
 
     if options is not None:
         if "bband" in options:
-            should_add_avg = False
             ress = bollinger_bands(highs, lows, closes)
             fig['layout']['showlegend'] = True
             for res in ress:
@@ -166,7 +164,6 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
 
         # cf https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/fibonacci-retracement and https://plotly.com/python/line-charts/
         if "fibo" in options or "fibonnaci" in options or "fib" in options:
-            should_add_avg = False
             annotations = []
             ress = fibonnaci_bands(closes)
             # fig['layout']['showlegend'] = True
@@ -188,21 +185,18 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
             fig['layout']['template'] = None
             fig['layout']['plot_bgcolor'] = 'rgb(250, 250, 250)'
 
-    if should_add_avg:
-        # adding moving average
-        mv_y = __moving_average(closes)
-        mv_x = list(dates)
+        if 'avg' in options or 'm' in options or 'average' in options:
+            mv_y = __moving_average(closes)
+            mv_x = list(dates)
 
-        # Clip the ends
-        mv_x = mv_x[5:-5]
-        mv_y = mv_y[5:-5]
+            # Clip the ends
+            mv_x = mv_x[5:-5]
+            mv_y = mv_y[5:-5]
 
-        fig['data'].append(dict(x=mv_x, y=mv_y, type='scatter', mode='lines',
-                                line=dict(width=2),
-                                marker=dict(color='#E377C2'),
-                                yaxis='y2', name='Moving Average'))
-
-    # pprint.pprint(fig['data'])
+            fig['data'].append(dict(x=mv_x, y=mv_y, type='scatter', mode='lines',
+                                    line=dict(width=2),
+                                    marker=dict(color='#E377C2'),
+                                    yaxis='y2', name='Moving Average'))
 
     colors_volume = []
 
