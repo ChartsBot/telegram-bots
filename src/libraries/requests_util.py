@@ -16,6 +16,11 @@ from libraries.util import float_to_str, pretty_number, keep_significant_number_
 import libraries.time_util as time_util
 
 
+clef = os.environ.get('BINANCE_API_KEY')
+secret = os.environ.get('BINANCE_API_SECRET')
+
+client_binance = Client(clef, secret)
+
 jwt = os.environ.get('JWT')
 
 
@@ -221,18 +226,16 @@ def get_binance_chart_data(token_name, t_from, t_to):
         res = "1h"
     elif delta < 24 * 3600 * 30 + 100:
         res = "6h"
-    else:
+    elif delta < 24 * 3600 * 500 + 100:
         res = "1d"
+    else:
+        res = "2d"
 
     t_from_ms = t_from * 1000
     t_to_ms = t_to * 1000
     print("token: " + token_name + "f_from: " + str(t_from) + " - t_to: " + str(t_to) + " - resolution = " + str(res))
-    clef = os.environ.get('BINANCE_API_KEY')
-    secret = os.environ.get('BINANCE_API_SECRET')
 
-    client = Client(clef, secret)
-
-    candles = client.get_klines(symbol=token_name, interval=res, startTime=t_from_ms, endTime=t_to_ms)
+    candles = client_binance.get_klines(symbol=token_name, interval=res, startTime=t_from_ms, endTime=t_to_ms)
     return candles
 
 
