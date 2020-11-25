@@ -737,24 +737,25 @@ def get_price_direct(update: Update, context: CallbackContext):
     ticker = update.message.text.split(' ')[0][1:]
     if ticker not in command_list:  # should not be needed but keeping it just in case
         __log_channel(update.message.chat, "price_direct")
-        contract_from_ticker = requests_util.get_token_contract_address(ticker)
-        if contract_from_ticker is not None:
-            util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
-            button_list_price = [
-                [InlineKeyboardButton('refresh', callback_data='r_p_' + contract_from_ticker + "_t_" + ticker)]]
-            reply_markup_price = InlineKeyboardMarkup(button_list_price)
-            message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
-                                                      graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
-            context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html',
-                                     reply_markup=reply_markup_price, disable_web_page_preview=True)
-            if not __did_user_vote_too_much(update.message.from_user.name, "price", ticker):
-                context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
-                                         disable_web_page_preview=True)
+        if ticker.upper() in symbol_gecko:
+            value = symbol_gecko.get(ticker)
+            message = general_end_functions.get_price_gecko(value)
+            context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
         else:
-            if ticker.upper() in symbol_gecko:
-                value = symbol_gecko.get(ticker)
-                message = general_end_functions.get_price_gecko(value)
-                context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
+            contract_from_ticker = requests_util.get_token_contract_address(ticker)
+            if contract_from_ticker is not None:
+                util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
+                button_list_price = [
+                    [InlineKeyboardButton('refresh', callback_data='r_p_' + contract_from_ticker + "_t_" + ticker)]]
+                reply_markup_price = InlineKeyboardMarkup(button_list_price)
+                message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
+                                                          graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
+                context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html',
+                                         reply_markup=reply_markup_price, disable_web_page_preview=True)
+                if not __did_user_vote_too_much(update.message.from_user.name, "price", ticker):
+                    context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
+                                             disable_web_page_preview=True)
+
 
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
