@@ -5,6 +5,7 @@ import json
 import os
 from binance.client import Client
 from dataclasses import dataclass
+from cachetools import cached, TTLCache
 import os
 import sys
 
@@ -372,6 +373,7 @@ def get_volume_24h(graphclient_uni, pair_contract):
     return amount
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=120))
 def get_number_holder_token(token):
     url = ethexplorer_holder_base_url + token
     res = requests.get(url).json()
@@ -382,6 +384,8 @@ def get_number_holder_token(token):
     return int(holders)
 
 
+# cache weather data for no longer than ten minutes
+@cached(cache=TTLCache(maxsize=1024, ttl=3600))
 def get_token_contract_address(token_ticker):
     if token_ticker == "eth" or token_ticker == "ETH":
         return "0x0000000000000000000000000000000000000000"
@@ -401,6 +405,7 @@ def get_token_contract_address(token_ticker):
     # pprint.pprint(res)
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=30))
 def get_eth_price_now():
     res = requests.get(url_eth_price_gecko).json()
     if 'ethereum' in res:
