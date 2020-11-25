@@ -728,7 +728,7 @@ def ask_wolfram(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text=res[:4055], parse_mode='html', disable_web_page_preview=True)
 
 
-def log_command(update: Update, context: CallbackContext):
+def get_price_direct(update: Update, context: CallbackContext):
     command_list = ["p", "start", "charts", "chart", "c", "price", "twitter", "t", "biz", "b", "convert", "gas", "g",
                    "balance", "timeto", "last_actions", "l", "trending", "gas_spent", "tr", "translate", "ask",
                    "set_default_token", "get_default_token", "set_faq", "faq", "chart_supply", "set_monitor",
@@ -736,6 +736,7 @@ def log_command(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     ticker = update.message.text.split(' ')[0][1:]
     if ticker not in command_list:  # should not be needed but keeping it just in case
+        __log_channel(update.message.chat, "price_direct")
         contract_from_ticker = requests_util.get_token_contract_address(ticker)
         if contract_from_ticker is not None:
             util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
@@ -792,7 +793,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
 
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image, run_async=True))
-    dp.add_handler(MessageHandler(Filters.command, log_command, run_async=True))
+    dp.add_handler(MessageHandler(Filters.command, get_price_direct, run_async=True))
     # admin stuff
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
 
