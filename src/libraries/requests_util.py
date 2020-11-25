@@ -390,19 +390,19 @@ def get_token_contract_address(token_ticker):
     if token_ticker == "eth" or token_ticker == "ETH":
         return "0x0000000000000000000000000000000000000000"
     url = get_address_endpoint + token_ticker
-    pprint.pprint("start")
+    pprint.pprint("start getting contract from token")
     res = requests.get(url).json()
     for i in res:
         if 'token1' in i:
             if 'symbol' in i['token1']:
                 if i['token1']['symbol'].lower() == token_ticker.lower():
                     if 'id' in i['token1']:
-                        pprint.pprint("done")
+                        pprint.pprint("done getting contract from token")
                         return i['token1']['id']
 
                 elif i['token0']['symbol'].lower() == token_ticker.lower():
                     if 'id' in i['token0']:
-                        pprint.pprint("done")
+                        pprint.pprint("done getting contract from token")
                         return i['token0']['id']
     return None
     # pprint.pprint(res)

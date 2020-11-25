@@ -732,7 +732,7 @@ def get_price_direct(update: Update, context: CallbackContext):
     command_list = ["p", "start", "charts", "chart", "c", "price", "twitter", "t", "biz", "b", "convert", "gas", "g",
                    "balance", "timeto", "last_actions", "l", "trending", "gas_spent", "tr", "translate", "ask",
                    "set_default_token", "get_default_token", "set_faq", "faq", "chart_supply", "set_monitor",
-                   "restart"]
+                   "restart", "ban"]
     chat_id = update.message.chat_id
     ticker = update.message.text.split(' ')[0][1:]
     if ticker not in command_list:  # should not be needed but keeping it just in case
