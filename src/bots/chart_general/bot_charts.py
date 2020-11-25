@@ -728,6 +728,14 @@ def ask_wolfram(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text=res[:4055], parse_mode='html', disable_web_page_preview=True)
 
 
+def log_command(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    query_received = update.message.text.split(' ')
+    pprint.pprint("log command")
+    pprint.pprint(query_received)
+    pprint.pprint(chat_id)
+
+
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
@@ -769,6 +777,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
 
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image, run_async=True))
+    dp.add_handler(MessageHandler(Filters.command, handle_new_image, run_async=True))
     # admin stuff
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
 
