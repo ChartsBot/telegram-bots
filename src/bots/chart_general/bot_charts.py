@@ -729,11 +729,26 @@ def ask_wolfram(update: Update, context: CallbackContext):
 
 
 def log_command(update: Update, context: CallbackContext):
+    command_list = ["p", "start", "charts", "chart", "c", "price", "twitter", "t", "biz", "b", "convert", "gas", "g",
+                   "balance", "timeto", "last_actions", "l", "trending", "gas_spent", "tr", "translate", "ask",
+                   "set_default_token", "get_default_token", "set_faq", "faq", "chart_supply", "set_monitor",
+                   "restart"]
     chat_id = update.message.chat_id
-    query_received = update.message.text.split(' ')
-    pprint.pprint("log command")
-    pprint.pprint(query_received)
-    pprint.pprint(chat_id)
+    ticker = update.message.text.split(' ')[0][1:]
+    if ticker not in command_list:  # should not be needed but keeping it just in case
+        contract_from_ticker = requests_util.get_token_contract_address(ticker)
+        if contract_from_ticker is not None:
+            util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
+            button_list_price = [
+                [InlineKeyboardButton('refresh', callback_data='r_p_' + contract_from_ticker + "_t_" + ticker)]]
+            reply_markup_price = InlineKeyboardMarkup(button_list_price)
+            message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
+                                                      graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
+            context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html',
+                                     reply_markup=reply_markup_price, disable_web_page_preview=True)
+            if not __did_user_vote_too_much(update.message.from_user.name, "price", ticker):
+                context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
+                                         disable_web_page_preview=True)
 
 
 def main():
