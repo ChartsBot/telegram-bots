@@ -777,7 +777,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
 
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image, run_async=True))
-    dp.add_handler(MessageHandler(Filters.command, handle_new_image, run_async=True))
+    dp.add_handler(MessageHandler(Filters.command, log_command, run_async=True))
     # admin stuff
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
 
