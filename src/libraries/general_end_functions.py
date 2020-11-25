@@ -146,7 +146,7 @@ def get_price_gecko(name):
               + "\n7D :  " + var_7d_str \
               + "\n" \
               + "\nVol 24H = $" + util.number_to_beautiful(volume_24_usd) \
-              + "\nM.  Cap = $" + util.number_to_beautiful(mcap_usd) \
+              + "\nM.  Cap = $" + util.number_to_beautiful(mcap_usd) + '</code>' \
               + "\n" + ad
     return message
 
