@@ -390,8 +390,8 @@ def get_token_contract_address(token_ticker):
     if token_ticker == "eth" or token_ticker == "ETH":
         return "0x0000000000000000000000000000000000000000"
     url = get_address_endpoint + token_ticker
-    res = requests.get(url).json()
     pprint.pprint("start")
+    res = requests.get(url).json()
     for i in res:
         if 'token1' in i:
             if 'symbol' in i['token1']:
