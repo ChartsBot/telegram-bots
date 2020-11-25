@@ -24,7 +24,7 @@ message_faq_empty = "No faq defined for this channel (yet). Any admin can add on
 symbol_gecko = {
     'BTC': 'bitcoin',
     'ETH': 'ethereum',
-    'XRP': 'xrp',
+    'XRP': 'ripple',
     'BCH': 'bitcoin-cash',
     'LTC': 'litecoin'
 }

@@ -32,7 +32,7 @@ def get_price_at(ticker: str, days: int):
 if __name__ == '__main__':
     pass
     from pprint import pprint
-    name = 'bitcoin'
+    name = 'ripple'
     price_usd, change_percentage, volume_24_usd, mcap_usd = get_price_now_full(name)
     pprint(price_usd)
     pprint(change_percentage)
