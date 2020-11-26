@@ -95,8 +95,8 @@ class Channel:
 
 coin_token_channel = Channel(channel_id=-1001269515340,
                              ticker='COIN',
-                             contract="0xeb547ed1d8a3ff1461abaa7f0022fed4836e00a4",
-                             pair_contract="0x01d92294bf3b7adbab7cd615a6de188f43b1f6bc")
+                             contract="0xE61fDAF474Fac07063f2234Fb9e60C1163Cfa850".lower(),
+                             pair_contract="0xff62e62e8b3cf80050464b86194e52c3ead43bb6".lower())
 
 channel_list = [coin_token_channel]
 
