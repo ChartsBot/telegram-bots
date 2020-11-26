@@ -654,9 +654,6 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
     return start_message + string
 
 
-def
-
-
 def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, options=["whale"], amount=30):
     if pair is None:
         return None
