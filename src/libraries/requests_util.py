@@ -593,6 +593,7 @@ def parse_swaps(res):
     swaps = res['data']['swaps']
     l_swaps = []
     for swap in swaps:
+        pprint.pprint(swap)
         amount0In = float(swap['amount0In'])
         amount0Out = float(swap['amount0Out'])
         amount1In = float(swap['amount1In'])
@@ -604,6 +605,10 @@ def parse_swaps(res):
             l_swaps.append(Swap((token0, amount0In), (token1, amount1Out), id, timestamp))
         else:
             l_swaps.append(Swap((token1, amount1In), (token0, amount0Out), id, timestamp))
+    # detect bots:
+    l_swaps = sorted(l_swaps, key=lambda x: x.timestamp, reverse=True)
+    for swap in l_swaps:
+
     return l_swaps
 
 

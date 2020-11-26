@@ -354,7 +354,7 @@ def get_gas_price():
     return asap, fast, average, low
 
 
-def get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client_uni, contract: str = None, options = None):
+def get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client_uni, contract: str = None, options=None):
     print("options: ")
     pprint(options)
     token_contract = contract if contract is not None else requests_util.get_token_contract_address(token_ticker)
