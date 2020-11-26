@@ -372,7 +372,7 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
         img_up = __generate_upper_barrier(txt, options)
         img_down = Image.open(file_path)
         __get_concat_v(img_up, img_down).save(file_path)
-    border_color = 'green' if closes[-1] > closes[0] else '#3f0000'
+    border_color = '#013220' if closes[-1] > closes[0] else '#3f0000'
     add_border(file_path, color=border_color)
     return closes[-1]
 
