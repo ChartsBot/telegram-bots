@@ -118,7 +118,7 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
     holders_str = "\nHolders = " + str(holders) if holders != -1 else ""
     links = '<a href="etherscan.io/token/' + contract + '">Etherscan</a>|<a href="https://app.uniswap.org/#/swap?inputCurrency=' + contract + '">Uni</a>'
     ad = util.get_ad()
-    message = "<code>" + name \
+    message = "<b>" + name + '</b><code>' \
               + "\nETH: Ξ" + float_to_str(derivedETH_now)[0:10] \
               + "\nUSD: $" + float_to_str(token_price_now_usd)[0:10] \
               + "\n24H:  " + var_1d_str \
@@ -140,7 +140,7 @@ def get_price_gecko(name):
 
     var_7d = - int(((price_usd_7_d - price_usd_now) / price_usd_7_d) * 100) if price_usd_7_d > price_usd_now else int(((price_usd_now - price_usd_7_d) / price_usd_7_d) * 100)
     var_7d_str = "+" + str(var_7d) + "%" if var_7d > 0 else str(var_7d) + "%"
-    message = "<code>" + name \
+    message = "<b>" + name + '</b><code>' \
               + "\nUSD: $" + util.pretty_number(price_usd_now) \
               + "\n24H:  " + str(change_percentage)[0:5] + "%"  \
               + "\n7D :  " + var_7d_str \
