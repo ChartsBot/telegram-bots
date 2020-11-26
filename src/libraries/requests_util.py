@@ -655,16 +655,6 @@ def get_last_actions(pair, graphql_client_uni, options=None, amount=30):
 
     start_message = "Last 5 actions for pair: " + str(pair)[0:5] + "[...]\n"
     if options is not None:
-
-        if "whale" in options or "whales" in options or "w" in options:
-            start_message = start_message + "Showing only actions <b>> 10 Eth:</b>\n"
-            to_keep_if_whales = []
-            for action in all_actions:
-                if action.amount_eth() > 10:
-                    print("keeping it cause swap value eth = " + str(action.amount_eth()))
-                    to_keep_if_whales.append(action)
-            all_actions = to_keep_if_whales
-
         if "buy" in options or "buys" in options or "b" in options:
             start_message = start_message.replace("actions", "buys")
             all_actions = [x for x in parsed_swaps if x.is_positif()]
@@ -674,6 +664,15 @@ def get_last_actions(pair, graphql_client_uni, options=None, amount=30):
         elif "liq" in options or "liqs" in options or "liquidity" in options or "l" in options:
             start_message = start_message.replace("actions", "liquidity actions")
             all_actions = parsed_mints + parsed_burns
+
+        if "whale" in options or "whales" in options or "w" in options:
+            start_message = start_message + "Showing only actions <b>> 10 Eth:</b>\n"
+            to_keep_if_whales = []
+            for action in all_actions:
+                if action.amount_eth() > 10:
+                    print("keeping it cause swap value eth = " + str(action.amount_eth()))
+                    to_keep_if_whales.append(action)
+            all_actions = to_keep_if_whales
 
     all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
     return all_actions_sorted, start_message, eth_price
@@ -708,7 +707,7 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
             return '\n\n'.join(strings)
 
     else:
-        strings = list(map(lambda x: x.to_string(eth_price), all_actions_kept))
+        strings = list(map(lambda x: x.to_string(eth_price, '🐋'), all_actions_kept))
     if len(strings) == 0:
         return None
     else:
