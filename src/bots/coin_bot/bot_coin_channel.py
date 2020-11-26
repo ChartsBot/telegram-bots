@@ -190,6 +190,8 @@ def callback_minute_check_buys(context: CallbackContext):
 
         options = ["print_complex"]
         pair = channel.pair_contract
+        pprint.pprint("pair = " + str(pair))
+        pprint.pprint("pair found = " + str(requests_util.web3_util.does_pair_token_eth_exist(channel.contract, uni_wrapper)))
         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options, amount=100)
         pprint.pprint("latest actions for coin " + str(channel.contract))
         pprint.pprint(latest_actions_pretty)
@@ -239,7 +241,7 @@ def main():
         Thread(target=stop_and_restart).start()
 
     j = updater.job_queue
-    j.run_repeating(callback_minute_check_buys, interval=check_buys_interval_second, first=15)
+    j.run_repeating(callback_minute_check_buys, interval=check_buys_interval_second, first=6)
     # j.run_repeating(callback_minute_check_buys, interval=check_sells_interval_second, first=15)
     j.run_repeating(get_biz, interval=check_biz_interval_second, first=round(check_biz_interval_second / 2))
     j.run_repeating(get_twitter, interval=check_tweets_interval_second, first=15)
