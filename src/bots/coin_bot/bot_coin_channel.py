@@ -30,6 +30,8 @@ from libraries.common_values import *
 from web3 import Web3
 from threading import Thread
 import zerorpc
+from dataclasses import dataclass
+
 
 
 # charts delete
@@ -78,14 +80,25 @@ check_buys_interval_second = 60
 check_sells_interval_second = 60
 check_price_interval_second = 60
 print_chart_interval_second = 120
-check_gas_interval_second = 300
-check_tweets_interval_second = 600
-check_biz_interval_second = 600
+check_gas_interval_second = 600
+check_tweets_interval_second = 1000
+check_biz_interval_second = 1000
 
-channel_id = -1001269515340
-ticker = 'COIN'
-contract = "0xeb547ed1d8a3ff1461abaa7f0022fed4836e00a4"
-pair_contract = "0x01d92294bf3b7adbab7cd615a6de188f43b1f6bc"
+
+@dataclass(frozen=True)
+class Channel:
+    channel_id: int
+    ticker: str
+    contract: str
+    pair_contract: str
+
+
+coin_token_channel = Channel(channel_id=1001269515340,
+                             ticker='COIN',
+                             contract="0xeb547ed1d8a3ff1461abaa7f0022fed4836e00a4",
+                             pair_contract="0x01d92294bf3b7adbab7cd615a6de188f43b1f6bc")
+
+channel_list = [coin_token_channel]
 
 # button refresh: h:int-d:int-t:token
 def get_candlestick(context: CallbackContext):
@@ -108,42 +121,46 @@ def get_candlestick(context: CallbackContext):
 
     trending = util.get_banner_txt(zerorpc_client_data_aggregator)
 
-    (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(ticker, charts_path, k_days,
-                                                                                        k_hours, t_from,
-                                                                                        t_to, txt=trending, options=options)
+    for channel in channel_list:
 
-    pprint.pprint(path)
+        (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(channel.ticker, charts_path, k_days,
+                                                                                            k_hours, t_from,
+                                                                                            t_to, txt=trending, options=options)
 
-    context.bot.send_photo(chat_id=channel_id, photo=open(path, 'rb'), caption=message, parse_mode="html")
+        context.bot.send_photo(chat_id=channel.channel_id, photo=open(path, 'rb'), caption=message, parse_mode="html")
 
 
 def get_price_token(context: CallbackContext):
-    message = general_end_functions.get_price(contract, pair_contract, graphql_client_eth,
-                                              graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
-    context.bot.send_message(chat_id=channel_id, text=message, parse_mode='html', disable_web_page_preview=True)
+    for channel in channel_list:
+
+        message = general_end_functions.get_price(channel.contract, channel.pair_contract, graphql_client_eth,
+                                                  graphql_client_uni, channel.ticker.upper(), decimals, uni_wrapper)
+        context.bot.send_message(chat_id=channel.channel_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
 
 # sends the current biz threads
 def get_biz(context: CallbackContext):
-    base_url = "boards.4channel.org/biz/thread/"
-    word = '\\$' + ticker
-    message = """Current /biz threads containing the word $WORD:
-""".replace("$WORD", word)
-    threads_ids = scrap_websites_util.get_biz_threads(re.compile(word))
-    for thread_id in threads_ids:
-        excerpt = thread_id[2] + " | " + thread_id[1]
-        message += base_url + str(thread_id[0]) + " -- " + excerpt[0: 100] + "[...] \n"
-    if not threads_ids:
-        meme_caption = "No current /biz/ thread containing the word $WORD. You can make one at https://boards.4channel.org/biz/.".replace(
-            "$WORD", word)
-        context.bot.send_message(chat_id=channel_id, text=meme_caption, disable_web_page_preview=True)
-    else:
-        context.bot.send_message(chat_id=channel_id, text=message, disable_web_page_preview=True)
+    for channel in channel_list:
+        base_url = "boards.4channel.org/biz/thread/"
+        word = '\\$' + channel.ticker
+        message = """Current /biz threads containing the word $WORD:
+    """.replace("$WORD", word)
+        threads_ids = scrap_websites_util.get_biz_threads(re.compile(word))
+        for thread_id in threads_ids:
+            excerpt = thread_id[2] + " | " + thread_id[1]
+            message += base_url + str(thread_id[0]) + " -- " + excerpt[0: 100] + "[...] \n"
+        if not threads_ids:
+            meme_caption = "No current /biz/ thread containing the word $WORD. You can make one at https://boards.4channel.org/biz/.".replace(
+                "$WORD", word)
+            context.bot.send_message(chat_id=channel.channel_id, text=meme_caption, disable_web_page_preview=True)
+        else:
+            context.bot.send_message(chat_id=channel.channel_id, text=message, disable_web_page_preview=True)
 
 
 def get_twitter(context: CallbackContext):
-    res = scrap_websites_util.get_last_tweets(twitter, ticker)
-    context.bot.send_message(chat_id=channel_id, text=res, parse_mode='html', disable_web_page_preview=True)
+    for channel in channel_list:
+        res = scrap_websites_util.get_last_tweets(twitter, channel.ticker)
+        context.bot.send_message(chat_id=channel.channel_id, text=res, parse_mode='html', disable_web_page_preview=True)
 
 
 def get_gas_average(context: CallbackContext):
@@ -153,35 +170,39 @@ def get_gas_average(context: CallbackContext):
               "\nFast: " + str(fast) + \
               "\nAvg : " + str(average) + \
               "\nSlow: " + str(low) + "</code>"
-    context.bot.send_message(chat_id=channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
+    for channel in channel_list:
+        context.bot.send_message(chat_id=channel.channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
 def get_trending(context: CallbackContext):
-    res = zerorpc_client_data_aggregator.view_trending()
-    context.bot.send_message(chat_id=channel_id, text=res)
+    for channel in channel_list:
+
+        res = zerorpc_client_data_aggregator.view_trending()
+        context.bot.send_message(chat_id=channel.channel_id, text=res)
 
 
 def callback_minute_check_buys(context: CallbackContext):
-    coin = "0xE61fDAF474Fac07063f2234Fb9e60C1163Cfa850".lower()
-    print("checking monitors")
-    now = round(time.time())
-    last_min = now - 80
+    for channel in channel_list:
 
-    options = ["print_complex"]
-    pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
-    latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options, amount=100)
-    pprint.pprint("latest actions for coin " + str(coin))
-    pprint.pprint(latest_actions_pretty)
-    if latest_actions_pretty is not None:
-        links = '<a href="etherscan.io/token/' + contract + '">Etherscan</a> | <a href="https://app.uniswap.org/#/swap?inputCurrency=' + contract + '">Uniswap</a>'
+        print("checking monitors")
+        now = round(time.time())
+        last_min = now - 80
 
-        message = "🚀🌕New actions that took place in the last minute: \n" + latest_actions_pretty + '\n' + links
+        options = ["print_complex"]
+        pair = web3_util.does_pair_token_eth_exist(channel.contract, uni_wrapper)
+        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options, amount=100)
+        pprint.pprint("latest actions for coin " + str(channel.contract))
+        pprint.pprint(latest_actions_pretty)
+        if latest_actions_pretty is not None:
+            links = '<a href="etherscan.io/token/' + channel.contract + '">Etherscan</a> | <a href="https://app.uniswap.org/#/swap?inputCurrency=' + channel.contract + '">Uniswap</a>'
 
-        try:
-            context.bot.send_message(chat_id=channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
-        except ChatMigrated as err:
-            print("CHANNEL ID CHANGED: ", err)
-            pass
+            message = "🚀🌕New actions that took place in the last minute: \n" + latest_actions_pretty + '\n' + links
+
+            try:
+                context.bot.send_message(chat_id=channel.channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
+            except ChatMigrated as err:
+                print("CHANNEL ID CHANGED: ", err)
+                pass
 
 #
 #
