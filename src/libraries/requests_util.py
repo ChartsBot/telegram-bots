@@ -489,7 +489,7 @@ class Swap:
                         + pretty_number(self.buy[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
                         + str(time_since) + " mins ago."
         else:
-            price_usd_raw = self.buy[1] * eth_price
+            price_usd_raw = self.sell[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
             emoji = (round(price_usd_raw) // 150) * "🔴"
             main_part = "Sell " + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + " for " \
