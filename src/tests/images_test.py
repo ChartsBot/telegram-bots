@@ -44,7 +44,7 @@ img_output = 'img/pillow_concat_v_border.jpg'
 
 from PIL import Image, ImageOps
 img = Image.open(img_path)
-img_with_border = ImageOps.expand(img,border=15,fill='green')
+img_with_border = ImageOps.expand(img,border=15,fill='#3f0000')
 img_with_border.save(img_output)
 
 
