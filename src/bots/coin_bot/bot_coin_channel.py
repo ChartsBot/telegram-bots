@@ -93,7 +93,7 @@ class Channel:
     pair_contract: str
 
 
-coin_token_channel = Channel(channel_id=1001269515340,
+coin_token_channel = Channel(channel_id=-1001269515340,
                              ticker='COIN',
                              contract="0xeb547ed1d8a3ff1461abaa7f0022fed4836e00a4",
                              pair_contract="0x01d92294bf3b7adbab7cd615a6de188f43b1f6bc")
