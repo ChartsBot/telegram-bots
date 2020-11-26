@@ -593,7 +593,6 @@ def parse_swaps(res):
     swaps = res['data']['swaps']
     l_swaps = []
     for swap in swaps:
-        pprint.pprint(swap)
         amount0In = float(swap['amount0In'])
         amount0Out = float(swap['amount0Out'])
         amount1In = float(swap['amount1In'])

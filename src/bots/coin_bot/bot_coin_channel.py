@@ -103,7 +103,13 @@ epan_token_channel = Channel(channel_id=-1001294607485,
                              contract="0x72630B1e3B42874bf335020Ba0249e3E9e47Bafc".lower(),
                              pair_contract="0xeb4770eea58fefab132663b852a8b7a35a843c71".lower())
 
-channel_list = [coin_token_channel, epan_token_channel]
+cp3r_token_channel = Channel(channel_id=-1001356862307,
+                             ticker='CP3R',
+                             contract="0x7Ef1081Ecc8b5B5B130656a41d4cE4f89dBBCC8c".lower(),
+                             pair_contract="0xbc6b3dc17e86c8cacf0f384f2e19468c36154a22".lower())
+
+
+channel_list = [coin_token_channel, epan_token_channel, cp3r_token_channel]
 
 # button refresh: h:int-d:int-t:token
 def get_candlestick(context: CallbackContext):
