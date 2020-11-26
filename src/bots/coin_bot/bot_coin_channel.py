@@ -167,7 +167,7 @@ def callback_minute_check_buys(context: CallbackContext):
     now = round(time.time())
     last_min = now - 80
 
-    options = None
+    options = ["print_complex"]
     pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
     latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options, amount=100)
     pprint.pprint("latest actions for coin " + str(coin))

@@ -15,14 +15,12 @@ sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
 from libraries.util import float_to_str, pretty_number, keep_significant_number_float
 import libraries.time_util as time_util
 
-
 clef = os.environ.get('BINANCE_API_KEY')
 secret = os.environ.get('BINANCE_API_SECRET')
 
 client_binance = Client(clef, secret)
 
 jwt = os.environ.get('JWT')
-
 
 query_get_latest = """
 query {  mints(first: $AMOUNT, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
@@ -167,7 +165,6 @@ query_uni = '''query blocks {
 }
 '''
 
-
 query_eth_now = '''
 query blocks {
     tnow: blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: {timestamp_lt: %d}) {
@@ -175,7 +172,6 @@ query blocks {
     }
 }
 '''
-
 
 query_uni_now = '''query blocks {
     tnow: token(id: "CONTRACT", block: {number: NUMBER_TNOW}) {
@@ -186,7 +182,6 @@ query_uni_now = '''query blocks {
     }
 }
 '''
-
 
 req_graphql_vol24h_rot = '''{
   pairHourDatas(
@@ -208,9 +203,9 @@ def create_url_request_graphex(symbol, resolution, t_from, t_to):
 
 
 def get_gecko_chart(token_name, t_from, t_to):
-    print("token: " + token_name +  "f_from: " + str(t_from) + " - t_to: " + str(t_to))
-    gecko_url_updated = gecko_chart_url.replace("$TOKEN", token_name)\
-        .replace("$T_FROM", str(t_from))\
+    print("token: " + token_name + "f_from: " + str(t_from) + " - t_to: " + str(t_to))
+    gecko_url_updated = gecko_chart_url.replace("$TOKEN", token_name) \
+        .replace("$T_FROM", str(t_from)) \
         .replace("$T_TO", str(t_to))
     pprint.pprint(gecko_url_updated)
     res = requests.get(gecko_url_updated)
@@ -292,7 +287,6 @@ def get_price_raw_now(graphql_client_eth, graphql_client_uni, token_contract):  
 # graphql_client_uni_2 = GraphQLClient('https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2')
 # graphql_client_eth = GraphQLClient('https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks')
 def get_price_raw(graphql_client_eth, graphql_client_uni, token_contract):
-
     now = int(time.time())
 
     before_7d = now - 3600 * 24 * 7
@@ -317,7 +311,6 @@ def get_price_raw(graphql_client_eth, graphql_client_uni, token_contract):
     res_uni_query = graphql_client_uni.execute(query_uni_updated)
     json_resp_uni = json.loads(res_uni_query)
 
-
     try:
         token_per_eth_now = float(json_resp_uni['data']['tnow']['derivedETH'])
     except KeyError:  # trying again, as sometimes the block that we query has not yet been indexed. For that, we read
@@ -333,11 +326,13 @@ def get_price_raw(graphql_client_eth, graphql_client_uni, token_contract):
         token_per_eth_now = float(json_resp_uni['data']['tnow']['derivedETH'])
 
     try:
-        token_per_eth_7d = float(json_resp_uni['data']['t1']['derivedETH']) if 'derivedETH' in json_resp_uni['data']['t1'] else 0.0
+        token_per_eth_7d = float(json_resp_uni['data']['t1']['derivedETH']) if 'derivedETH' in json_resp_uni['data'][
+            't1'] else 0.0
     except TypeError:
         token_per_eth_7d = None
     try:
-        token_per_eth_1d = float(json_resp_uni['data']['t2']['derivedETH']) if 'derivedETH' in json_resp_uni['data']['t2'] else 0.0
+        token_per_eth_1d = float(json_resp_uni['data']['t2']['derivedETH']) if 'derivedETH' in json_resp_uni['data'][
+            't2'] else 0.0
     except TypeError:
         token_per_eth_1d = None
 
@@ -445,7 +440,6 @@ def get_price_at(ticker: str, days: int):
     return res
 
 
-
 def get_gas_price_raw():
     url = "https://ethgasstation.info/json/ethgasAPI.json"
     return requests.get(url).json()
@@ -485,6 +479,26 @@ class Swap:
         message += " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
         return message
 
+    def to_string_complex(self, eth_price):
+        time_since = time_util.get_minute_diff(self.timestamp)
+        if self.is_positif():
+            price_usd_raw = self.buy[1] * eth_price
+            price_usd = pretty_number(price_usd_raw)
+            emoji = (round(price_usd_raw) // 150) * "🟢"
+            main_part = "Buy  " + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + " for " \
+                        + pretty_number(self.buy[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
+                        + str(time_since) + " mins ago."
+        else:
+            price_usd_raw = self.buy[1] * eth_price
+            price_usd = pretty_number(price_usd_raw)
+            emoji = (round(price_usd_raw) // 150) * "🔴"
+            main_part = "Sell " + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + " for " \
+                        + pretty_number(self.sell[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
+                        + str(time_since) + " mins ago."
+        first_row = emoji + '\n'
+        end = " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
+        return first_row + main_part + end
+
 
 @dataclass(frozen=True)
 class Mint:
@@ -494,7 +508,7 @@ class Mint:
     timestamp: int
 
     def price_usd(self, eth_price):
-        return self.amount_eth() *  eth_price
+        return self.amount_eth() * eth_price
 
     def amount_eth(self):
         if self.token_0[0] == 'WETH':
@@ -507,12 +521,25 @@ class Mint:
         emoji = "💚" if custom_emoji is None else custom_emoji
         price_usd = pretty_number(self.price_usd(eth_price))
         time_since = time_util.get_minute_diff(self.timestamp)
-        message = emoji + " Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " +\
+        message = emoji + " Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " + \
                   pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
                   + " <code>($" + price_usd[0:6] + ")</code> " \
                   + str(time_since) + " mins ago."
         message += " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
         return message
+
+    def to_string_complex(self, eth_price):
+        price_usd_raw = self.price_usd(eth_price)
+        price_usd = pretty_number(price_usd_raw)
+        emoji = (round(price_usd_raw) // 150) * "💚"
+        time_since = time_util.get_minute_diff(self.timestamp)
+        first_row = emoji + '\n'
+        main_part = "Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " + \
+                    pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
+                    + " <code>($" + price_usd[0:6] + ")</code> " \
+                    + str(time_since) + " mins ago."
+        end = " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
+        return first_row + main_part + end
 
 
 @dataclass(frozen=True)
@@ -523,7 +550,7 @@ class Burn:
     timestamp: int
 
     def price_usd(self, eth_price):
-        return self.amount_eth() *  eth_price
+        return self.amount_eth() * eth_price
 
     def amount_eth(self):
         if self.token_0[0] == 'WETH':
@@ -538,10 +565,23 @@ class Burn:
         time_since = time_util.get_minute_diff(self.timestamp)
         message = emoji + " Removed " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " \
                   + pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
-                  + " <code>($" + price_usd[0:6] + ")</code> "\
+                  + " <code>($" + price_usd[0:6] + ")</code> " \
                   + str(time_since) + " mins ago."
         message += " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
         return message
+
+    def to_string_complex(self, eth_price):
+        price_usd_raw = self.price_usd(eth_price)
+        price_usd = pretty_number(price_usd_raw)
+        emoji = (round(price_usd_raw) // 150) * "💔"
+        time_since = time_util.get_minute_diff(self.timestamp)
+        first_row = emoji + '\n'
+        main_part = "Removed " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " \
+                    + pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
+                    + " <code>($" + price_usd[0:6] + ")</code> " \
+                    + str(time_since) + " mins ago."
+        end = " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
+        return first_row + main_part + end
 
 
 def get_latest_actions(pair, graphql_client_uni, options=None, amount=30):
@@ -633,7 +673,6 @@ def get_last_actions(pair, graphql_client_uni, options=None, amount=30):
             start_message = start_message.replace("actions", "liquidity actions")
             all_actions = parsed_mints + parsed_burns
 
-
     all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
     return all_actions_sorted, start_message, eth_price
 
@@ -659,7 +698,15 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
         return None
     all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options, amount)
     all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts]
-    strings = list(map(lambda x: x.to_string(eth_price), all_actions_kept))
+    if 'print_complex' in options:
+        strings = list(map(lambda x: x.to_string_complex(eth_price), all_actions_kept))
+        if len(strings) == 0:
+            return None
+        else:
+            return '\n\n'.join(strings)
+
+    else:
+        strings = list(map(lambda x: x.to_string(eth_price), all_actions_kept))
     if len(strings) == 0:
         return None
     else:
@@ -680,15 +727,18 @@ class GasSpent:
         amount_spent_on_gas_raw = keep_significant_number_float(self.eth_spent, 2)
         amount_spent_on_gas_usd = keep_significant_number_float(amount_spent_on_gas_raw * eth_price_now, 2)
         avg_gas_cost = keep_significant_number_float(self.avg_gas_price, 1)
-        eth_success = keep_significant_number_float(self.success[1] / 10**18, 3)
-        eth_fail = keep_significant_number_float(self.fail[1] / 10**18, 3)
+        eth_success = keep_significant_number_float(self.success[1] / 10 ** 18, 3)
+        eth_fail = keep_significant_number_float(self.fail[1] / 10 ** 18, 3)
         eth_success_dollar = keep_significant_number_float(eth_success * eth_price_now, 3)
         eth_fail_dollar = keep_significant_number_float(eth_fail * eth_price_now, 3)
         message = "Total number of tx: " + str(self.amountTx) + '\n' \
-                  + "Amount spent on gas: Ξ" + str(amount_spent_on_gas_raw) + " = $" + str(amount_spent_on_gas_usd) + '\n' \
+                  + "Amount spent on gas: Ξ" + str(amount_spent_on_gas_raw) + " = $" + str(
+            amount_spent_on_gas_usd) + '\n' \
                   + "Average gas spent per tx = " + str(avg_gas_cost) + '\n' \
-                  + "Tx successful = " + str(self.success[0]) + " -> Ξ" + str(eth_success) + " spent in gas ($" + str(eth_success_dollar) + ')\n' \
-                  + "Tx failed = " + str(self.fail[0]) + " -> Ξ" + str(eth_fail) + " spent in gas ($" + str(eth_fail_dollar) + ')'
+                  + "Tx successful = " + str(self.success[0]) + " -> Ξ" + str(eth_success) + " spent in gas ($" + str(
+            eth_success_dollar) + ')\n' \
+                  + "Tx failed = " + str(self.fail[0]) + " -> Ξ" + str(eth_fail) + " spent in gas ($" + str(
+            eth_fail_dollar) + ')'
         return message
 
 
@@ -716,9 +766,10 @@ def get_gas_spent(address):
             total_cost_success += gas_used * gas_price_tx
     avg_price = round(avg_price / len(txs))
     total_gas = total_gas_success + total_cost_fail
-    avg_price_rounded = avg_price / 10**9
-    total_cost = ((total_cost_fail + total_cost_success) / 10**18)
-    return GasSpent(len(txs), total_cost, total_gas, avg_price_rounded, (len(txs) - error_number, total_cost_success), (error_number, total_cost_fail))
+    avg_price_rounded = avg_price / 10 ** 9
+    total_cost = ((total_cost_fail + total_cost_success) / 10 ** 18)
+    return GasSpent(len(txs), total_cost, total_gas, avg_price_rounded, (len(txs) - error_number, total_cost_success),
+                    (error_number, total_cost_fail))
 
 
 def main():
