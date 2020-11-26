@@ -78,8 +78,8 @@ graphql_client_eth = GraphQLClient('https://api.thegraph.com/subgraphs/name/bloc
 # CONFIG OPTION repeated task
 check_buys_interval_second = 60
 check_sells_interval_second = 60
-check_price_interval_second = 60
-print_chart_interval_second = 120
+check_price_interval_second = 300
+print_chart_interval_second = 180
 check_gas_interval_second = 600
 check_tweets_interval_second = 1000
 check_biz_interval_second = 1000
@@ -190,13 +190,8 @@ def callback_minute_check_buys(context: CallbackContext):
         last_min = now - 80
 
         options = ["print_complex"]
-        pair = channel.pair_contract
-        pprint.pprint("pair = " + str(pair))
-        pair_found = web3_util.does_pair_token_eth_exist(channel.contract, uni_wrapper)
-        pprint.pprint("pair found = " + str(pair_found))
-        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair_found.lower(), graphql_client_uni, options, amount=100)
-        pprint.pprint("latest actions for coin " + str(channel.contract))
-        pprint.pprint(latest_actions_pretty)
+
+        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, channel.pair_contract.lower(), graphql_client_uni, options, amount=100)
         if latest_actions_pretty is not None:
             links = '<a href="etherscan.io/token/' + channel.contract + '">Etherscan</a> | <a href="https://app.uniswap.org/#/swap?inputCurrency=' + channel.contract + '">Uniswap</a>'
 
