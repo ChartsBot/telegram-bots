@@ -32,8 +32,6 @@ from threading import Thread
 import zerorpc
 
 
-announcement_channel_id = -1001478326834
-
 # charts delete
 charts_time_refresh = {}
 
@@ -113,6 +111,8 @@ def get_candlestick(context: CallbackContext):
     (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(ticker, charts_path, k_days,
                                                                                         k_hours, t_from,
                                                                                         t_to, txt=trending, options=options)
+
+    pprint.pprint(path)
 
     context.bot.send_photo(chat_id=channel_id, photo=open(path, 'rb'), caption=message, parse_mode="html")
 
