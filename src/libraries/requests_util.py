@@ -659,7 +659,7 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
         return None
     all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options, amount)
     all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts]
-    strings = list(map(lambda x: x.to_string(eth_price, '🐋'), all_actions_kept))
+    strings = list(map(lambda x: x.to_string(eth_price), all_actions_kept))
     if len(strings) == 0:
         return None
     else:

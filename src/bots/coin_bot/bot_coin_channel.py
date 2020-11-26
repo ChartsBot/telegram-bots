@@ -221,7 +221,7 @@ def main():
     j.run_repeating(get_biz, interval=check_tweets_interval_second, first=15)
     j.run_repeating(get_twitter, interval=check_biz_interval_second, first=15)
     j.run_repeating(get_price_token, interval=print_chart_interval_second, first=0)
-    j.run_repeating(get_candlestick, interval=print_chart_interval_second, first=0)
+    j.run_repeating(get_candlestick, interval=print_chart_interval_second, first=15)
     j.run_repeating(get_gas_average, interval=print_chart_interval_second, first=0)
 
     updater.start_polling()
