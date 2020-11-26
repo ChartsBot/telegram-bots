@@ -77,9 +77,11 @@ graphql_client_eth = GraphQLClient('https://api.thegraph.com/subgraphs/name/bloc
 # CONFIG OPTION repeated task
 check_buys_interval_second = 60
 check_sells_interval_second = 60
+check_price_interval_second = 60
 print_chart_interval_second = 60
+check_gas_interval_second = 300
 check_tweets_interval_second = 120
-check_biz_interval_second = 120
+check_biz_interval_second = 300
 
 channel_id = -1001269515340
 ticker = 'COIN'
@@ -220,9 +222,9 @@ def main():
     # j.run_repeating(callback_minute_check_buys, interval=check_sells_interval_second, first=15)
     j.run_repeating(get_biz, interval=check_tweets_interval_second, first=15)
     j.run_repeating(get_twitter, interval=check_biz_interval_second, first=15)
-    j.run_repeating(get_price_token, interval=print_chart_interval_second, first=0)
+    j.run_repeating(get_price_token, interval=check_price_interval_second, first=15)
     j.run_repeating(get_candlestick, interval=print_chart_interval_second, first=15)
-    j.run_repeating(get_gas_average, interval=print_chart_interval_second, first=0)
+    j.run_repeating(get_gas_average, interval=check_gas_interval_second, first=15)
 
     updater.start_polling()
     updater.idle()
