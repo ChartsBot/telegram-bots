@@ -352,7 +352,10 @@ def add_border(file_path, color):
 def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=None):
     resolution = __calculate_resolution_from_time(t_from, t_to)
 
-    if token.upper() == "BTC":
+    if "binance" in options or "b" in options:
+        values = requests_util.get_binance_chart_data(token.upper() + "USDT", t_from, t_to)
+        (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
+    elif token.upper() == "BTC":
         values = requests_util.get_binance_chart_data("BTCUSDT", t_from, t_to)
         (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
     elif token.upper() == "ETH" or token == "weth" or token == "WETH" or token == "ethereum" or token == "Ethereum":
