@@ -351,25 +351,28 @@ def add_border(file_path, color):
 # options = TA stuff for example
 def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=None):
     resolution = __calculate_resolution_from_time(t_from, t_to)
-
-    if "binance" in options or "b" in options:
-        values = requests_util.get_binance_chart_data(token.upper() + "USDT", t_from, t_to)
-        (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
-    elif token.upper() == "BTC":
-        values = requests_util.get_binance_chart_data("BTCUSDT", t_from, t_to)
-        (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
-    elif token.upper() == "ETH" or token == "weth" or token == "WETH" or token == "ethereum" or token == "Ethereum":
-        values = requests_util.get_binance_chart_data("ETHUSDT", t_from, t_to)
-        (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
-    elif token.upper() == "XRP" or token.lower() == "ripple":
-        values = requests_util.get_binance_chart_data("XRPUSDT", t_from, t_to)
-        (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
-    elif token.upper() == "LTC" or token.lower() == "litecoin":
-        values = requests_util.get_binance_chart_data("LTCUSDT", t_from, t_to)
-        (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
-    else:
-        values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
-        (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
+    check_others = True
+    if options is not None:
+        if "binance" in options or "b" in options:
+            check_others = False
+            values = requests_util.get_binance_chart_data(token.upper() + "USDT", t_from, t_to)
+            (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
+    if check_others:
+        if token.upper() == "BTC":
+            values = requests_util.get_binance_chart_data("BTCUSDT", t_from, t_to)
+            (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
+        elif token.upper() == "ETH" or token == "weth" or token == "WETH" or token == "ethereum" or token == "Ethereum":
+            values = requests_util.get_binance_chart_data("ETHUSDT", t_from, t_to)
+            (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
+        elif token.upper() == "XRP" or token.lower() == "ripple":
+            values = requests_util.get_binance_chart_data("XRPUSDT", t_from, t_to)
+            (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
+        elif token.upper() == "LTC" or token.lower() == "litecoin":
+            values = requests_util.get_binance_chart_data("LTCUSDT", t_from, t_to)
+            (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
+        else:
+            values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
+            (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
     __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token, options)
     if txt is not None:
         img_up = __generate_upper_barrier(txt, options)
