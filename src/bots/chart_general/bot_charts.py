@@ -587,7 +587,7 @@ def set_monitor(update: Update, context: CallbackContext):
 def __is_user_admin(context, update):
     user = context.bot.get_chat_member(update.effective_chat.id, update.message.from_user.id)
     status = user.status
-    username = user.username
+    username = user.user.username
     return status == 'administrator' or status == 'creator' or username == 'rotted_ben'
 
 
