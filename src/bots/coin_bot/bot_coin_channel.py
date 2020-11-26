@@ -143,10 +143,12 @@ def get_price_token(context: CallbackContext):
 def get_biz(context: CallbackContext):
     for channel in channel_list:
         base_url = "boards.4channel.org/biz/thread/"
-        word = '\\$' + channel.ticker
+
+        word = '$' + channel.ticker
+        word_regex_friendly = word.replace('$', '\\$')
         message = """Current /biz threads containing the word $WORD:
-    """.replace("$WORD", word)
-        threads_ids = scrap_websites_util.get_biz_threads(re.compile(word))
+    """.replace("WORD", channel.ticker)
+        threads_ids = scrap_websites_util.get_biz_threads(re.compile(word_regex_friendly))
         for thread_id in threads_ids:
             excerpt = thread_id[2] + " | " + thread_id[1]
             message += base_url + str(thread_id[0]) + " -- " + excerpt[0: 100] + "[...] \n"
