@@ -303,7 +303,7 @@ def get_price_raw(graphql_client_eth, graphql_client_uni, token_contract):
     block_from_1d = int(json_resp_eth['data']['t2'][0]['number'])
     latest_block = int(json_resp_eth['data']['tnow'][0]['number'])
 
-    query_uni_updated = query_uni.replace("CONTRACT", token_contract) \
+    query_uni_updated = query_uni.replace("CONTRACT", token_contract.lower()) \
         .replace("NUMBER_T1", str(block_from_7d)) \
         .replace("NUMBER_T2", str(block_from_1d)) \
         .replace("NUMBER_TNOW", str(latest_block))
