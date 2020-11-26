@@ -191,8 +191,9 @@ def callback_minute_check_buys(context: CallbackContext):
         options = ["print_complex"]
         pair = channel.pair_contract
         pprint.pprint("pair = " + str(pair))
-        pprint.pprint("pair found = " + str(web3_util.does_pair_token_eth_exist(channel.contract, uni_wrapper)))
-        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options, amount=100)
+        pair_found = web3_util.does_pair_token_eth_exist(channel.contract, uni_wrapper)
+        pprint.pprint("pair found = " + str(pair_found))
+        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair_found.lower(), graphql_client_uni, options, amount=100)
         pprint.pprint("latest actions for coin " + str(channel.contract))
         pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
