@@ -485,16 +485,14 @@ class Swap:
             price_usd_raw = self.buy[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
             emoji = (round(price_usd_raw) // 300) * "🟢" + "🟢"
-            main_part = "Buy  " + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + " for " \
-                        + pretty_number(self.buy[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
-                        + str(time_since) + " mins ago."
+            main_part = "Buy  <b>" + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + "</b> for <b>" \
+                        + pretty_number(self.buy[1])[0:9] + " ETH</b> <code>($" + price_usd[0:6] + ")</code>"
         else:
             price_usd_raw = self.sell[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
             emoji = (round(price_usd_raw) // 300) * "🔴" + "🔴"
-            main_part = "Sell " + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + " for " \
-                        + pretty_number(self.sell[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
-                        + str(time_since) + " mins ago."
+            main_part = "Sell <b>" + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + "</b> for <b>" \
+                        + pretty_number(self.sell[1])[0:9] + " ETH</b> <code>($" + price_usd[0:6] + ")</code>"
         first_row = emoji + '\n'
         end = " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
         return first_row + main_part + end
