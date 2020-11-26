@@ -606,8 +606,8 @@ def parse_swaps(res):
         else:
             l_swaps.append(Swap((token1, amount1In), (token0, amount0Out), id, timestamp))
     # detect bots:
-    l_swaps = sorted(l_swaps, key=lambda x: x.timestamp, reverse=True)
-    for swap in l_swaps:
+    # l_swaps = sorted(l_swaps, key=lambda x: x.timestamp, reverse=True)
+    # for swap in l_swaps:
 
     return l_swaps
 
