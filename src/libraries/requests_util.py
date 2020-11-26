@@ -544,8 +544,7 @@ class Burn:
         return message
 
 
-def get_latest_actions(pair, graphql_client_uni, options=None):
-    amount = 30
+def get_latest_actions(pair, graphql_client_uni, options=None, amount=30):
     updated_eth_query = query_get_latest.replace("$PAIR", '["' + pair + '"]').replace("$AMOUNT", str(amount))
     res_eth_query = graphql_client_uni.execute(updated_eth_query)
     json_resp_eth = json.loads(res_eth_query)
@@ -603,9 +602,9 @@ def parse_pair(pair):
     return token0, token1
 
 
-def get_last_actions(pair, graphql_client_uni, options=None):
+def get_last_actions(pair, graphql_client_uni, options=None, amount=30):
     eth_price = get_eth_price_now()
-    last_actions = get_latest_actions(pair.lower(), graphql_client_uni, options)
+    last_actions = get_latest_actions(pair.lower(), graphql_client_uni, options, amount)
 
     parsed_swaps = parse_swaps(last_actions)
     parsed_mints = parse_mint(last_actions)
@@ -614,6 +613,16 @@ def get_last_actions(pair, graphql_client_uni, options=None):
 
     start_message = "Last 5 actions for pair: " + str(pair)[0:5] + "[...]\n"
     if options is not None:
+
+        if "whale" in options or "whales" in options or "w" in options:
+            start_message = start_message + "Showing only actions <b>> 10 Eth:</b>\n"
+            to_keep_if_whales = []
+            for action in all_actions:
+                if action.amount_eth() > 10:
+                    print("keeping it cause swap value eth = " + str(action.amount_eth()))
+                    to_keep_if_whales.append(action)
+            all_actions = to_keep_if_whales
+
         if "buy" in options or "buys" in options or "b" in options:
             start_message = start_message.replace("actions", "buys")
             all_actions = [x for x in parsed_swaps if x.is_positif()]
@@ -624,14 +633,6 @@ def get_last_actions(pair, graphql_client_uni, options=None):
             start_message = start_message.replace("actions", "liquidity actions")
             all_actions = parsed_mints + parsed_burns
 
-        if "whale" in options or "whales" in options or "w" in options:
-            start_message = start_message + "Showing only actions <b>> 10 Eth:</b>\n"
-            to_keep_if_whales = []
-            for action in all_actions:
-                if action.amount_eth() > 10:
-                    print("keeping it cause swap value eth = " + str(action.amount_eth()))
-                    to_keep_if_whales.append(action)
-            all_actions = to_keep_if_whales
 
     all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
     return all_actions_sorted, start_message, eth_price
@@ -653,10 +654,13 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
     return start_message + string
 
 
-def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, options=["whale"]):
+def
+
+
+def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, options=["whale"], amount=30):
     if pair is None:
         return None
-    all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options)
+    all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options, amount)
     all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts]
     strings = list(map(lambda x: x.to_string(eth_price, '🐋'), all_actions_kept))
     if len(strings) == 0:
