@@ -49,7 +49,6 @@ twitter = Twython(APP_KEY, APP_SECRET, ACCESS_TOKEN, ACCESS_SECRET_TOKEN)
 
 # ENV FILES
 TELEGRAM_KEY = os.environ.get('COIN_TELEGRAM_KEY')
-pair_contract = "0x5a265315520696299fa1ece0701c3a1ba961b888"
 decimals = 1000000000000000000  # that's 18
 TMP_FOLDER = BASE_PATH + 'tmp/'
 supply_file_path = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
@@ -86,8 +85,7 @@ check_biz_interval_second = 300
 channel_id = -1001269515340
 ticker = 'COIN'
 contract = "0xeb547ed1d8a3ff1461abaa7f0022fed4836e00a4"
-
-
+pair_contract = "0x01d92294bf3b7adbab7cd615a6de188f43b1f6bc"
 
 # button refresh: h:int-d:int-t:token
 def get_candlestick(context: CallbackContext):
@@ -120,7 +118,7 @@ def get_candlestick(context: CallbackContext):
 
 
 def get_price_token(context: CallbackContext):
-    message = general_end_functions.get_price(contract, "", graphql_client_eth,
+    message = general_end_functions.get_price(contract, pair_contract, graphql_client_eth,
                                               graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
     context.bot.send_message(chat_id=channel_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
@@ -175,7 +173,7 @@ def callback_minute_check_buys(context: CallbackContext):
     pprint.pprint("latest actions for coin " + str(coin))
     pprint.pprint(latest_actions_pretty)
     if latest_actions_pretty is not None:
-        message = "🚀🌕New buys that took place in the last minute: \n" + latest_actions_pretty
+        message = "🚀🌕New actions that took place in the last minute: \n" + latest_actions_pretty
 
         try:
             context.bot.send_message(chat_id=channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
