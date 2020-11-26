@@ -12,7 +12,7 @@ import libraries.requests_util as requests_util
 import libraries.util as util
 import numpy as np
 import plotly.io as pio
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 import pprint
 
@@ -340,6 +340,12 @@ def __get_concat_v(im1, im2):
     return dst
 
 
+def add_border(file_path, color):
+    img = Image.open(file_path)
+    img_with_border = ImageOps.expand(img,border=15,fill=color)
+    img_with_border.save(file_path)
+
+
 # t_from and t_to should be int epoch second
 # return the last price
 # options = TA stuff for example
@@ -366,6 +372,8 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
         img_up = __generate_upper_barrier(txt, options)
         img_down = Image.open(file_path)
         __get_concat_v(img_up, img_down).save(file_path)
+    border_color = 'green' if closes[-1] > closes[0] else 'red'
+    add_border(file_path, color=border_color)
     return closes[-1]
 
 

@@ -30,7 +30,7 @@ d.text((x, y), txt, align='center', font=font, fill=(0, 0, 0))
 # d.text((10,10), txt, font=unicode_font, fill=(0,0,0))
 
 img.save('img/pil_text.png')
-img.show()
+# img.show()
 
 
 def get_concat_v(im1, im2):
@@ -39,7 +39,16 @@ def get_concat_v(im1, im2):
     dst.paste(im2, (0, im1.height))
     return dst
 
-get_concat_v(img, img).save('img/pillow_concat_v.jpg')
+img_path = 'img/pillow_concat_v.jpg'
+img_output = 'img/pillow_concat_v_border.jpg'
+
+from PIL import Image, ImageOps
+img = Image.open(img_path)
+img_with_border = ImageOps.expand(img,border=15,fill='green')
+img_with_border.save(img_output)
+
+
+# get_concat_v(img, img).save('img/pillow_concat_v.jpg')
 
 if __name__ == '__main__':
     pass
