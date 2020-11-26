@@ -108,15 +108,11 @@ def get_candlestick(context: CallbackContext):
     t_to = int(time.time())
     if rand > 5:
         t_from = t_to - 3600*24
-        time_type = 'd'
-        k_hours = 0
-        k_days = 1
+        k_hours, k_days = 0, 1
         options = None
     else:
         t_from = t_to - 3600
-        time_type = 'h'
-        k_hours = 1
-        k_days = 0
+        k_hours, k_days = 1, 0
         options = None
 
     trending = util.get_banner_txt(zerorpc_client_data_aggregator)
@@ -245,10 +241,10 @@ def main():
     j.run_repeating(callback_minute_check_buys, interval=check_buys_interval_second, first=6)
     # j.run_repeating(callback_minute_check_buys, interval=check_sells_interval_second, first=15)
     j.run_repeating(get_biz, interval=check_biz_interval_second, first=round(check_biz_interval_second / 2))
-    j.run_repeating(get_twitter, interval=check_tweets_interval_second, first=15)
-    # j.run_repeating(get_price_token, interval=check_price_interval_second, first=15)
-    j.run_repeating(get_candlestick, interval=print_chart_interval_second, first=15)
-    j.run_repeating(get_gas_average, interval=check_gas_interval_second, first=15)
+    j.run_repeating(get_twitter, interval=check_tweets_interval_second, first=200)
+    j.run_repeating(get_price_token, interval=check_price_interval_second, first=6)
+    j.run_repeating(get_candlestick, interval=print_chart_interval_second, first=60)
+    j.run_repeating(get_gas_average, interval=check_gas_interval_second, first=200)
 
     updater.start_polling()
     updater.idle()
