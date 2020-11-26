@@ -484,14 +484,14 @@ class Swap:
         if self.is_positif():
             price_usd_raw = self.buy[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
-            emoji = (round(price_usd_raw) // 150) * "🟢"
+            emoji = (round(price_usd_raw) // 300) * "🟢"
             main_part = "Buy  " + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + " for " \
                         + pretty_number(self.buy[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
                         + str(time_since) + " mins ago."
         else:
             price_usd_raw = self.sell[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
-            emoji = (round(price_usd_raw) // 150) * "🔴"
+            emoji = (round(price_usd_raw) // 300) * "🔴"
             main_part = "Sell " + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + " for " \
                         + pretty_number(self.sell[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
                         + str(time_since) + " mins ago."
@@ -531,7 +531,7 @@ class Mint:
     def to_string_complex(self, eth_price):
         price_usd_raw = self.price_usd(eth_price)
         price_usd = pretty_number(price_usd_raw)
-        emoji = (round(price_usd_raw) // 150) * "💚"
+        emoji = (round(price_usd_raw) // 300) * "💚"
         time_since = time_util.get_minute_diff(self.timestamp)
         first_row = emoji + '\n'
         main_part = "Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " + \
@@ -573,7 +573,7 @@ class Burn:
     def to_string_complex(self, eth_price):
         price_usd_raw = self.price_usd(eth_price)
         price_usd = pretty_number(price_usd_raw)
-        emoji = (round(price_usd_raw) // 150) * "💔"
+        emoji = (round(price_usd_raw) // 300) * "💔"
         time_since = time_util.get_minute_diff(self.timestamp)
         first_row = emoji + '\n'
         main_part = "Removed " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " \
