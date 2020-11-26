@@ -77,9 +77,9 @@ graphql_client_eth = GraphQLClient('https://api.thegraph.com/subgraphs/name/bloc
 check_buys_interval_second = 60
 check_sells_interval_second = 60
 check_price_interval_second = 60
-print_chart_interval_second = 60
+print_chart_interval_second = 120
 check_gas_interval_second = 300
-check_tweets_interval_second = 120
+check_tweets_interval_second = 300
 check_biz_interval_second = 300
 
 channel_id = -1001269515340
@@ -173,7 +173,9 @@ def callback_minute_check_buys(context: CallbackContext):
     pprint.pprint("latest actions for coin " + str(coin))
     pprint.pprint(latest_actions_pretty)
     if latest_actions_pretty is not None:
-        message = "🚀🌕New actions that took place in the last minute: \n" + latest_actions_pretty
+        links = '<a href="etherscan.io/token/' + contract + '">Etherscan</a> | <a href="https://app.uniswap.org/#/swap?inputCurrency=' + contract + '">Uniswap</a>'
+
+        message = "🚀🌕New actions that took place in the last minute: \n" + latest_actions_pretty + '\n' + links
 
         try:
             context.bot.send_message(chat_id=channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
