@@ -105,6 +105,7 @@ def filter_tweets(all_tweets):
         for tweet in tweets:
             if "RT " not in tweet['text']:
                 if count < how_many_tweets:
+                    pprint("keeping twouit")
                     tweets_to_keep.append(parse_tweet(tweet))
                     count = count + 1
     return tweets_to_keep
