@@ -213,7 +213,7 @@ def get_actions(context: CallbackContext):
         options = ["print_complex"]
 
         latest_actions_pretty, ids = requests_util.pretty_print_monitor_last_actions(last_min, channel.pair_contract.lower(),
-                                                                                graphql_client_uni, options, amount=100)
+                                                                                graphql_client_uni, options, amount=100, blacklist=already_checked_tx)
         already_checked_tx += ids
         if latest_actions_pretty is not None:
             links = '<a href="etherscan.io/token/' + channel.contract + '">Etherscan</a> | <a href="https://app.uniswap.org/#/swap?inputCurrency=' + channel.contract + '">Uniswap</a>'
