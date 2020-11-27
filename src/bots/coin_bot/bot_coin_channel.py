@@ -240,7 +240,7 @@ def main():
     # j.run_repeating(callback_minute_check_buys, interval=check_sells_interval_second, first=15)
     j.run_repeating(get_biz, interval=check_biz_interval_second, first=round(check_biz_interval_second / 2))
     j.run_repeating(get_twitter, interval=check_tweets_interval_second, first=200)
-    j.run_repeating(get_price_token, interval=check_price_interval_second, first=6)
+    j.run_repeating(get_price_token, interval=check_price_interval_second, first=200)
     j.run_repeating(get_candlestick, interval=print_chart_interval_second, first=60)
     j.run_repeating(get_gas_average, interval=check_gas_interval_second, first=200)
 

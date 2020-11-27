@@ -451,6 +451,9 @@ class Swap:
     id: str
     timestamp: int
 
+    def value_raw_eth(self):
+        return self.amount_eth()
+
     def is_positif(self):
         return self.buy[0] == 'WETH'
 
@@ -503,6 +506,9 @@ class BotSwap:
     swap_sell: Swap
     amount_eth: int
 
+    def value_raw_eth(self):
+        return self.amount_eth
+
     def price_usd(self, eth_price):
         return self.amount_eth * eth_price
 
@@ -524,6 +530,9 @@ class Mint:
     token_1: (str, int)
     id: str
     timestamp: int
+
+    def value_raw_eth(self):
+        return self.amount_eth()
 
     def price_usd(self, eth_price):
         return self.amount_eth() * eth_price
@@ -566,6 +575,9 @@ class Burn:
     token_1: (str, int)
     id: str
     timestamp: int
+
+    def value_raw_eth(self):
+        return self.amount_eth()
 
     def price_usd(self, eth_price):
         return self.amount_eth() * eth_price
@@ -753,7 +765,8 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
     pprint.pprint(all_actions_sorted[0])
     if 'print_complex' in options:
         actions_with_bots = detect_bots(all_actions_kept)
-        strings = list(map(lambda x: x.to_string_complex(eth_price), actions_with_bots))
+        all_actions_kept_sorted = sorted(actions_with_bots, key=lambda x: x.value_raw_eth(), reverse=True)
+        strings = list(map(lambda x: x.to_string_complex(eth_price), all_actions_kept_sorted))
         if len(strings) == 0:
             return None, []
         else:

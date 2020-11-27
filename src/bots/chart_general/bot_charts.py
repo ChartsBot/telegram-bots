@@ -158,6 +158,7 @@ def get_price_token(update: Update, context: CallbackContext):
     query_received = update.message.text.split(' ')
     if len(query_received) == 2:
         ticker = query_received[1]
+
         if ticker.upper() in symbol_gecko:
             value = symbol_gecko.get(ticker.upper())
             message = general_end_functions.get_price_gecko(value)
@@ -639,10 +640,13 @@ def _is_coin_being_watched(ticker: str):
     return zerorpc_client_data_aggregator.is_coin_being_watched(ticker.upper())
 
 
-def text_if_coin_being_watched(ticker: str):
+def text_if_coin_being_watched(ticker: str, small=False):
     if _is_coin_being_watched(ticker):
         print(ticker + " is being watched")
-        return "Live $" + ticker.upper() + " actions ➡ @TheFomoBot_" + ticker.upper() + "_actions ⬅"
+        if small:
+            return "➡ @TheFomoBot_" + ticker.upper() + "_actions ⬅"
+        else:
+            return "Live $" + ticker.upper() + " actions ➡ @TheFomoBot_" + ticker.upper() + "_actions ⬅"
     else:
         return None
 
