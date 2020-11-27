@@ -509,7 +509,7 @@ class BotSwap:
 
     def to_string(self, eth_price):
         price_usd_pretty = pretty_number(self.price_usd(eth_price))
-        emoji = "🤖"
+        emoji = "🤖" * (round(self.amount_eth * 10) + 1)
         main_part = "Bot stole <b>" + pretty_number(self.amount_eth) + " ETH</b> <code>($" + price_usd_pretty + ")</code>"
         end = " | " + '<a href="etherscan.io/tx/' + str(self.swap_buy.id) + '">buy tx</a> - ' + '<a href="etherscan.io/tx/' + str(self.swap_sell.id) + '">sell tx</a>'
         return emoji + '\n' + main_part + end

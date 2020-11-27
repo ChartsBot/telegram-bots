@@ -202,6 +202,7 @@ def get_trending(context: CallbackContext):
 
 already_checked_tx = []
 
+
 def get_actions(context: CallbackContext):
     print("checking monitors")
     global already_checked_tx
@@ -225,7 +226,6 @@ def get_actions(context: CallbackContext):
             except ChatMigrated as err:
                 print("CHANNEL ID CHANGED: ", err)
                 pass
-
 
 
 def main():
