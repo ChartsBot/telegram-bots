@@ -692,6 +692,7 @@ def callback_minute(context: CallbackContext):
         if latest_actions_pretty is not None:
             maybe_bottom_text = text_if_coin_being_watched(coin)
             follow_up_message = "\n" + maybe_bottom_text if maybe_bottom_text is not None else ""
+            print("follow up message: " + follow_up_message)
             message = latest_actions_pretty + follow_up_message
             for channel in new_list[coin]:
                 pprint.pprint("sent latest actions to channel: " + str(channel))
