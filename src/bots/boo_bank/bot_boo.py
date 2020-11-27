@@ -428,7 +428,10 @@ commands = """
 help - How to use the bot.
 chart - Display a chart of the price.
 boob - Get the current price of $BOOB.
+bbra - Get the current price of $BBRA
 ecto - Get the current price of $ECTO.
+ballad - BBRA music.
+flyer_bbra - Explain bbra.
 chart_supply - Display a chart of the supply (BOOB and ECTO).
 twitter - Get the last tweets concerning $BOOB.
 add_meme - Add a meme to the meme folder.
