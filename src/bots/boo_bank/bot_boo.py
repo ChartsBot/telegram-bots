@@ -131,9 +131,9 @@ def get_price_ecto(update: Update, context: CallbackContext):
 
 
 def get_price_bbra(update: Update, context: CallbackContext):
-    message = general_end_functions.get_price(ecto_contract, pair_contract, graphql_client_eth, graphql_client_uni, ecto_name, decimals, uni_wrapper)
+    message = general_end_functions.get_price(bbra_contract, pair_contract, graphql_client_eth, graphql_client_uni, bbra_name, decimals, uni_wrapper)
     chat_id = update.message.chat_id
-    util.create_and_send_vote("ECTO", "price", update.message.from_user.name, zerorpc_client_data_aggregator)
+    util.create_and_send_vote("BBRA", "price", update.message.from_user.name, zerorpc_client_data_aggregator)
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price, disable_web_page_preview=True)
 
 
@@ -391,6 +391,7 @@ def main():
     dp.add_handler(CommandHandler('chart', get_candlestick))
     dp.add_handler(CommandHandler('price', get_price_token))
     dp.add_handler(CommandHandler('boob', get_price_token))
+    dp.add_handler(CommandHandler('bbra', get_price_bbra))
     dp.add_handler(CommandHandler('timeto', get_time_to))
     dp.add_handler(CommandHandler('ecto', get_price_ecto))
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
