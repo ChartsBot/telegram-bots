@@ -96,7 +96,6 @@ class Channel:
 
 @cached(cache=TTLCache(maxsize=1024, ttl=60))
 def get_my_channels(my_name='@coin_chart_bot'):
-    print("getting my channels")
     results = zerorpc_client_data_aggregator.get_bot_assigned_channels(my_name)
     if results is None or results is []:
         return []
@@ -107,7 +106,9 @@ def get_my_channels(my_name='@coin_chart_bot'):
                           contract=res[2].lower(),
                           pair_contract=res[3].lower())
         my_channels.append(channel)
-    pprint.pprint(my_channels)
+    if random.randint(0, 10) > 8:  # TODO: use real logging at one point, that's ridiculous
+        pprint.pprint("my channels: ")
+        pprint.pprint(my_channels)
     return my_channels
 
 
