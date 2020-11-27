@@ -275,6 +275,12 @@ def send_flyer(update: Update, context: CallbackContext):
     context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'))
 
 
+def send_flyer_bbra(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    path = BASE_PATH + 'images/boo/flyer_bbra.jpg'
+    context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'))
+
+
 def log_current_supply():
     number_boob = requests_util.get_supply_cap_raw(boob_contract, decimals)
     number_ecto = requests_util.get_supply_cap_raw(ecto_contract, decimals)
@@ -389,6 +395,7 @@ def main():
     dp.add_handler(CommandHandler('anthem', send_anthem))
     dp.add_handler(CommandHandler('music', send_music))
     dp.add_handler(CommandHandler('ballad', send_ballad))
+    dp.add_handler(CommandHandler('flyer_bbra', send_flyer_bbra))
     dp.add_handler(CommandHandler('flyer', send_flyer))
     dp.add_handler(CommandHandler('chart_supply', get_chart_supply))
     dp.add_handler(CommandHandler('how_to_swap', send_how_to_swap))
