@@ -106,7 +106,7 @@ def get_my_channels(my_name='@coin_chart_bot'):
                           contract=res[2].lower(),
                           pair_contract=res[3].lower())
         my_channels.append(channel)
-    if random.randint(0, 10) > 8:  # TODO: use real logging at one point, that's ridiculous
+    if random.randint(0, 100) > 97:  # TODO: use real logging at one point, that's ridiculous
         pprint.pprint("my channels: ")
         pprint.pprint(my_channels)
     return my_channels
