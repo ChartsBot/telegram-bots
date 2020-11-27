@@ -26,7 +26,7 @@ import libraries.scrap_websites_util as scrap_websites_util
 import libraries.git_util as git_util
 import libraries.requests_util as requests_util
 import libraries.util as util
-from bots.boo_bank.bot_boo_values import links, test_error_token, how_to_swap
+from bots.boo_bank.bot_boo_values import links, how_to_swap
 from libraries.timer_util import RepeatedTimer
 from libraries.uniswap import Uniswap
 from libraries.common_values import *
