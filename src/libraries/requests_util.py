@@ -748,7 +748,9 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
         return None
     all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options, amount)
     all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts and x.id not in blacklist]
-    pprint.pprint(all_actions_kept)
+    pprint.pprint("latest action: ")
+    pprint.pprint(all_actions_sorted[-1])
+    pprint.pprint(all_actions_sorted[0])
     if 'print_complex' in options:
         actions_with_bots = detect_bots(all_actions_kept)
         strings = list(map(lambda x: x.to_string_complex(eth_price), actions_with_bots))
