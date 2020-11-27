@@ -670,7 +670,7 @@ def callback_minute(context: CallbackContext):
         pprint.pprint("latest actions for coin " + str(coin))
         pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
-            message = "🚀🌕 in the last minute: \n" + latest_actions_pretty
+            message = latest_actions_pretty
             for channel in new_list[coin]:
                 pprint.pprint("sent message to channel: " + str(channel))
                 try:
