@@ -91,7 +91,7 @@ def get_last_tweets(twitter, ticker, minutes_since=10000000):
         for tweet in results:
             parsed_tweets.append(parse_tweet(tweet))
         tweets_to_keep = [x.to_string() for x in parsed_tweets if x.minutes_since() < minutes_since]
-        rest_message = ''.join(tweets_to_keep)
+        rest_message = tweets_to_keep
         if rest_message == "":
             print("empty tweets, fallback")
             rest_message = "Unable to find tweets right now."
