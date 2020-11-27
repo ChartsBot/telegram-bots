@@ -89,9 +89,9 @@ def get_last_tweets(twitter, ticker, minutes_since=10000000):
             time.sleep(0.5)
             results = query_tweets(twitter, ticker)
         if minutes_since == 10000000:
-            message = "<b>Last tweets for " + ticker.upper() + ":</b>\n"
+            message = "<b>Last tweets about " + ticker.upper() + ":</b>\n"
         else:
-            message = "<b>Last tweets for " + ticker.upper() + " of the past " + str(minutes_since) + " minutes:</b>\n"
+            message = "<b>Tweets about " + ticker.upper() + " in the past " + str(minutes_since) + " minutes:</b>\n"
         parsed_tweets = filter_tweets(results)
         tweets_to_keep = [x.to_string() for x in parsed_tweets if x.minutes_since() < minutes_since]
         rest_message = ''.join(tweets_to_keep)
@@ -109,7 +109,6 @@ def filter_tweets(all_tweets):
         for tweet in tweets:
             if "RT " not in tweet['text']:
                 if count < how_many_tweets:
-                    pprint("keeping twouit")
                     tweets_to_keep.append(parse_tweet(tweet))
                     count = count + 1
     return tweets_to_keep

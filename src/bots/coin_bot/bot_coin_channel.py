@@ -81,7 +81,7 @@ check_sells_interval_second = 60
 check_price_interval_second = 300
 print_chart_interval_second = 180
 check_gas_interval_second = 600
-check_tweets_interval_second = 1000
+check_tweets_interval_second = 900
 check_biz_interval_second = 1000
 
 
@@ -201,9 +201,9 @@ def get_trending(context: CallbackContext):
 
 
 def get_actions(context: CallbackContext):
+    print("checking monitors")
     for channel in channel_list:
 
-        print("checking monitors")
         now = round(time.time())
         last_min = now - 80
 
@@ -252,18 +252,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-commands = """
-chart - <TICKER> Display charts of the TICKER.
-twitter - <TICKER> Get latests twitter containing $<TICKER>. 
-price - <TICKER> get price of the <TICKER> token.
-biz - <WORD> get 4chan/biz threads containing <WORD>.
-gas - Get gas price.
-faq - Print the FAQ.
-convert - <AMOUNT> <TICKER> option(<TICKER>) convert amount of ticker to usd (and to the second ticker if specified). 
-balance - <WALLET> <TICKER> check how much an address has of a specific coin.
-timeto - time until date passed as argument.
-last_actions - <TICKER> get the last trades / liq events of the coin.
-trending - See which coins are trending in dextrends.
-translate - <LANGUAGE_TO> <TEXT> Translate a text into the desired language.
-"""
