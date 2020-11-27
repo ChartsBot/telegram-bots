@@ -47,7 +47,6 @@ def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, t
                          ]]
     reply_markup_chart = InlineKeyboardMarkup(button_list_chart)
     msg_time = " " + str(k_days) + " day(s) " if k_days > 0 else " last " + str(k_hours) + " hour(s) "
-    print(float_to_str(last_price))
     if with_ad is None:
         ad = util.get_ad()
     else:

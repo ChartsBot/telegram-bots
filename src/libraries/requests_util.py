@@ -666,8 +666,6 @@ def parse_pair(pair):
 
 def detect_bots(actions):
     swaps = [x for x in actions if type(x) is Swap]
-    pprint.pprint("swaps: ")
-    pprint.pprint(swaps)
     others = [x for x in actions if type(x) is not Swap]
     yeeted_sells = []
     kept_actions = []
@@ -676,7 +674,6 @@ def detect_bots(actions):
         for action in swaps:
             if action.is_positif():
                 amount_buy_token = action.sell[1]
-                pprint.pprint("bought " + str(amount_buy_token) + " tokens")
                 similar_sell = next(iter([x for x in swaps if (not x.is_positif() and x.buy[1] == amount_buy_token)]), "")
                 if similar_sell != "":
                     pprint.pprint("DETECTED BOT ACTION!: ")
@@ -692,8 +689,6 @@ def detect_bots(actions):
         for action in swaps:  # Yes it's not optimized but n < 10 so who cares
             if not action.is_positif() and action not in yeeted_sells:
                 kept_actions.append(action)
-    pprint.pprint("kept actions: ")
-    pprint.pprint(kept_actions)
     return others + kept_actions
 
 
