@@ -677,7 +677,8 @@ def detect_bots(actions):
         for action in swaps:
             if action.is_positif():
                 amount_buy_token = action.sell[0]
-                similar_sell = next([x for x in swaps if not x.is_positif() and x.buy[1] == amount_buy_token], "")
+                pprint.pprint("bought " + str(amount_buy_token) + " tokens")
+                similar_sell = next([x for x in swaps if (not x.is_positif() and x.buy[1] == amount_buy_token)], "")
                 if similar_sell != "":
                     pprint.pprint("DETECTED BOT ACTION!: ")
                     pprint.pprint(action.id)
