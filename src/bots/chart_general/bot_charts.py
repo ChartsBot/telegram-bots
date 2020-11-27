@@ -136,16 +136,12 @@ def get_candlestick(update: Update, context: CallbackContext):
     t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
     trending = util.get_banner_txt(zerorpc_client_data_aggregator)
 
-    if _is_coin_being_watched(token):
-        print(token + " is being watched")
-        bottom_text = "➡️Live coin actions @TheFomoBot_" + token.upper() + "_actions ⬅"
-    else:
-        bottom_text = None
+    maybe_bottom_text = text_if_coin_being_watched(token)
 
     (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
                                                                                         k_hours, t_from,
                                                                                         t_to, txt=trending, options=options,
-                                                                                        with_ad=bottom_text)
+                                                                                        with_ad=maybe_bottom_text)
 
     util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
     token_chat_id = str(chat_id) + "_" + token
@@ -643,6 +639,14 @@ def _is_coin_being_watched(ticker: str):
     return zerorpc_client_data_aggregator.is_coin_being_watched(ticker.upper())
 
 
+def text_if_coin_being_watched(ticker: str):
+    if _is_coin_being_watched(ticker):
+        print(ticker + " is being watched")
+        return "Live $" + ticker.upper() + " actions ➡ @TheFomoBot_" + ticker.upper() + "_actions ⬅"
+    else:
+        return None
+
+
 def __log_channel(chat, method):
     now = datetime.now().strftime('%Y-%m-%d, %H')
     # today = datetime.today().strftime('%Y-%m-%d')
@@ -681,7 +685,9 @@ def callback_minute(context: CallbackContext):
         pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options)
         if latest_actions_pretty is not None:
-            message = latest_actions_pretty
+            maybe_bottom_text = text_if_coin_being_watched(coin)
+            follow_up_message = "\n" + maybe_bottom_text if maybe_bottom_text is not None else ""
+            message = latest_actions_pretty + follow_up_message
             for channel in new_list[coin]:
                 pprint.pprint("sent latest actions to channel: " + str(channel))
                 try:
