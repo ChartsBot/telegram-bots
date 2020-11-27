@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 from twython import TwythonError
 from pprint import pprint
+from dataclasses import dataclass
 
 how_many_tweets = 5
 
@@ -34,30 +35,39 @@ def get_biz_threads(re_4chan):
     return threads_ids
 
 
-def format_tweet(tweet, is_user_tweet: bool = False):
-    current_time = datetime.utcnow()
-    # if is_user_tweet:
-    #     message = tweet['text']
-    #     id = tweet['id']
-    #     pass
-    #
-    # else:
-    tweet_id = tweet['id_str']
-    url = "twitter.com/anyuser/status/" + tweet_id
-    message = tweet['text'].replace("\n", "").split('https')[0].replace('#', '').replace('@', '')
+@dataclass(frozen=True)
+class TweetReceived:
+    message: str
+    creation_date: datetime
+    user: str
+    tweet_id: str
 
-    time_tweet_creation = tweet['created_at']
-    new_datetime = datetime.strptime(time_tweet_creation, '%a %b %d %H:%M:%S +0000 %Y')
-    diff_time = current_time - new_datetime
-    minutessince = int(diff_time.total_seconds() / 60)
+    def minutes_since(self, current_time=datetime.utcnow()):
+        diff_time = current_time - self.creation_date
+        return int(diff_time.total_seconds() / 60)
 
-    user = tweet['user']['screen_name']
-    message_final = "<a href=\"" + url + "\"><b>" + str(minutessince) + \
-                    " mins ago</b> | " + user + "</a> -- " + message + "\n"
-    return message_final
+    def tweet_url(self):
+        return "twitter.com/anyuser/status/" + self.tweet_id
+
+    def to_string(self):
+        return "<a href=\"" + self.tweet_url() + "\"><b>" + str(self.minutes_since()) + \
+        " mins ago</b> | " + self.user + "</a> -- " + self.message + "\n"
 
 
-def get_last_tweets(twitter, ticker):
+def parse_tweet(tweet_raw):
+    tweet_id = tweet_raw['id_str']
+    message = tweet_raw['text'].replace("\n", "").split('https')[0].replace('#', '').replace('@', '')
+
+    time_tweet_creation = tweet_raw['created_at']
+    user = tweet_raw['user']['screen_name']
+    tweet_raw = TweetReceived(message=message,
+                              creation_date=time_tweet_creation,
+                              user=user,
+                              tweet_id=tweet_id)
+    return tweet_raw
+
+
+def get_last_tweets(twitter, ticker, minutes_since=10000000):
     if ticker[0] == "@":
         message = '<b>Last tweets by <a href="twitter.com/' + ticker + '">' + ticker[1:] + "</a>:</b>\n"
         try:
@@ -65,10 +75,11 @@ def get_last_tweets(twitter, ticker):
         except TwythonError:
             time.sleep(0.5)
             results = query_tweets(twitter, ticker[1:], True)
-        tweets = []
+        parsed_tweets = []
         for tweet in results:
-            tweets.append(format_tweet(tweet))
-        return message + ''.join(tweets)
+            parsed_tweets.append(parse_tweet(tweet))
+        tweets_to_keep = [x.to_string() for x in parsed_tweets if x.minutes_since() < minutes_since]
+        return message + ''.join(tweets_to_keep)
     else:
         try:
             results = query_tweets(twitter, ticker)
@@ -76,7 +87,11 @@ def get_last_tweets(twitter, ticker):
             time.sleep(0.5)
             results = query_tweets(twitter, ticker)
         message = "<b>Last tweets for " + ticker.upper() + ":</b>\n"
-        rest_message = filter_tweets(results)
+        parsed_tweets = []
+        for tweet in results:
+            parsed_tweets.append(parse_tweet(tweet))
+        tweets_to_keep = [x.to_string() for x in parsed_tweets if x.minutes_since() < minutes_since]
+        rest_message = ''.join(tweets_to_keep)
         if rest_message == "":
             print("empty tweets, fallback")
             rest_message = "Unable to find tweets right now."
@@ -91,7 +106,7 @@ def filter_tweets(all_tweets):
         for tweet in tweets:
             if "RT " not in tweet['text']:
                 if count < how_many_tweets:
-                    message = message + format_tweet(tweet)
+                    message = message + parse_tweet(tweet)
                     count = count + 1
     return message
 

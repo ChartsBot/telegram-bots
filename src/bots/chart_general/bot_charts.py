@@ -583,7 +583,6 @@ def set_monitor(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text="Only admins can do that you silly")
 
 
-
 def __is_user_admin(context, update):
     user = context.bot.get_chat_member(update.effective_chat.id, update.message.from_user.id)
     status = user.status
