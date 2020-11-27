@@ -750,18 +750,21 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
     return start_message + string
 
 
-def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, options=["whale"], amount=30):
+def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, options=["whale"], amount=30, blacklist=[]):
     if pair is None:
         return None
     all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options, amount)
-    all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts]
+    all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts and x.id not in blacklist]
     if 'print_complex' in options:
         actions_with_bots = detect_bots(all_actions_kept)
         strings = list(map(lambda x: x.to_string_complex(eth_price), actions_with_bots))
         if len(strings) == 0:
-            return None
+            return None, []
         else:
-            return '\n\n'.join(strings)
+            ids = [x.id for x in all_actions_kept]
+            pprint.pprint("ids: ")
+            pprint.pprint(ids)
+            return '\n\n'.join(strings), ids
 
     else:
         strings = list(map(lambda x: x.to_string(eth_price, '🐋'), all_actions_kept))

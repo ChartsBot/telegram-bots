@@ -200,17 +200,21 @@ def get_trending(context: CallbackContext):
         context.bot.send_message(chat_id=channel.channel_id, text=res)
 
 
+already_checked_tx = []
+
 def get_actions(context: CallbackContext):
     print("checking monitors")
+    global already_checked_tx
     for channel in channel_list:
 
         now = round(time.time())
-        last_min = now - 80
+        last_min = now - 200
 
         options = ["print_complex"]
 
-        latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, channel.pair_contract.lower(),
+        latest_actions_pretty, ids = requests_util.pretty_print_monitor_last_actions(last_min, channel.pair_contract.lower(),
                                                                                 graphql_client_uni, options, amount=100)
+        already_checked_tx += ids
         if latest_actions_pretty is not None:
             links = '<a href="etherscan.io/token/' + channel.contract + '">Etherscan</a> | <a href="https://app.uniswap.org/#/swap?inputCurrency=' + channel.contract + '">Uniswap</a>'
 
