@@ -60,9 +60,10 @@ def parse_tweet(tweet_raw):
     message = tweet_raw['text'].replace("\n", "").split('https')[0].replace('#', '').replace('@', '')
 
     time_tweet_creation = tweet_raw['created_at']
+    time_tweet_creation_datetime = datetime.strptime(time_tweet_creation, '%a %b %d %H:%M:%S +0000 %Y')
     user = tweet_raw['user']['screen_name']
     tweet_raw = TweetReceived(message=message,
-                              creation_date=time_tweet_creation,
+                              creation_date=time_tweet_creation_datetime,
                               user=user,
                               tweet_id=tweet_id)
     return tweet_raw
