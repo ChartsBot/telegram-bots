@@ -7,9 +7,7 @@ def ask_wolfram_raw(query, client):
     try:
         for pod in res.pods:
 
-            pprint(pod)
             if pod['@id'] == 'Result':
-                pprint(pod['subpod'])
                 found_match = pod['subpod']['plaintext']
     except KeyError:
         return "error"
