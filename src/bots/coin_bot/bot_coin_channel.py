@@ -208,7 +208,7 @@ def callback_minute_check_buys(context: CallbackContext):
         if latest_actions_pretty is not None:
             links = '<a href="etherscan.io/token/' + channel.contract + '">Etherscan</a> | <a href="https://app.uniswap.org/#/swap?inputCurrency=' + channel.contract + '">Uniswap</a>'
 
-            message = "🚀🌕New actions that took place in the last minute: \n" + latest_actions_pretty + '\n' + links
+            message = "🚀Actions of the last minute: \n\n" + latest_actions_pretty + '\n' + links
 
             try:
                 context.bot.send_message(chat_id=channel.channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
@@ -216,26 +216,7 @@ def callback_minute_check_buys(context: CallbackContext):
                 print("CHANNEL ID CHANGED: ", err)
                 pass
 
-#
-#
-# def callback_minute_check_sells(context: CallbackContext):
-#     coin = "0xE61fDAF474Fac07063f2234Fb9e60C1163Cfa850".lower()
-#     print("checking monitors")
-#     now = round(time.time())
-#     last_min = now - 80
-#
-#     pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
-#     latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options)
-#     pprint.pprint("latest actions for coin " + str(coin))
-#     pprint.pprint(latest_actions_pretty)
-#     if latest_actions_pretty is not None:
-#         message = "🚀🌕New buys that took place in the last minute: \n" + latest_actions_pretty
-#
-#         try:
-#             context.bot.send_message(chat_id=channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
-#         except ChatMigrated as err:
-#             print("CHANNEL ID CHANGED: ", err)
-#             pass
+
 
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
