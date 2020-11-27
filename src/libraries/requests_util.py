@@ -461,26 +461,26 @@ class Swap:
         else:
             return self.sell[1]
 
-    def to_string(self, eth_price, custom_emoji=None):
+    def to_string(self, eth_price, custom_emoji=None, with_date=True):
         message = ""
         time_since = time_util.get_minute_diff(self.timestamp)
+        date_msg = str(time_since) + " mins ago." if with_date else ""
         if self.is_positif():
             price_usd = pretty_number(self.buy[1] * eth_price)
             emoji = "🟢" if custom_emoji is None else custom_emoji
             message += emoji + " Buy  " + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + " for " \
                        + pretty_number(self.buy[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
-                       + str(time_since) + " mins ago."
+                       + date_msg
         else:
             emoji = "🔴" if custom_emoji is None else custom_emoji
             price_usd = pretty_number(self.sell[1] * eth_price)
             message += emoji + " Sell " + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + " for " \
                        + pretty_number(self.sell[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
-                       + str(time_since) + " mins ago."
+                       + date_msg
         message += " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
         return message
 
     def to_string_complex(self, eth_price):
-        time_since = time_util.get_minute_diff(self.timestamp)
         if self.is_positif():
             price_usd_raw = self.buy[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
@@ -726,7 +726,6 @@ def get_last_actions(pair, graphql_client_uni, options=None, amount=30):
             to_keep_if_whales = []
             for action in all_actions:
                 if action.amount_eth() > 10:
-                    print("keeping it cause swap value eth = " + str(action.amount_eth()))
                     to_keep_if_whales.append(action)
             all_actions = to_keep_if_whales
 
@@ -767,7 +766,7 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
             return '\n\n'.join(strings), ids
 
     else:
-        strings = list(map(lambda x: x.to_string(eth_price, '🐋'), all_actions_kept))
+        strings = list(map(lambda x: x.to_string(eth_price, '🐋', with_date=False), all_actions_kept))
     if len(strings) == 0:
         return None
     else:

@@ -22,7 +22,7 @@ from pprint import pprint
 last_time_checked_4chan = 0
 
 
-def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, txt: str = None, options=None):
+def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, txt: str = None, options=None, with_ad=None):
     print("requesting coin " + token + " from " + str(k_days) + " days and " + str(k_hours) + " hours")
 
     path = charts_path + token + '.png'
@@ -48,7 +48,10 @@ def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, t
     reply_markup_chart = InlineKeyboardMarkup(button_list_chart)
     msg_time = " " + str(k_days) + " day(s) " if k_days > 0 else " last " + str(k_hours) + " hour(s) "
     print(float_to_str(last_price))
-    ad = util.get_ad()
+    if with_ad is None:
+        ad = util.get_ad()
+    else:
+        ad = with_ad
     message = "<b>" + token + "</b>" + msg_time + "<code>$" + float_to_str(last_price)[0:10] + "</code>\n" + ad + ""
 
     return message, path, reply_markup_chart

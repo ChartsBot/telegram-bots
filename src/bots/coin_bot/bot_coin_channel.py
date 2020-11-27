@@ -31,6 +31,7 @@ from web3 import Web3
 from threading import Thread
 import zerorpc
 from dataclasses import dataclass
+from cachetools import cached, TTLCache
 
 
 
@@ -79,8 +80,8 @@ graphql_client_eth = GraphQLClient('https://api.thegraph.com/subgraphs/name/bloc
 check_buys_interval_second = 60
 check_sells_interval_second = 60
 check_price_interval_second = 300
-print_chart_interval_second = 180
-check_gas_interval_second = 600
+print_chart_interval_second = 300
+check_gas_interval_second = 900
 check_tweets_interval_second = 900
 check_biz_interval_second = 1000
 
@@ -120,6 +121,24 @@ kp3r_token_channel = Channel(channel_id=-1001205642974,
 
 channel_list = [coin_token_channel, epan_token_channel, cp3r_token_channel, sav3_token_channel, kp3r_token_channel]
 
+
+@cached(cache=TTLCache(maxsize=1024, ttl=60))
+def get_my_channels(my_name='@coin_chart_bot'):
+    print("getting my channels")
+    results = zerorpc_client_data_aggregator.get_bot_assigned_channels(my_name)
+    if results is None or results is []:
+        return []
+    my_channels = []
+    for res in results:
+        channel = Channel(channel_id=res[0],
+                          ticker=res[1],
+                          contract=res[2].lower(),
+                          pair_contract=res[3].lower())
+        my_channels.append(channel)
+    pprint.pprint(my_channels)
+    return my_channels
+
+
 # button refresh: h:int-d:int-t:token
 def get_candlestick(context: CallbackContext):
 
@@ -131,8 +150,8 @@ def get_candlestick(context: CallbackContext):
         k_hours, k_days = 0, 1
         options = None
     else:
-        t_from = t_to - 3600
-        k_hours, k_days = 1, 0
+        t_from = t_to - 3600 * 6
+        k_hours, k_days = 6, 0
         options = None
 
     trending = util.get_banner_txt(zerorpc_client_data_aggregator)
@@ -168,7 +187,7 @@ def get_biz(context: CallbackContext):
             excerpt = thread_id[2] + " | " + thread_id[1]
             message += base_url + str(thread_id[0]) + " -- " + excerpt[0: 100] + "[...] \n"
         if not threads_ids:
-            meme_caption = "No current /biz/ thread containing the word $WORD. You can make one at https://boards.4channel.org/biz/.".replace(
+            meme_caption = "No current /biz/ thread containing the word $WORD. You can make one at boards.4chan.org/biz/.".replace(
                 "$WORD", word)
             context.bot.send_message(chat_id=channel.channel_id, text=meme_caption, disable_web_page_preview=True)
         else:
@@ -206,6 +225,9 @@ already_checked_tx = []
 def get_actions(context: CallbackContext):
     print("checking monitors")
     global already_checked_tx
+    my_channels = get_my_channels()
+    pprint.pprint(my_channels)
+    pprint.pprint(channel_list)
     for channel in channel_list:
 
         now = round(time.time())

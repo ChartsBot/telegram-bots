@@ -667,12 +667,10 @@ def callback_minute(context: CallbackContext):
         options = ["buy", "whale"]
         pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options)
-        pprint.pprint("latest actions for coin " + str(coin))
-        pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
             message = latest_actions_pretty
             for channel in new_list[coin]:
-                pprint.pprint("sent message to channel: " + str(channel))
+                pprint.pprint("sent latest actions to channel: " + str(channel))
                 try:
                     context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
                 except ChatMigrated as err:
@@ -751,6 +749,21 @@ def get_price_direct(update: Update, context: CallbackContext):
                                              disable_web_page_preview=True)
 
 
+def add_channel(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    query_received = update.message.text.split(' ')
+    if len(query_received) != 6:
+        context.bot.send_message(chat_id=chat_id, text="wrong number of args")
+    else:
+        channel_id = query_received[1]
+        ticker = query_received[2]
+        contract = query_received[3]
+        pair_contract = query_received[4]
+        bot_assigned = query_received[5]
+        zerorpc_client_data_aggregator.assign_bot_to(channel_id, ticker, contract, pair_contract, bot_assigned)
+        context.bot.send_message("added channel")
+
+
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
@@ -795,6 +808,7 @@ def main():
     dp.add_handler(MessageHandler(Filters.command, get_price_direct, run_async=True))
     # admin stuff
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
+    dp.add_handler(CommandHandler('add_channel', add_channel, filters=Filters.user(username='@rotted_ben')))
 
     j = updater.job_queue
     job_minute = j.run_repeating(callback_minute, interval=check_big_buys_interval_seconds, first=15)
