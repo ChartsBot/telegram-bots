@@ -103,7 +103,6 @@ rejection_no_default_ticker_message = "No default token found for this chat. Ple
 check_big_buys_interval_seconds = 60
 
 
-@run_async
 def get_start_message(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "start")
     chat_id = update.message.chat_id
@@ -111,7 +110,6 @@ def get_start_message(update: Update, context: CallbackContext):
 
 
 # button refresh: h:int-d:int-t:token
-@run_async
 def get_candlestick(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "chart")
     global charts_time_refresh
@@ -295,7 +293,6 @@ def refresh_chart(update: Update, context: CallbackContext):
 
 
 # sends the current biz threads
-@run_async
 def get_biz(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "biz")
     chat_id = update.message.chat_id
@@ -342,7 +339,6 @@ def get_biz(update: Update, context: CallbackContext):
                                  text='Please use the format /biz WORD')
 
 
-@run_async
 def get_twitter(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "twitter")
     chat_id = update.message.chat_id
@@ -408,7 +404,7 @@ def balance_token_in_wallet(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text="Wrong arguments. Please use /balance WALLET TOKEN")
 
 
-@run_async
+
 def get_gas_average(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "gas")
     chat_id = update.message.chat_id
@@ -422,7 +418,6 @@ def get_gas_average(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
-@run_async
 def get_time_to(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "timeto")
     chat_id = update.message.chat_id
@@ -684,29 +679,6 @@ def callback_minute(context: CallbackContext):
                     print("CHANNEL ID CHANGED: ", err)
                     pass
             context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
-
-    # if channels_to_check is not None:
-    #     coins = [c[1].lower() for c in channels_to_check]
-    #     for coin in list(dict.fromkeys(coins)):
-    #         pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
-    #         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, ["whale", "buy"])
-    #         if latest_actions_pretty is not None:
-    #             for channel in channels_to_check[0]:
-    #                 if coin
-    #
-    # for channel_mon in channels_to_check:
-    #     pprint.pprint(channel_mon)
-    #     channel = channel_mon[0]
-    #     coin = channel_mon[1]
-    #     monitor_type = channel_mon[2]
-    #     options = [monitor_type, "whale"]
-    #     pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
-    #     latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options)
-    #     pprint.pprint("latest actions for chat " + str(channel))
-    #     pprint.pprint(latest_actions_pretty)
-    #     if latest_actions_pretty is not None:
-    #         message = "🚀🌕New HOT stuff that took place in the last minute: \n" + latest_actions_pretty
-    #         context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
 def translate_text(update: Update, context: CallbackContext):

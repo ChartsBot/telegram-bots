@@ -42,8 +42,9 @@ class TweetReceived:
     user: str
     tweet_id: str
 
-    def minutes_since(self, current_time=datetime.utcnow()):
-        diff_time = current_time - self.creation_date
+    def minutes_since(self, current_time=None):
+        actual_current_time = datetime.utcnow() if current_time == None else current_time
+        diff_time = actual_current_time - self.creation_date
         return int(diff_time.total_seconds() / 60)
 
     def tweet_url(self):
