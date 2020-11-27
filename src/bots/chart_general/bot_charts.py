@@ -137,6 +137,7 @@ def get_candlestick(update: Update, context: CallbackContext):
     trending = util.get_banner_txt(zerorpc_client_data_aggregator)
 
     if _is_coin_being_watched(token):
+        print(token + " is being watched")
         bottom_text = "➡️Live coin actions @TheFomoBot_" + token.upper() + "_actions ⬅"
     else:
         bottom_text = None
