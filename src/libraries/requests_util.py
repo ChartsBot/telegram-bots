@@ -676,7 +676,7 @@ def detect_bots(actions):
     if swaps is not None or swaps is not []:
         for action in swaps:
             if action.is_positif():
-                amount_buy_token = action.sell[0]
+                amount_buy_token = action.sell[1]
                 pprint.pprint("bought " + str(amount_buy_token) + " tokens")
                 similar_sell = next([x for x in swaps if (not x.is_positif() and x.buy[1] == amount_buy_token)], "")
                 if similar_sell != "":
@@ -685,7 +685,7 @@ def detect_bots(actions):
                     pprint.pprint(similar_sell.id)
 
                     yeeted_sells.append(similar_sell)
-                    eth_drained = similar_sell.sell[0] - action.buy[1]
+                    eth_drained = similar_sell.sell[1] - action.buy[1]
                     bot_action = BotSwap(action, similar_sell, eth_drained)
                     kept_actions.append(bot_action)
                 else:
