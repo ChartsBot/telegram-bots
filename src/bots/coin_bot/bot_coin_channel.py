@@ -199,7 +199,8 @@ def get_actions(context: CallbackContext):
     global already_checked_tx
 
     for channel in get_my_channels():
-
+        pprint.pprint("checking channel ")
+        pprint.pprint(channel)
         now = round(time.time())
         last_min = now - 200
 
@@ -208,6 +209,7 @@ def get_actions(context: CallbackContext):
         latest_actions_pretty, ids = requests_util.pretty_print_monitor_last_actions(last_min, channel.pair_contract.lower(),
                                                                                 graphql_client_uni, options, amount=100, blacklist=already_checked_tx)
         already_checked_tx += ids
+        pprint.pprint(latest_actions_pretty)
         if latest_actions_pretty is not None:
             links = '<a href="etherscan.io/token/' + channel.contract + '">Etherscan</a> | <a href="https://app.uniswap.org/#/swap?inputCurrency=' + channel.contract + '">Uniswap</a>'
 
