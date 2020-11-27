@@ -21,6 +21,7 @@ from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQuery
 from telegram.ext.dispatcher import run_async
 from telegram.error import ChatMigrated
 import libraries.web3_calls as web3_util
+from cachetools import cached, TTLCache
 
 
 import libraries.graphs_util as graphs_util
@@ -135,9 +136,15 @@ def get_candlestick(update: Update, context: CallbackContext):
     t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
     trending = util.get_banner_txt(zerorpc_client_data_aggregator)
 
+    if _is_coin_being_watched(token):
+        bottom_text = "➡️Live coin actions @TheFomoBot_" + token.upper() + "_actions ⬅"
+    else:
+        bottom_text = None
+
     (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
                                                                                         k_hours, t_from,
-                                                                                        t_to, txt=trending, options=options)
+                                                                                        t_to, txt=trending, options=options,
+                                                                                        with_ad=bottom_text)
 
     util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
     token_chat_id = str(chat_id) + "_" + token
@@ -628,6 +635,11 @@ def get_chart_supply(update: Update, context: CallbackContext):
                                photo=open(ticker_supply_chart_path, 'rb'),
                                caption=caption,
                                parse_mode="html")
+
+
+@cached(cache=TTLCache(maxsize=1024, ttl=120))
+def _is_coin_being_watched(ticker: str):
+    return zerorpc_client_data_aggregator.is_coin_being_watched(ticker.upper())
 
 
 def __log_channel(chat, method):
