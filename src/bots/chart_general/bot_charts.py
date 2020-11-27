@@ -690,6 +690,7 @@ def callback_minute(context: CallbackContext):
         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options)
         if latest_actions_pretty is not None:
             maybe_bottom_text = text_if_coin_being_watched(coin)
+            pprint.pprint(maybe_bottom_text)
             follow_up_message = "\n" + maybe_bottom_text if maybe_bottom_text is not None else ""
             message = latest_actions_pretty + follow_up_message
             for channel in new_list[coin]:
