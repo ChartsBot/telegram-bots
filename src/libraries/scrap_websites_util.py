@@ -87,11 +87,9 @@ def get_last_tweets(twitter, ticker, minutes_since=10000000):
             time.sleep(0.5)
             results = query_tweets(twitter, ticker)
         message = "<b>Last tweets for " + ticker.upper() + ":</b>\n"
-        parsed_tweets = []
-        for tweet in results:
-            parsed_tweets.append(parse_tweet(tweet))
+        parsed_tweets = filter_tweets(results)
         tweets_to_keep = [x.to_string() for x in parsed_tweets if x.minutes_since() < minutes_since]
-        rest_message = tweets_to_keep
+        rest_message = ''.join(tweets_to_keep)
         if rest_message == "":
             print("empty tweets, fallback")
             rest_message = "Unable to find tweets right now."
@@ -99,16 +97,16 @@ def get_last_tweets(twitter, ticker, minutes_since=10000000):
 
 
 def filter_tweets(all_tweets):
-    message = ""
+    tweets_to_keep = []
     if all_tweets.get('statuses'):
         count = 0
         tweets = all_tweets['statuses']
         for tweet in tweets:
             if "RT " not in tweet['text']:
                 if count < how_many_tweets:
-                    message = message + parse_tweet(tweet)
+                    tweets_to_keep.append(parse_tweet(tweet))
                     count = count + 1
-    return message
+    return tweets_to_keep
 
 
 def query_tweets(twitter, token, is_user: bool = False):
