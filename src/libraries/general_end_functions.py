@@ -102,13 +102,15 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
     if token_price_7d_usd is not None and token_price_7d_usd != 0.0:
         var_7d = - int(((token_price_7d_usd - token_price_now_usd) / token_price_7d_usd) * 100) if token_price_7d_usd > token_price_now_usd else int(((token_price_now_usd - token_price_7d_usd) / token_price_7d_usd) * 100)
         var_7d_str = "+" + str(var_7d) + "%" if var_7d > 0 else str(var_7d) + "%"
+        var_7d_msg = "\n7D :  " + var_7d_str
     else:
-        var_7d_str = "Not available"
+        var_7d_msg = ""
     if token_price_1d_usd is not None and token_price_1d_usd != 0.0:
         var_1d = - int(((token_price_1d_usd - token_price_now_usd) / token_price_1d_usd) * 100) if token_price_1d_usd > token_price_now_usd else int(((token_price_now_usd - token_price_1d_usd) / token_price_1d_usd) * 100)
         var_1d_str = "+" + str(var_1d) + "%" if var_1d > 0 else str(var_1d) + "%"
+        var_1d_msg = "\n24H:  " + var_1d_str
     else:
-        var_1d_str = "Not available"
+        var_1d_msg = ""
 
     print("vol 24: " + str(vol_24h))
 
@@ -123,8 +125,8 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
     message = "<b>" + name + '</b><code>' \
               + "\nETH: Ξ" + float_to_str(derivedETH_now)[0:10] \
               + "\nUSD: $" + float_to_str(token_price_now_usd)[0:10] \
-              + "\n24H:  " + var_1d_str \
-              + "\n7D :  " + var_7d_str \
+              + var_1d_msg \
+              + var_7d_msg \
               + "\n" \
               + msg_vol_24 \
               + "\nS.  Cap = " + supply_cat_pretty \
