@@ -486,13 +486,13 @@ class Swap:
         if self.is_positif():
             price_usd_raw = self.buy[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
-            emoji = (self.buy[1]) * "🟢" + "🟢"
+            emoji = round(self.buy[1]) * "🟢" + "🟢"
             main_part = "Buy  <b>" + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + "</b> for <b>" \
                         + pretty_number(self.buy[1])[0:9] + " ETH</b> <code>($" + price_usd[0:6] + ")</code>"
         else:
             price_usd_raw = self.sell[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
-            emoji = (self.sell[1]) * "🔴" + "🔴"
+            emoji = round(self.sell[1]) * "🔴" + "🔴"
             main_part = "Sell <b>" + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + "</b> for <b>" \
                         + pretty_number(self.sell[1])[0:9] + " ETH</b> <code>($" + price_usd[0:6] + ")</code>"
         first_row = emoji + '\n'
