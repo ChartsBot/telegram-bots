@@ -35,7 +35,6 @@ from web3 import Web3
 import zerorpc
 import html
 
-
 # ZERORPC
 zerorpc_client_data_aggregator = zerorpc.Client()
 zerorpc_client_data_aggregator.connect("tcp://127.0.0.1:4243")
@@ -81,6 +80,10 @@ ecto_contract = "0x921c87490ccbef90a3b0fc1951bd9064f7220af6"
 ecto_name = "Ectoplasma"
 ecto_ticker = 'ECTO'
 pair_contract = "0x6e31ef0b62a8abe30d80d35476ca78897dffa769"
+bbra_name = "BBRA"
+bbra_ticker = 'BBRA'
+bbra_contract = "0x70460c3bb9abcc0aa51f922c00d37816d6ede4d7"
+
 decimals = 1000000000000000000  # that's 18
 git_url = "https://api.github.com/repos/boobank/boo-memes/contents/memesFolder"
 
@@ -114,17 +117,25 @@ def get_candlestick(update: Update, context: CallbackContext):
 
 
 def get_price_token(update: Update, context: CallbackContext):
-    message = general_end_functions.get_price(boob_contract, pair_contract, graphql_client_eth, graphql_client_uni, name, decimals)
+    message = general_end_functions.get_price(boob_contract, pair_contract, graphql_client_eth, graphql_client_uni, name, decimals, uni_wrapper)
     chat_id = update.message.chat_id
     util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price, disable_web_page_preview=True)
 
 
 def get_price_ecto(update: Update, context: CallbackContext):
-    message = general_end_functions.get_price(ecto_contract, pair_contract, graphql_client_eth, graphql_client_uni, ecto_name, decimals)
+    message = general_end_functions.get_price(ecto_contract, pair_contract, graphql_client_eth, graphql_client_uni, ecto_name, decimals, uni_wrapper)
     chat_id = update.message.chat_id
     util.create_and_send_vote("ECTO", "price", update.message.from_user.name, zerorpc_client_data_aggregator)
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price, disable_web_page_preview=True)
+
+
+def get_price_bbra(update: Update, context: CallbackContext):
+    message = general_end_functions.get_price(ecto_contract, pair_contract, graphql_client_eth, graphql_client_uni, ecto_name, decimals, uni_wrapper)
+    chat_id = update.message.chat_id
+    util.create_and_send_vote("ECTO", "price", update.message.from_user.name, zerorpc_client_data_aggregator)
+    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price, disable_web_page_preview=True)
+
 
 
 def refresh_chart(update: Update, context: CallbackContext):
