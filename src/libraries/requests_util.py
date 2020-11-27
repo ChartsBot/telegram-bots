@@ -667,28 +667,31 @@ def parse_pair(pair):
 
 def detect_bots(actions):
     swaps = [x for x in actions if type(x) is Swap]
+    pprint.pprint("swaps: ")
+    pprint.pprint(swaps)
     others = [x for x in actions if type(x) is not Swap]
     yeeted_sells = []
     kept_actions = []
     # We first check the positive actions
-    for action in swaps:
-        if action.is_positif():
-            amount_buy_token = action.sell[0]
-            similar_sell = next([x for x in swaps if not x.is_positif() and x.buy[1] == amount_buy_token], "")
-            if similar_sell != "":
-                pprint.pprint("DETECTED BOT ACTION!: ")
-                pprint.pprint(action.id)
-                pprint.pprint(similar_sell.id)
+    if swaps is not None or swaps is not []:
+        for action in swaps:
+            if action.is_positif():
+                amount_buy_token = action.sell[0]
+                similar_sell = next([x for x in swaps if not x.is_positif() and x.buy[1] == amount_buy_token], "")
+                if similar_sell != "":
+                    pprint.pprint("DETECTED BOT ACTION!: ")
+                    pprint.pprint(action.id)
+                    pprint.pprint(similar_sell.id)
 
-                yeeted_sells.append(similar_sell)
-                eth_drained = similar_sell.sell[0] - action.buy[1]
-                bot_action = BotSwap(action, similar_sell, eth_drained)
-                kept_actions.append(bot_action)
-            else:
+                    yeeted_sells.append(similar_sell)
+                    eth_drained = similar_sell.sell[0] - action.buy[1]
+                    bot_action = BotSwap(action, similar_sell, eth_drained)
+                    kept_actions.append(bot_action)
+                else:
+                    kept_actions.append(action)
+        for action in swaps:  # Yes it's not optimized but n < 10 so who cares
+            if not action.is_positif and action not in yeeted_sells:
                 kept_actions.append(action)
-    for action in swaps:  # Yes it's not optimized but n < 10 so who cares
-        if not action.is_positif and action not in yeeted_sells:
-            kept_actions.append(action)
     return others + kept_actions
 
 
