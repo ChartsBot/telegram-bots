@@ -172,7 +172,8 @@ def get_biz(context: CallbackContext):
 
 def get_twitter(context: CallbackContext):
     for channel in channel_list:
-        res = scrap_websites_util.get_last_tweets(twitter, channel.ticker)
+        tweets_of_the_last_minutes = int(check_tweets_interval_second / 60) * 2
+        res = scrap_websites_util.get_last_tweets(twitter, channel.ticker, tweets_of_the_last_minutes)
         context.bot.send_message(chat_id=channel.channel_id, text=res, parse_mode='html', disable_web_page_preview=True)
 
 

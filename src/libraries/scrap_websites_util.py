@@ -88,7 +88,10 @@ def get_last_tweets(twitter, ticker, minutes_since=10000000):
         except TwythonError:
             time.sleep(0.5)
             results = query_tweets(twitter, ticker)
-        message = "<b>Last tweets for " + ticker.upper() + ":</b>\n"
+        if minutes_since == 10000000:
+            message = "<b>Last tweets for " + ticker.upper() + ":</b>\n"
+        else:
+            message = "<b>Last tweets for " + ticker.upper() + " of the past " + str(minutes_since) + " minutes:</b>\n"
         parsed_tweets = filter_tweets(results)
         tweets_to_keep = [x.to_string() for x in parsed_tweets if x.minutes_since() < minutes_since]
         rest_message = ''.join(tweets_to_keep)
