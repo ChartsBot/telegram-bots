@@ -693,6 +693,8 @@ def detect_bots(actions):
         for action in swaps:  # Yes it's not optimized but n < 10 so who cares
             if not action.is_positif and action not in yeeted_sells:
                 kept_actions.append(action)
+    pprint.pprint("kept actions: ")
+    pprint.pprint(kept_actions)
     return others + kept_actions
 
 
