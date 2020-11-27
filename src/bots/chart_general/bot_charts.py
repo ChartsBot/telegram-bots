@@ -761,7 +761,7 @@ def add_channel(update: Update, context: CallbackContext):
         pair_contract = query_received[4]
         bot_assigned = query_received[5]
         zerorpc_client_data_aggregator.assign_bot_to(channel_id, ticker, contract, pair_contract, bot_assigned)
-        context.bot.send_message("added channel")
+        context.bot.send_message(chat_id=chat_id, text="added channel")
 
 
 def main():
