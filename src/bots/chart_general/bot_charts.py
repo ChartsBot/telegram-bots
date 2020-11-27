@@ -289,9 +289,10 @@ def refresh_chart(update: Update, context: CallbackContext):
 
         message_id = update.callback_query.message.message_id
         trending = util.get_banner_txt(zerorpc_client_data_aggregator)
+        maybe_bottom_text = text_if_coin_being_watched(token)
         (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
                                                                                             k_hours, t_from, t_to,
-                                                                                            txt=trending)
+                                                                                            txt=trending, with_ad=maybe_bottom_text)
         context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
                                reply_markup=reply_markup_chart)
         context.bot.delete_message(chat_id=chat_id, message_id=message_id)
@@ -690,7 +691,6 @@ def callback_minute(context: CallbackContext):
         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options)
         if latest_actions_pretty is not None:
             maybe_bottom_text = text_if_coin_being_watched(coin)
-            pprint.pprint(maybe_bottom_text)
             follow_up_message = "\n" + maybe_bottom_text if maybe_bottom_text is not None else ""
             message = latest_actions_pretty + follow_up_message
             for channel in new_list[coin]:

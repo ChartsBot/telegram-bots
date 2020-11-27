@@ -768,8 +768,6 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
             return None, []
         else:
             ids = [x.id for x in all_actions_kept]
-            pprint.pprint("ids: ")
-            pprint.pprint(ids)
             return '\n\n'.join(strings), ids
 
     else:
