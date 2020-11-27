@@ -245,7 +245,6 @@ def get_graphex_data(token, resolution, t_from, t_to):
     url = create_url_request_graphex(symbol, resolution, t_from, t_to)
     name = 'cookie'
     header = {name: jwt}
-    pprint.pprint(header)
     resp = requests.get(url, headers=header)
     return resp
 

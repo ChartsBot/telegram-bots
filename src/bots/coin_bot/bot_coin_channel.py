@@ -94,34 +94,6 @@ class Channel:
     pair_contract: str
 
 
-coin_token_channel = Channel(channel_id=-1001269515340,
-                             ticker='COIN',
-                             contract="0xE61fDAF474Fac07063f2234Fb9e60C1163Cfa850".lower(),
-                             pair_contract="0xff62e62e8b3cf80050464b86194e52c3ead43bb6".lower())
-
-epan_token_channel = Channel(channel_id=-1001294607485,
-                             ticker='EPAN',
-                             contract="0x72630B1e3B42874bf335020Ba0249e3E9e47Bafc".lower(),
-                             pair_contract="0xeb4770eea58fefab132663b852a8b7a35a843c71".lower())
-
-cp3r_token_channel = Channel(channel_id=-1001356862307,
-                             ticker='CP3R',
-                             contract="0x7Ef1081Ecc8b5B5B130656a41d4cE4f89dBBCC8c".lower(),
-                             pair_contract="0xbc6b3dc17e86c8cacf0f384f2e19468c36154a22".lower())
-
-sav3_token_channel = Channel(channel_id=-1001188590509,
-                             ticker='SAV3',
-                             contract="0x6e10aacb89a28d6fa0fe68790777fec7e7f01890".lower(),
-                             pair_contract="0xc2b7888a8d7b62e2a518bbc79fbbd6b75da524b6".lower())
-
-kp3r_token_channel = Channel(channel_id=-1001205642974,
-                             ticker='KP3R',
-                             contract="0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44".lower(),
-                             pair_contract="0x87febfb3ac5791034fd5ef1a615e9d9627c2665d".lower())
-
-channel_list = [coin_token_channel, epan_token_channel, cp3r_token_channel, sav3_token_channel, kp3r_token_channel]
-
-
 @cached(cache=TTLCache(maxsize=1024, ttl=60))
 def get_my_channels(my_name='@coin_chart_bot'):
     print("getting my channels")
@@ -156,7 +128,7 @@ def get_candlestick(context: CallbackContext):
 
     trending = util.get_banner_txt(zerorpc_client_data_aggregator)
 
-    for channel in channel_list:
+    for channel in get_my_channels():
 
         (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(channel.ticker, charts_path, k_days,
                                                                                             k_hours, t_from,
@@ -166,7 +138,7 @@ def get_candlestick(context: CallbackContext):
 
 
 def get_price_token(context: CallbackContext):
-    for channel in channel_list:
+    for channel in get_my_channels():
 
         message = general_end_functions.get_price(channel.contract, channel.pair_contract, graphql_client_eth,
                                                   graphql_client_uni, channel.ticker.upper(), decimals, uni_wrapper)
@@ -175,7 +147,7 @@ def get_price_token(context: CallbackContext):
 
 # sends the current biz threads
 def get_biz(context: CallbackContext):
-    for channel in channel_list:
+    for channel in get_my_channels():
         base_url = "boards.4channel.org/biz/thread/"
 
         word = '$' + channel.ticker
@@ -195,7 +167,7 @@ def get_biz(context: CallbackContext):
 
 
 def get_twitter(context: CallbackContext):
-    for channel in channel_list:
+    for channel in get_my_channels():
         tweets_of_the_last_minutes = int(check_tweets_interval_second / 60) * 2
         res = scrap_websites_util.get_last_tweets(twitter, channel.ticker, tweets_of_the_last_minutes)
         context.bot.send_message(chat_id=channel.channel_id, text=res, parse_mode='html', disable_web_page_preview=True)
@@ -208,12 +180,12 @@ def get_gas_average(context: CallbackContext):
               " --- Fast: " + str(fast) + \
               "\nAvg : " + str(average) + \
               " --- Slow: " + str(low) + "</code>"
-    for channel in channel_list:
+    for channel in get_my_channels():
         context.bot.send_message(chat_id=channel.channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
 def get_trending(context: CallbackContext):
-    for channel in channel_list:
+    for channel in get_my_channels():
 
         res = zerorpc_client_data_aggregator.view_trending()
         context.bot.send_message(chat_id=channel.channel_id, text=res)
@@ -225,10 +197,8 @@ already_checked_tx = []
 def get_actions(context: CallbackContext):
     print("checking monitors")
     global already_checked_tx
-    my_channels = get_my_channels()
-    pprint.pprint(my_channels)
-    pprint.pprint(channel_list)
-    for channel in channel_list:
+
+    for channel in get_my_channels():
 
         now = round(time.time())
         last_min = now - 200
