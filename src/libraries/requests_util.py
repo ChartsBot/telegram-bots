@@ -499,6 +499,27 @@ class Swap:
 
 
 @dataclass(frozen=True)
+class BotSwap:
+    swap_buy: Swap
+    swap_sell: Swap
+    amount_eth: int
+
+    def price_usd(self, eth_price):
+        return self.amount_eth * eth_price
+
+    def to_string(self, eth_price):
+        price_usd_pretty = pretty_number(self.price_usd(eth_price))
+        emoji = "🤖"
+        main_part = "Bot stole <b>" + pretty_number(self.amount_eth) + " ETH</b> <code>($" + price_usd_pretty + ")</code>"
+        end = " | " + '<a href="etherscan.io/tx/' + str(self.swap_buy.id) + '">buy</a>' + '<a href="etherscan.io/tx/' + str(self.swap_sell.id) + '">sell</a>'
+        return emoji + '\n' + main_part + end
+
+    def to_string_complex(self, eth_price):
+        return self.to_string(eth_price)
+
+
+
+@dataclass(frozen=True)
 class Mint:
     token_0: (str, int)
     token_1: (str, int)
@@ -644,6 +665,35 @@ def parse_pair(pair):
     return token0, token1
 
 
+def detect_bots(actions):
+    swaps = [x for x in actions if type(x) is Swap]
+    others = [x for x in actions if type(x) is not Swap]
+    yeeted_sells = []
+    kept_actions = []
+    # We first check the positive actions
+    for action in swaps:
+        if action.is_positif():
+            amount_buy_token = action.sell[0]
+            similar_sell = next([x for x in swaps if not x.is_positif() and x.buy[1] == amount_buy_token], "")
+            if similar_sell is not "":
+                pprint.pprint("DETECTED BOT ACTION!: ")
+                pprint.pprint(action.id)
+                pprint.pprint(similar_sell.id)
+
+                yeeted_sells.append(similar_sell)
+                eth_drained = similar_sell.sell[0] - action.buy[1]
+                bot_action = BotSwap(action, similar_sell, eth_drained)
+                kept_actions.append(bot_action)
+            else:
+                kept_actions.append(action)
+    for action in swaps:  # Yes it's not optimized but n < 10 so who cares
+        if not action.is_positif and action not in yeeted_sells:
+            kept_actions.append(action)
+    return others + kept_actions
+
+
+
+
 def get_last_actions(pair, graphql_client_uni, options=None, amount=30):
     eth_price = get_eth_price_now()
     last_actions = get_latest_actions(pair.lower(), graphql_client_uni, options, amount)
@@ -700,7 +750,8 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
     all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options, amount)
     all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts]
     if 'print_complex' in options:
-        strings = list(map(lambda x: x.to_string_complex(eth_price), all_actions_kept))
+        actions_with_bots = detect_bots(all_actions_kept)
+        strings = list(map(lambda x: x.to_string_complex(eth_price), actions_with_bots))
         if len(strings) == 0:
             return None
         else:

@@ -181,9 +181,9 @@ def get_gas_average(context: CallbackContext):
     asap, fast, average, low = general_end_functions.get_gas_price()
     message = "<b>Gas price:</b><code>" + \
               "\nASAP: " + str(asap) + \
-              "\nFast: " + str(fast) + \
+              " --- Fast: " + str(fast) + \
               "\nAvg : " + str(average) + \
-              "\nSlow: " + str(low) + "</code>"
+              " --- Slow: " + str(low) + "</code>"
     for channel in channel_list:
         context.bot.send_message(chat_id=channel.channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
@@ -195,7 +195,7 @@ def get_trending(context: CallbackContext):
         context.bot.send_message(chat_id=channel.channel_id, text=res)
 
 
-def callback_minute_check_buys(context: CallbackContext):
+def get_actions(context: CallbackContext):
     for channel in channel_list:
 
         print("checking monitors")
@@ -233,7 +233,7 @@ def main():
         Thread(target=stop_and_restart).start()
 
     j = updater.job_queue
-    j.run_repeating(callback_minute_check_buys, interval=check_buys_interval_second, first=6)
+    j.run_repeating(get_actions, interval=check_buys_interval_second, first=6)
     # j.run_repeating(callback_minute_check_buys, interval=check_sells_interval_second, first=15)
     j.run_repeating(get_biz, interval=check_biz_interval_second, first=round(check_biz_interval_second / 2))
     j.run_repeating(get_twitter, interval=check_tweets_interval_second, first=200)
