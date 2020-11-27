@@ -251,6 +251,15 @@ def send_music(update: Update, context: CallbackContext):
                            parse_mode='html')
 
 
+def send_ballad(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    caption = "🎸🤘🎼 <i>Give it to me boobies</i>🎼🤘🎸"
+    context.bot.send_audio(chat_id=chat_id,
+                           audio=open(BASE_PATH + 'audio/boo/bbra_anthem.mp3', 'rb'),
+                           caption=caption,
+                           parse_mode='html')
+
+
 def send_anthem(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     caption = "🎸🤘🎼 <i>I want my stacked boobiiiiieeesssss</i>🎼🤘🎸"
@@ -379,6 +388,7 @@ def main():
     dp.add_handler(CommandHandler('links', get_links))
     dp.add_handler(CommandHandler('anthem', send_anthem))
     dp.add_handler(CommandHandler('music', send_music))
+    dp.add_handler(CommandHandler('ballad', send_ballad))
     dp.add_handler(CommandHandler('flyer', send_flyer))
     dp.add_handler(CommandHandler('chart_supply', get_chart_supply))
     dp.add_handler(CommandHandler('how_to_swap', send_how_to_swap))
