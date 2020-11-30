@@ -192,7 +192,7 @@ def get_trending(context: CallbackContext):
         context.bot.send_message(chat_id=channel.channel_id, text=res)
 
 
-already_checked_tx = []
+already_checked_tx = [] 
 
 
 def get_actions(context: CallbackContext):

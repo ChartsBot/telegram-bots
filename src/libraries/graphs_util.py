@@ -306,20 +306,23 @@ def __preprocess_chartex_data(values, resolution):
             index = times_from_chartex.index(date)
             last_index = index + missing_dates_count
             # check if "too big" value and remove it in this case
-            if index == 0:
-                if highs[0] > highs[1] * 2:
-                    # print("reducing highs index 0")
-                    highs[0] = min(highs[1] * 3, highs[0] / 2)
-                if lows[0] < lows[1] / 2:
-                    # print("increasing lows index 0")
-                    lows[0] = max(lows[0] * 2, lows[1] / 2)
-            else:
-                if highs[index] > highs[index - 1] * 2 and highs[index] > highs[index + 1] * 2:
-                    # print("reducing highs")
-                    highs[index] = (highs[index - 1] + highs[index + 1])
-                if lows[index] < lows[index - 1] / 2 and lows[index] < lows[index + 1] / 2:
-                    # print("increasing lows: from " + str(lows[index]) + ' to ' + str(min(lows[index - 1] - lows[index], lows[index + 1] - lows[index])))
-                    lows[index] = min(lows[index - 1] - lows[index], lows[index + 1] - lows[index])
+            try :
+                if index == 0:
+                    if highs[0] > highs[1] * 2:
+                        # print("reducing highs index 0")
+                        highs[0] = min(highs[1] * 3, highs[0] / 2)
+                    if lows[0] < lows[1] / 2:
+                        # print("increasing lows index 0")
+                        lows[0] = max(lows[0] * 2, lows[1] / 2)
+                else:
+                    if highs[index] > highs[index - 1] * 2 and highs[index] > highs[index + 1] * 2:
+                        # print("reducing highs")
+                        highs[index] = (highs[index - 1] + highs[index + 1])
+                    if lows[index] < lows[index - 1] / 2 and lows[index] < lows[index + 1] / 2:
+                        # print("increasing lows: from " + str(lows[index]) + ' to ' + str(min(lows[index - 1] - lows[index], lows[index + 1] - lows[index])))
+                        lows[index] = min(lows[index - 1] - lows[index], lows[index + 1] - lows[index])
+            except IndexError:
+                pass
         else:
             index = last_index + 1
             price = closes[index - 1]
