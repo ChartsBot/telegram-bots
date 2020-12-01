@@ -690,7 +690,7 @@ def callback_minute(context: CallbackContext):
         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, pair.lower(), graphql_client_uni, options)
         if latest_actions_pretty is not None:
             maybe_bottom_text = text_if_coin_being_watched(coin)
-            if maybe_bottom_text is not None or maybe_bottom_text != "":
+            if maybe_bottom_text is not None and maybe_bottom_text != "":
                 follow_up_message = "\n" + maybe_bottom_text
             else:
                 follow_up_message = ""
@@ -817,7 +817,7 @@ def main():
         update.message.reply_text('Bot is restarting...')
         Thread(target=stop_and_restart).start()
 
-    dp.add_error_handler(error_callback)
+    # dp.add_error_handler(error_callback)
     dp.add_handler(CommandHandler('start', get_start_message))
     dp.add_handler(CommandHandler(['charts', 'chart', 'c'], get_candlestick, run_async=True))
     dp.add_handler(CommandHandler(['price', 'p'], get_price_token, run_async=True))
