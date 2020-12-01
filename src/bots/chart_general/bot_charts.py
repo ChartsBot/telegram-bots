@@ -798,7 +798,7 @@ def analyze_wallet(update: Update, context: CallbackContext):
     else:
         wallet = query_received[1]
         if not Web3.isChecksumAddress(wallet.lower()):
-            context.bot.send_message("provided address " + wallet + " is not a valid checksum address")
+            context.bot.send_message(chat_id=chat_id, text="provided address " + wallet + " is not a valid checksum address")
         else:
             if '-simple' in query_received:
                 res = general_end_functions.get_balance_wallet(wallet, True)
