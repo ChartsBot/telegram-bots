@@ -1,5 +1,6 @@
 import datetime
 import time
+import io
 
 import os
 import sys
@@ -20,18 +21,18 @@ INCREASING_COLOR = '#228B22'
 DECREASING_COLOR = '#FF0000'
 
 
-def __generate_upper_barrier(txt, options=None):
-    font_size = 60
+def __generate_upper_barrier(txt, options=None, width=3200):
+    font_size = 40
     unicode_font = ImageFont.truetype("DejaVuSans.ttf", font_size, encoding="unic")
 
     font = unicode_font
     dark_theme = True
     if options:
-        dark_theme = False if 'white' in options else True
+        dark_theme = 'white' not in options
     img_color = (255, 255, 255) if not dark_theme else (36, 36, 36)
     txt_color = (0, 0, 0) if not dark_theme else (255, 255, 255)
 
-    bounding_box = [0, 0, 4800, 150]
+    bounding_box = [0, 0, width, 100]
     x1, y1, x2, y2 = bounding_box  # For easy reading
 
     img = Image.new('RGB', (x2, y2), color=img_color)
@@ -42,8 +43,8 @@ def __generate_upper_barrier(txt, options=None):
     w, h = d.textsize(txt, font=font)
 
     # Calculate the mid points and offset by the upper left corner of the bounding box
-    x = (x2 - x1 - w)/2 + x1
-    y = (y2 - y1 - h)/2 + y1
+    x = (x2 - x1 - w) / 2 + x1
+    y = (y2 - y1 - h) / 2 + y1
 
     # Write the text to the image, where (x,y) is the top left corner of the text
     d.text((x, y), txt, align='center', font=font, fill=txt_color)
@@ -143,8 +144,8 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
     fig['layout']['template'] = 'plotly_dark'
     # fig['layout']['plot_bgcolor'] = 'rgb(250, 250, 250)'
     fig['layout']['autosize'] = False
-    fig['layout']['width'] = 1600
-    fig['layout']['height'] = 900
+    fig['layout']['width'] = 1600 * 2
+    fig['layout']['height'] = 900 * 2
     fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False))
     fig['layout']['yaxis'] = dict(domain=[0, 0.19], showticklabels=True, title='Volume ($)', side='right')
     fig['layout']['yaxis2'] = dict(domain=[0.2, 1], title=token_name + ' price ($)', side='right')
@@ -213,7 +214,8 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                             marker=dict(color=colors_volume),
                             type='bar', yaxis='y', name='Volume'))
 
-    pio.write_image(fig=fig, file=file_path, scale=3)
+    img = pio.to_image(fig=fig, scale=1)
+    return io.BytesIO(img)
 
 
 # t_from and t_to should be numbers, not strings
@@ -343,10 +345,8 @@ def __get_concat_v(im1, im2):
     return dst
 
 
-def add_border(file_path, color):
-    img = Image.open(file_path)
-    img_with_border = ImageOps.expand(img,border=10,fill=color)
-    img_with_border.save(file_path)
+def add_border(img, color):
+    return ImageOps.expand(img,border=10,fill=color)
 
 
 # t_from and t_to should be int epoch second
@@ -364,7 +364,7 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
         if token.upper() == "BTC":
             values = requests_util.get_binance_chart_data("BTCUSDT", t_from, t_to)
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
-        elif token.upper() == "ETH" or token == "weth" or token == "WETH" or token == "ethereum" or token == "Ethereum":
+        elif token.upper() == "ETH" or token.upper() == "WETH" or token.upper() == "ETHEREUM":
             values = requests_util.get_binance_chart_data("ETHUSDT", t_from, t_to)
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
         elif token.upper() == "XRP" or token.lower() == "ripple":
@@ -376,13 +376,14 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
         else:
             values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
-    __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token, options)
+    chart_img_raw = __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token, options)
+    chart_img = Image.open(chart_img_raw)
     if txt is not None:
         img_up = __generate_upper_barrier(txt, options)
-        img_down = Image.open(file_path)
-        __get_concat_v(img_up, img_down).save(file_path)
+        chart_img = __get_concat_v(img_up, chart_img)
     border_color = '#013220' if closes[-1] > closes[0] else '#3f0000'
-    add_border(file_path, color=border_color)
+    img_final = add_border(chart_img, color=border_color)
+    img_final.save(file_path)
     return closes[-1]
 
 
@@ -406,7 +407,7 @@ def main():
     t_to = int(time.time())
     t_from = int(time.time()) - 3600*24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
-    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["white"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark", "m"])
 
 
 if __name__ == '__main__':
