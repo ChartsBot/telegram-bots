@@ -449,7 +449,7 @@ def get_balance_wallet(wallet: str, simple=False):
     total_value = eth_token.get_amount_usd_token(0.0)
     for token in tokens_owned:
         total_value += token.get_amount_usd_token(0.0)
-    message = "<b>Total value of wallet: </b><code>" + util.pretty_number(total_value) + "</code>"
+    message = "<b>Total value of wallet: </b><code>$" + util.pretty_number(total_value) + "</code>\n"
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]
         tokens_owned_sorted = [eth_token] + sorted(tokens_owned_sorted, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
