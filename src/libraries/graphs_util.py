@@ -97,12 +97,11 @@ def __calculate_rsi(closes):
     #  Loop to calculate RSI and RS
     while p < len(closes):
         if p < 15:
-            rsi.append(0)
+            rsi.append(np.nan)
         else:
             rs_value = (avg_gain[p] / avg_loss[p])
             rsi.append(100 - (100 / (1 + rs_value)))
         p += 1
-    colors_rsi = []
     lower_band = np.ones(len(rsi)) * 30
     upper_band = np.ones(len(rsi)) * 70
     return rsi, lower_band.tolist(), upper_band.tolist()
@@ -468,7 +467,7 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
 
 
 def main():
-    token = "xlm"
+    token = "cp3r"
     t_to = int(time.time())
     t_from = int(time.time()) - 3600 * 24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
