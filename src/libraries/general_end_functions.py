@@ -452,7 +452,7 @@ def get_balance_wallet(wallet: str, simple=False):
         message_top = "Only showing tokens that have a value > $0.01\n"
     message = "Overview of wallet " + wallet[0:10] + "...:\n"
     for token in tokens_owned_sorted:
-        message += token.to_string()
+        message += token.to_string() + "\n"
     return message_top + message
 
 
