@@ -461,7 +461,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
     for token in tokens_owned_sorted:
         message += token.to_string() + "\n"
 
-    graphs_util.get_piechart(tokens_owned, path)
+    graphs_util.get_piechart(tokens_owned_sorted, path)
 
     return message_top + message
 
