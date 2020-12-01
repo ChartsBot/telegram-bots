@@ -98,7 +98,6 @@ def __calculate_rsi(closes):
     p = 0
     rsi = []
     #  Loop to calculate RSI and RS
-    pprint(avg_loss)
     while p < len(closes):
         if p < 15:
             rsi.append(np.nan)
