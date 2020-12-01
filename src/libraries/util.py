@@ -7,18 +7,12 @@ from binascii import hexlify
 import re
 import html
 
-
 BASE_PATH = os.environ.get('BASE_PATH')
 
 from datetime import datetime
 
 supply_file_path = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
 cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
-
-
-# convert int to nice string: 1234567 => 1 234 567
-def number_to_beautiful(nbr):
-    return locale.format_string("%d", nbr, grouping=True).replace(",", " ")
 
 
 def get_ad():
@@ -56,6 +50,11 @@ def float_to_str(f):
     """
     d1 = ctx.create_decimal(repr(f))
     return format(d1, 'f')
+
+
+# convert int to nice string: 1234567 => 1 234 567
+def number_to_beautiful(nbr):
+    return locale.format_string("%d", nbr, grouping=True).replace(",", " ")
 
 
 def pretty_number(num):

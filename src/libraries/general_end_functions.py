@@ -11,6 +11,7 @@ import libraries.graphs_util as graphs_util
 import libraries.scrap_websites_util as scrap_websites_util
 import libraries.requests_util as requests_util
 import libraries.util as util
+import requests
 from libraries.util import float_to_str
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, CommandHandler, CallbackContext
@@ -24,6 +25,7 @@ import matplotlib.dates
 import matplotlib.pyplot as plt
 from web3 import Web3
 from pprint import pprint
+from dataclasses import dataclass
 
 
 last_time_checked_4chan = 0
@@ -386,8 +388,77 @@ def get_gas_spent(address):
         return gas_spent.to_string()
 
 
-def get_balance_wallet(wallet):
-    url = ""
+# Todo: put that somewhere else
+@dataclass(frozen=True)
+class TokenOwned:
+    name: str
+    ticker: str
+    address: str
+    amount_owned: float
+    value_usd: float
+
+    def get_amount_usd_token(self, default=None):
+        if self.value_usd is not None:
+            return self.value_usd * self.amount_owned
+        else:
+            return default
+
+    def to_string(self, complex=False):
+        top = "<b>(" + self.ticker[:6] + ") " + self.name[:15] + "</b>"
+        if self.get_amount_usd_token() is not None:
+            top += "   -   <code>$" + util.pretty_number(self.get_amount_usd_token()) + "</code>"
+        bottom = "<code>" + util.pretty_number(self.amount_owned) + "</code> " + self.ticker[:6]
+        if self.value_usd is not None:
+            bottom += " - <code>$" + util.pretty_number(self.value_usd) + "</code>"
+        return top + '\n' + bottom
+
+
+def get_balance_wallet(wallet: str, simple: False):
+    url = "https://ethplorer.io/service/service.php?data=$WALLET&showTx=all".replace('$WALLET', wallet)
+    res = requests.get(url).json()
+    tokens_that_were_owned = res['tokens']
+    tokens_owned = []
+    for token in res['balances']:
+        if token['balance'] != 0:
+            token_addr = token['contract']
+            token_owned_raw = float(token['balance'])
+            maybe_token_descr = tokens_that_were_owned.get(token_addr)
+            if maybe_token_descr is not None:
+                decimals = int(maybe_token_descr['decimals'])
+                amount_owned = token_owned_raw / 10 ** decimals
+                maybe_price_unit_token = maybe_token_descr['price']
+                maybe_price_token_unit_usd = get_price_token(maybe_token_descr)
+                actual_token = TokenOwned(name=maybe_token_descr['name'],
+                                          ticker=maybe_token_descr['symbol'],
+                                          address=maybe_token_descr['address'],
+                                          amount_owned=amount_owned,
+                                          value_usd=maybe_price_token_unit_usd)
+                tokens_owned.append(actual_token)
+    tokens_owned_sorted = sorted(tokens_owned, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
+    message_top = ""
+    if simple:
+        tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]
+        message_top = "Only showing tokens that have a value > $0.01\n"
+    message = "Overview of wallet " + wallet[0:10] + "...:\n"
+    for token in tokens_owned_sorted:
+        message += token.to_string()
+    return message_top + message
+
+
+def get_price_token(maybe_token):
+    maybe_price_unit_token = maybe_token['price']
+    if maybe_price_unit_token is not False:
+        if maybe_price_unit_token['currency'] == "USD":
+            price_token_unit_usd = float(maybe_price_unit_token['rate'])
+            return price_token_unit_usd
+    return None
+
+
+def get_amount_usd_token(value, amount):
+    if value is not None:
+        return value * amount
+    else:
+        return None
 
 
 if __name__ == '__main__':

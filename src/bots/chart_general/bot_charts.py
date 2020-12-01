@@ -53,7 +53,7 @@ APP_KEY_WOLFRAM = os.environ.get('WOLFRAM_API')
 try:
     wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
 except Exception:
-    pprint.pprint("Worlfram struggling to connect, trying again")
+    logging.info("Worlfram struggling to connect, trying again")
     wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
 
 
@@ -65,7 +65,7 @@ charts_time_refresh = {}
 # ZERORPC
 zerorpc_client_data_aggregator = zerorpc.Client()
 zerorpc_client_data_aggregator.connect("tcp://127.0.0.1:4243")  # TODO: change port to env variable
-pprint.pprint(zerorpc_client_data_aggregator.hello("coucou"))
+logging.info(zerorpc_client_data_aggregator.hello("coucou"))
 
 # twitter
 APP_KEY = os.environ.get('TWITTER_API_KEY')
@@ -85,7 +85,6 @@ supply_chart_path = BASE_PATH + 'log_files/boo_bot/supply_chart_$TICKER.png'
 
 # web3
 infura_url = os.environ.get('INFURA_URL')
-pprint.pprint(infura_url)
 w3 = Web3(Web3.HTTPProvider(infura_url))
 
 # web3 uni wrapper
@@ -534,13 +533,13 @@ def set_default_token(update: Update, context: CallbackContext):
         if len(query_received) == 2:
             ticker = query_received[1].upper()
             token_addr = requests_util.get_token_contract_address(ticker)
-            pprint.pprint("setting default channel " + str(chat_id) + " with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS")
+            logging.info("setting default channel " + str(chat_id) + " with address " + str(token_addr))
             res = zerorpc_client_data_aggregator.set_default_token(chat_id, ticker, token_addr)
             context.bot.send_message(chat_id=chat_id, text=res)
         elif len(query_received) == 3:
             ticker = query_received[1].upper()
             token_addr = query_received[2].lower()
-            pprint.pprint("setting default channel " + str(chat_id) + " with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS")
+            logging.info("setting default channel " + str(chat_id) + " with address " + str(token_addr))
             res = zerorpc_client_data_aggregator.set_default_token(chat_id, ticker, token_addr)
             context.bot.send_message(chat_id=chat_id, text=res)
 
@@ -560,9 +559,9 @@ def get_default_token(update: Update, context: CallbackContext):
 def __get_default_token_channel(channel_id: int):
     res = zerorpc_client_data_aggregator.get_default_token(channel_id)
     if res is not None:
-        pprint.pprint("Default token channel " + str(channel_id) + " is " + str(res[0]) + " - " + str(res[1]))
+        logging.debug("Default token channel " + str(channel_id) + " is " + str(res[0]) + " - " + str(res[1]))
     else:
-        pprint.pprint("Default token channel " + str(channel_id) + " is None")
+        logging.debug("Default token channel " + str(channel_id) + " is None")
     return res
 
 
@@ -593,10 +592,6 @@ def __is_user_admin(context, update):
     status = user.status
     username = user.user.username
     return status == 'administrator' or status == 'creator' or username == 'rotted_ben'
-
-
-def print_last_times(context, update):
-    pprint.pprint(charts_time_refresh)
 
 
 def get_chart_supply(update: Update, context: CallbackContext):
@@ -702,7 +697,7 @@ def callback_minute(context: CallbackContext):
             print("follow up message: " + follow_up_message)
             message = latest_actions_pretty + follow_up_message
             for channel in new_list[coin]:
-                pprint.pprint("sent latest actions to channel: " + str(channel))
+                logging.info("sent latest actions to channel: " + str(channel))
                 try:
                     context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
                 except ChatMigrated as err:
@@ -741,9 +736,7 @@ def ask_wolfram(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text="To use this method, please use /ask YOUR QUESTION")
     else:
         query = ' '.join(query_received[1:])
-        pprint.pprint(query_received)
         res = wolfram_queries.ask_wolfram_raw(query, wolfram_client)
-        pprint.pprint(res)
         context.bot.send_message(chat_id=chat_id, text=res[:4055], parse_mode='html', disable_web_page_preview=True)
 
 
@@ -795,6 +788,20 @@ def add_channel(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text="added channel")
 
 
+def analyze_wallet(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    query_received = update.message.text.split(' ')
+    if len(query_received) < 2:
+        context.bot.send_message(chat_id=chat_id, text="To use this command, please use the syntax /analyze_wallet wallet (option: -simple), eg: /analyze_wallet 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B")
+    else:
+        wallet = query_received[1]
+        if '-simple' in query_received:
+            res = general_end_functions.get_balance_wallet(wallet, True)
+        else:
+            res = general_end_functions.get_balance_wallet(wallet)
+        context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
+
+
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
@@ -822,6 +829,7 @@ def main():
     dp.add_handler(CommandHandler('gas_spent', get_gas_spent, run_async=True))
     dp.add_handler(CommandHandler(['tr', 'translate'], translate_text, run_async=True))
     dp.add_handler(CommandHandler(['ask'], ask_wolfram, run_async=True))
+    dp.add_handler(CommandHandler(['analyse_wallet'], analyze_wallet, run_async=True))
     # customoization stuff
     dp.add_handler(CommandHandler('set_default_token', set_default_token))
     dp.add_handler(CommandHandler('get_default_token', get_default_token))
