@@ -446,12 +446,16 @@ def get_balance_wallet(wallet: str, simple=False):
                                           value_usd=maybe_price_token_unit_usd)
                 tokens_owned.append(actual_token)
     tokens_owned_sorted = [eth_token] + sorted(tokens_owned, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
-    message_top = ""
+    total_value = eth_token.get_amount_usd_token(0.0)
+    for token in tokens_owned:
+        total_value += token.get_amount_usd_token(0.0)
+    message = "<b>Total value of wallet: </b><code>" + util.pretty_number(total_value) + "</code>"
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]
         tokens_owned_sorted = [eth_token] + sorted(tokens_owned_sorted, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
-        message_top = "Only showing tokens that have a value > $0.01\n"
-    message = "Overview of wallet " + wallet[0:10] + "...:\n"
+        message_top = "Overview of wallet " + wallet[0:10] + "...:\n"
+    else:
+        message_top = "Full view of wallet " + wallet[0:10] + "...:\n"
     for token in tokens_owned_sorted:
         message += token.to_string() + "\n"
     return message_top + message
