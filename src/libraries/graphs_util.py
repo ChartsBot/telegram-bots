@@ -16,7 +16,7 @@ import numpy as np
 import plotly.io as pio
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-import pprint
+from pprint import pprint
 
 INCREASING_COLOR = '#228B22'
 DECREASING_COLOR = '#FF0000'
@@ -54,6 +54,58 @@ def __generate_upper_barrier(txt, options=None, width=3200):
     # new_path = path + "trending.png"
     # img.save(new_path)
     return img  # returning raw img
+
+
+def __calculate_rsi(closes):
+    i = 0
+    up_prices = []
+    down_prices = []
+    #  Loop to hold up and down price movements
+    while i < len(closes):
+        if i == 0:
+            up_prices.append(0)
+            down_prices.append(0)
+        else:
+            if (closes[i] - closes[i - 1]) > 0:
+                up_prices.append(closes[i] - closes[i - 1])
+                down_prices.append(0)
+            else:
+                down_prices.append(closes[i] - closes[i - 1])
+                up_prices.append(0)
+        i += 1
+    x = 0
+    avg_gain = []
+    avg_loss = []
+    #  Loop to calculate the average gain and loss
+    while x < len(up_prices):
+        if x < 15:
+            avg_gain.append(0)
+            avg_loss.append(0)
+        else:
+            sum_gain = 0
+            sum_loss = 0
+            y = x - 14
+            while y <= x:
+                sum_gain += up_prices[y]
+                sum_loss += down_prices[y]
+                y += 1
+            avg_gain.append(sum_gain / 14)
+            avg_loss.append(abs(sum_loss / 14))
+        x += 1
+    p = 0
+    rsi = []
+    #  Loop to calculate RSI and RS
+    while p < len(closes):
+        if p < 15:
+            rsi.append(0)
+        else:
+            rs_value = (avg_gain[p] / avg_loss[p])
+            rsi.append(100 - (100 / (1 + rs_value)))
+        p += 1
+    colors_rsi = []
+    lower_band = np.ones(len(rsi)) * 30
+    upper_band = np.ones(len(rsi)) * 70
+    return rsi, lower_band.tolist(), upper_band.tolist()
 
 
 def __moving_average(interval, window_size=10):
@@ -173,14 +225,30 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                                         line=res[1], name=res[2],
                                         marker=dict(color='#ccc'), hoverinfo='none',
                                         legendgroup='Bollinger Bands', showlegend=False))
-                annotations.append(dict(xref='paper', x=0.0, y=res[0][0].to_list()[0], #fewrget=2435,
+                annotations.append(dict(xref='paper', x=0.0, y=res[0][0].to_list()[0],
                                         xanchor='right', yanchor='middle', yref='y2',
                                         text=res[2],
                                         font=dict(family='Arial',
-                                                              size=16),
+                                                  size=16),
                                         showarrow=False))
             fig['layout']['margin'] = dict(t=15, b=15, r=15, l=100)
             fig['layout']['annotations'] = annotations
+
+        if "rsi" in options or "RSI" in options:
+            rsis, lower, upper = __calculate_rsi(closes)
+            fig['layout']['yaxis'] = dict(domain=[0, 0.14], title='Volume ($)', side='right')
+            fig['layout']['yaxis3'] = dict(domain=[0.15, 0.29], showticklabels=True, title='RSI', side='right')
+            fig['layout']['yaxis2'] = dict(domain=[0.3, 1], title=token_name + ' price ($)', side='right')
+            fig['data'].append(dict(x=dates, y=rsis, type='scatter', mode='lines',
+                                    marker=dict(color='#E377C2'),
+                                    yaxis='y3', name='RSI'))
+            fig['data'].append(dict(x=dates, y=lower, type='scatter', mode='lines',
+                                    marker=dict(color='rgba(100, 0, 0, 0.9)'),
+                                    yaxis='y3', name='RSI'))
+            fig['data'].append(dict(x=dates, y=upper, type='scatter', mode='lines',
+                                    marker=dict(color='rgba(13, 55, 13, 0.9)'),
+                                    yaxis='y3', name='RSI'))
+
 
         if 'white' in options:
             fig['layout']['template'] = None
@@ -308,7 +376,7 @@ def __preprocess_chartex_data(values, resolution):
             index = times_from_chartex.index(date)
             last_index = index + missing_dates_count
             # check if "too big" value and remove it in this case
-            try :
+            try:
                 if index == 0:
                     if highs[0] > highs[1] * 2:
                         # print("reducing highs index 0")
@@ -372,7 +440,8 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
         else:
             values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
-    chart_img_raw = __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token, options)
+    chart_img_raw = __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token,
+                                                    options)
     chart_img = Image.open(chart_img_raw)
     if txt is not None:
         img_up = __generate_upper_barrier(txt, options)
@@ -399,11 +468,11 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
 
 
 def main():
-    token = "kp3r"
+    token = "xlm"
     t_to = int(time.time())
-    t_from = int(time.time()) - 3600*24
+    t_from = int(time.time()) - 3600 * 24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
-    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark", "m"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark", "rsi"])
 
 
 if __name__ == '__main__':
