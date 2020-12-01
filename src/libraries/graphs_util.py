@@ -213,9 +213,13 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
     fig['data'].append(dict(x=dates, y=volumes,
                             marker=dict(color=colors_volume),
                             type='bar', yaxis='y', name='Volume'))
-
+    t0 = time.time()
     img = pio.to_image(fig=fig, scale=2)
-    return io.BytesIO(img)
+    t1 = time.time()
+    t = io.BytesIO(img)
+    pprint.pprint("actual saving")
+    pprint.pprint(t1 - t0)
+    return t
 
 
 # t_from and t_to should be numbers, not strings
@@ -353,6 +357,7 @@ def add_border(img, color):
 # return the last price
 # options = TA stuff for example
 def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=None):
+    t0 = time.time()
     resolution = __calculate_resolution_from_time(t_from, t_to)
     check_others = True
     if options is not None:
@@ -376,14 +381,31 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
         else:
             values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
+    t1 = time.time()
     chart_img_raw = __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token, options)
+    t2 = time.time()
     chart_img = Image.open(chart_img_raw)
+    t3 = time.time()
     if txt is not None:
         img_up = __generate_upper_barrier(txt, options)
         chart_img = __get_concat_v(img_up, chart_img)
     border_color = '#013220' if closes[-1] > closes[0] else '#3f0000'
     img_final = add_border(chart_img, color=border_color)
+    t4 = time.time()
     img_final.save(file_path)
+    t5 = time.time()
+    pprint.pprint("fetch data and preprocess")
+    pprint.pprint(t1 - t0)
+    pprint.pprint("write img")
+    pprint.pprint(t2 - t1)
+    pprint.pprint("open raw img")
+    pprint.pprint(t3 - t2)
+    pprint.pprint("add barrier")
+    pprint.pprint(t4 - t3)
+    pprint.pprint("save image")
+    pprint.pprint(t5 - t4)
+    pprint.pprint("total")
+    pprint.pprint(t5 - t0)
     return closes[-1]
 
 
@@ -407,6 +429,10 @@ def main():
     t_to = int(time.time())
     t_from = int(time.time()) - 3600*24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark", "m"])
+    pprint.pprint("-------------")
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark", "m"])
+    pprint.pprint("-------------")
     print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark", "m"])
 
 
