@@ -801,6 +801,8 @@ def analyze_wallet(update: Update, context: CallbackContext):
             res = general_end_functions.get_balance_wallet(wallet)
         context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
 
+def error_callback(update, context):
+    pprint.pprint(context.error)
 
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
@@ -815,6 +817,7 @@ def main():
         update.message.reply_text('Bot is restarting...')
         Thread(target=stop_and_restart).start()
 
+    dp.add_error_handler(error_callback)
     dp.add_handler(CommandHandler('start', get_start_message))
     dp.add_handler(CommandHandler(['charts', 'chart', 'c'], get_candlestick, run_async=True))
     dp.add_handler(CommandHandler(['price', 'p'], get_price_token, run_async=True))
