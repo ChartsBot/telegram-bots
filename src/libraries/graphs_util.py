@@ -243,10 +243,10 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                                     marker=dict(color='#E377C2'),
                                     yaxis='y3', name='RSI'))
             fig['data'].append(dict(x=dates, y=lower, type='scatter', mode='lines',
-                                    marker=dict(color='rgba(100, 0, 0, 0.9)'),
+                                    marker=dict(color='rgba(13, 55, 13, 0.9)'),
                                     yaxis='y3', name='RSI'))
             fig['data'].append(dict(x=dates, y=upper, type='scatter', mode='lines',
-                                    marker=dict(color='rgba(13, 55, 13, 0.9)'),
+                                    marker=dict(color='rgba(100, 0, 0, 0.9)'),
                                     yaxis='y3', name='RSI'))
 
 
