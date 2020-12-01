@@ -426,7 +426,6 @@ def get_balance_wallet(wallet: str, simple=False):
             if maybe_token_descr is not None:
                 decimals = int(maybe_token_descr['decimals'])
                 amount_owned = token_owned_raw / 10 ** decimals
-                maybe_price_unit_token = maybe_token_descr['price']
                 maybe_price_token_unit_usd = get_price_token(maybe_token_descr)
                 actual_token = TokenOwned(name=maybe_token_descr['name'],
                                           ticker=maybe_token_descr['symbol'],
