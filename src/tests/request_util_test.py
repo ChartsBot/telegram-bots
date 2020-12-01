@@ -71,7 +71,7 @@ class TokenOwned:
 
 
 def get_balance_wallet(wallet: str):
-    url = "https://api.ethplorer.io/getAddressInfo/0xd08517cd0372cD12B710a554F5025cFD419B43fF?apiKey=".replace('$WALLET', wallet)
+    url = "https://api.ethplorer.io/getAddressInfo/$WALLET?apiKey=".replace('$WALLET', wallet)
     res = requests.get(url)
     # pprint(res)
     res = res.json()
@@ -89,16 +89,20 @@ def get_balance_wallet(wallet: str):
             token_owned_raw = float(token['balance'])
             maybe_token_descr = token['tokenInfo']
             if maybe_token_descr is not None:
-                decimals = int(maybe_token_descr['decimals'])
-                amount_owned = token_owned_raw / 10 ** decimals
-                maybe_price_unit_token = maybe_token_descr['price']
-                maybe_price_token_unit_usd = get_price_token(maybe_token_descr)
-                actual_token = TokenOwned(name=maybe_token_descr['name'],
-                                          ticker=maybe_token_descr['symbol'],
-                                          address=maybe_token_descr['address'],
-                                          amount_owned=amount_owned,
-                                          value_usd=maybe_price_token_unit_usd)
-                tokens_owned.append(actual_token)
+                if maybe_token_descr['decimals'] == 0 or 'name' not in maybe_token_descr:
+                    pass
+                else:
+                    pprint(maybe_token_descr)
+                    decimals = int(maybe_token_descr['decimals'])
+                    amount_owned = token_owned_raw / 10 ** decimals
+                    maybe_price_unit_token = maybe_token_descr['price']
+                    maybe_price_token_unit_usd = get_price_token(maybe_token_descr)
+                    actual_token = TokenOwned(name=maybe_token_descr['name'],
+                                              ticker=maybe_token_descr['symbol'],
+                                              address=maybe_token_descr['address'],
+                                              amount_owned=amount_owned,
+                                              value_usd=maybe_price_token_unit_usd)
+                    tokens_owned.append(actual_token)
     tokens_owned_sorted = [eth_token] + sorted(tokens_owned, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
     total_value = 0
     for token in tokens_owned_sorted:
@@ -143,7 +147,7 @@ def get_amount_usd_token(value, amount):
 
 
 if __name__ == '__main__':
-    get_balance_wallet("0xd08517cd0372cD12B710a554F5025cFD419B43fF")
+    get_balance_wallet("0x9a6572Cfe43e4529Eff41553166bbb433808a890")
     # url = "https://api.ethplorer.io/getTokenInfo/0xd08517cd0372cD12B710a554F5025cFD419B43fF"
     # res = requests.get(url).json()
     # pprint(res)

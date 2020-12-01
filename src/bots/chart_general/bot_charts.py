@@ -880,5 +880,6 @@ balance - <WALLET> <TICKER> check how much an address has of a specific coin.
 timeto - time until date passed as argument.
 last_actions - <TICKER> get the last trades / liq events of the coin.
 trending - See which coins are trending in dextrends.
+analyze_wallet - Provides analytics about a wallet (eg /analyze_wallet 0xbA1504000B5aC6cE413A1626d4833857Dd7311a0)
 translate - <LANGUAGE_TO> <TEXT> Translate a text into the desired language.
 """
