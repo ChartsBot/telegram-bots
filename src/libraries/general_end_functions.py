@@ -416,8 +416,9 @@ class TokenOwned:
 def get_balance_wallet(wallet: str, simple=False):
     url = "https://ethplorer.io/service/service.php?data=$WALLET&showTx=all".replace('$WALLET', wallet)
     pprint(url)
-    res = requests.get(url).json()
+    res = requests.get(url)
     pprint(res)
+    res = res.json()
     tokens_that_were_owned = res['tokens']
     tokens_owned = []
     for token in res['balances']:
