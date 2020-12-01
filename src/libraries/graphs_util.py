@@ -144,8 +144,8 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
     fig['layout']['template'] = 'plotly_dark'
     # fig['layout']['plot_bgcolor'] = 'rgb(250, 250, 250)'
     fig['layout']['autosize'] = False
-    fig['layout']['width'] = 1600 * 2
-    fig['layout']['height'] = 900 * 2
+    fig['layout']['width'] = 1600
+    fig['layout']['height'] = 900
     fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False))
     fig['layout']['yaxis'] = dict(domain=[0, 0.19], showticklabels=True, title='Volume ($)', side='right')
     fig['layout']['yaxis2'] = dict(domain=[0.2, 1], title=token_name + ' price ($)', side='right')
@@ -214,7 +214,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                             marker=dict(color=colors_volume),
                             type='bar', yaxis='y', name='Volume'))
 
-    img = pio.to_image(fig=fig, scale=1)
+    img = pio.to_image(fig=fig, scale=2)
     return io.BytesIO(img)
 
 
