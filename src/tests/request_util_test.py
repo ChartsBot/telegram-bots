@@ -68,17 +68,23 @@ class TokenOwned:
 
 
 def get_balance_wallet(wallet: str):
-    url = "https://ethplorer.io/service/service.php?data=$WALLET&showTx=all".replace('$WALLET', wallet)
+    url = "https://api.ethplorer.io/getAddressInfo/0xd08517cd0372cD12B710a554F5025cFD419B43fF?apiKey=".replace('$WALLET', wallet)
     res = requests.get(url)
-    pprint(res)
+    # pprint(res)
     res = res.json()
+    # pprint(res)
+    eth = res['ETH']
+    eth_token = TokenOwned(name='Ether',
+                           ticker='ETH',
+                           address='',
+                           amount_owned=float(eth['balance']),
+                           value_usd=float(eth['price']['rate']))
     tokens_that_were_owned = res['tokens']
     tokens_owned = []
-    for token in res['balances']:
+    for token in tokens_that_were_owned:
         if token['balance'] != 0:
-            token_addr = token['contract']
             token_owned_raw = float(token['balance'])
-            maybe_token_descr = tokens_that_were_owned.get(token_addr)
+            maybe_token_descr = token['tokenInfo']
             if maybe_token_descr is not None:
                 decimals = int(maybe_token_descr['decimals'])
                 amount_owned = token_owned_raw / 10 ** decimals
@@ -90,7 +96,7 @@ def get_balance_wallet(wallet: str):
                                           amount_owned=amount_owned,
                                           value_usd=maybe_price_token_unit_usd)
                 tokens_owned.append(actual_token)
-    tokens_owned_sorted = sorted(tokens_owned, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
+    tokens_owned_sorted = [eth_token] + sorted(tokens_owned, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
     for token in tokens_owned_sorted:
         print(token.to_string())
 
@@ -113,3 +119,6 @@ def get_amount_usd_token(value, amount):
 
 if __name__ == '__main__':
     get_balance_wallet("0xd08517cd0372cD12B710a554F5025cFD419B43fF")
+    # url = "https://api.ethplorer.io/getTokenInfo/0xd08517cd0372cD12B710a554F5025cFD419B43fF"
+    # res = requests.get(url).json()
+    # pprint(res)

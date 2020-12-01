@@ -27,6 +27,7 @@ from web3 import Web3
 from pprint import pprint
 from dataclasses import dataclass
 
+API_KEY_ETHEXPLORER = os.environ.get('API_KEY_ETHEXPLORER')
 
 last_time_checked_4chan = 0
 
@@ -414,21 +415,29 @@ class TokenOwned:
 
 
 def get_balance_wallet(wallet: str, simple=False):
-    url = "https://ethplorer.io/service/service.php?data=$WALLET&showTx=all".replace('$WALLET', wallet)
-    pprint(url)
+    url = "https://api.ethplorer.io/getAddressInfo/$WALLET?apiKey=$API_KEY_ETHEXPLORER"\
+        .replace('$WALLET', wallet)\
+        .replace('$API_KEY_ETHEXPLORER', API_KEY_ETHEXPLORER)
     res = requests.get(url)
-    pprint(res)
+    # pprint(res)
     res = res.json()
+    # pprint(res)
+    eth = res['ETH']
+    eth_token = TokenOwned(name='Ether',
+                           ticker='ETH',
+                           address='',
+                           amount_owned=float(eth['balance']),
+                           value_usd=float(eth['price']['rate']))
     tokens_that_were_owned = res['tokens']
     tokens_owned = []
-    for token in res['balances']:
+    for token in tokens_that_were_owned:
         if token['balance'] != 0:
-            token_addr = token['contract']
             token_owned_raw = float(token['balance'])
-            maybe_token_descr = tokens_that_were_owned.get(token_addr)
+            maybe_token_descr = token['tokenInfo']
             if maybe_token_descr is not None:
                 decimals = int(maybe_token_descr['decimals'])
                 amount_owned = token_owned_raw / 10 ** decimals
+                maybe_price_unit_token = maybe_token_descr['price']
                 maybe_price_token_unit_usd = get_price_token(maybe_token_descr)
                 actual_token = TokenOwned(name=maybe_token_descr['name'],
                                           ticker=maybe_token_descr['symbol'],
@@ -436,7 +445,7 @@ def get_balance_wallet(wallet: str, simple=False):
                                           amount_owned=amount_owned,
                                           value_usd=maybe_price_token_unit_usd)
                 tokens_owned.append(actual_token)
-    tokens_owned_sorted = sorted(tokens_owned, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
+    tokens_owned_sorted = [eth_token] + sorted(tokens_owned, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
     message_top = ""
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]
