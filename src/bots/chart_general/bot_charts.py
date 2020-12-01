@@ -797,8 +797,8 @@ def analyze_wallet(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text="To use this command, please use the syntax /analyze_wallet wallet (option: -simple), eg: /analyze_wallet 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B")
     else:
         wallet = query_received[1]
-        if not Web3.isChecksumAddress(wallet.lower()):
-            context.bot.send_message(chat_id=chat_id, text="provided address " + wallet + " is not a valid checksum address")
+        if not Web3.isAddress(wallet.lower()):
+            context.bot.send_message(chat_id=chat_id, text="Provided wallet " + wallet + " is not a valid Ethereum address.")
         else:
             if '-simple' in query_received:
                 res = general_end_functions.get_balance_wallet(wallet, True)
