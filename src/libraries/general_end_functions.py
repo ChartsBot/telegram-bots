@@ -449,7 +449,7 @@ def get_balance_wallet(wallet: str, simple=False):
     message_top = ""
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]
-        tokens_owned_sorted = sorted(tokens_owned_sorted, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
+        tokens_owned_sorted = [eth_token] + sorted(tokens_owned_sorted, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
         message_top = "Only showing tokens that have a value > $0.01\n"
     message = "Overview of wallet " + wallet[0:10] + "...:\n"
     for token in tokens_owned_sorted:
