@@ -2,7 +2,7 @@ import requests
 import pprint
 import time
 import json
-import os
+
 from binance.client import Client
 from dataclasses import dataclass
 from cachetools import cached, TTLCache
@@ -375,7 +375,7 @@ def get_volume_24h(graphclient_uni, pair_contract):
     return amount
 
 
-@cached(cache=TTLCache(maxsize=1024, ttl=120))
+@cached(cache=TTLCache(maxsize=1024, ttl=300))
 def get_number_holder_token(token):
     url = ethexplorer_holder_base_url + token
     res = requests.get(url).json()

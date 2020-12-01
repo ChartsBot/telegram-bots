@@ -44,6 +44,10 @@ import zerorpc
 
 import wolframalpha
 
+import logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 APP_KEY_WOLFRAM = os.environ.get('WOLFRAM_API')
 
 try:

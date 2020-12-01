@@ -1,4 +1,11 @@
 import time
+
+import os
+import sys
+
+BASE_PATH = os.environ.get('BASE_PATH')
+sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
+
 import libraries.commands_util as commands_util
 import libraries.graphs_util as graphs_util
 import libraries.scrap_websites_util as scrap_websites_util
@@ -377,3 +384,11 @@ def get_gas_spent(address):
     else:
         gas_spent = requests_util.get_gas_spent(address)
         return gas_spent.to_string()
+
+
+def get_balance_wallet(wallet):
+    url = ""
+
+
+if __name__ == '__main__':
+    print("coucou")
