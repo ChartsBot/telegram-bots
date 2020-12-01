@@ -90,11 +90,15 @@ def __calculate_rsi(closes):
                 sum_loss += down_prices[y]
                 y += 1
             avg_gain.append(sum_gain / 14)
-            avg_loss.append(abs(sum_loss / 14))
+            if sum_loss != 0.0:
+                avg_loss.append(abs(sum_loss / 14))
+            else:
+                avg_loss.append(0.00001)
         x += 1
     p = 0
     rsi = []
     #  Loop to calculate RSI and RS
+    pprint(avg_loss)
     while p < len(closes):
         if p < 15:
             rsi.append(np.nan)
@@ -467,7 +471,7 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
 
 
 def main():
-    token = "cp3r"
+    token = "bbra"
     t_to = int(time.time())
     t_from = int(time.time()) - 3600 * 24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
