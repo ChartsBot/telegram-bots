@@ -110,4 +110,4 @@ def get_amount_usd_token(value, amount):
 
 
 if __name__ == '__main__':
-    get_balance_wallet("0xd08517cd0372cD12B710a554F5025cFD419B43fF")
+    get_balance_wallet("0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B")

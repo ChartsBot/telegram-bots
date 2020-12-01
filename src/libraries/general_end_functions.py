@@ -413,7 +413,7 @@ class TokenOwned:
         return top + '\n' + bottom
 
 
-def get_balance_wallet(wallet: str, simple: False):
+def get_balance_wallet(wallet: str, simple=False):
     url = "https://ethplorer.io/service/service.php?data=$WALLET&showTx=all".replace('$WALLET', wallet)
     res = requests.get(url).json()
     tokens_that_were_owned = res['tokens']

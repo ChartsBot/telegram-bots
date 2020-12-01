@@ -800,7 +800,7 @@ def analyze_wallet(update: Update, context: CallbackContext):
         if '-simple' in query_received:
             res = general_end_functions.get_balance_wallet(wallet, True)
         else:
-            res = general_end_functions.get_balance_wallet(wallet)
+            res = general_end_functions.get_balance_wallet(wallet, False)
         context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
 
 def error_callback(update, context):
@@ -834,7 +834,7 @@ def main():
     dp.add_handler(CommandHandler('gas_spent', get_gas_spent, run_async=True))
     dp.add_handler(CommandHandler(['tr', 'translate'], translate_text, run_async=True))
     dp.add_handler(CommandHandler(['ask'], ask_wolfram, run_async=True))
-    dp.add_handler(CommandHandler(['analyse_wallet'], analyze_wallet, run_async=True))
+    dp.add_handler(CommandHandler(['analyze_wallet'], analyze_wallet, run_async=True))
     # customoization stuff
     dp.add_handler(CommandHandler('set_default_token', set_default_token))
     dp.add_handler(CommandHandler('get_default_token', get_default_token))
