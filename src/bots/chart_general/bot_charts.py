@@ -792,7 +792,6 @@ def analyze_wallet(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')
     logging.info("Analyzing wallet ")
-    pprint.pprint(query_received)
     if len(query_received) < 2:
         context.bot.send_message(chat_id=chat_id, text="To use this command, please use the syntax /analyze_wallet wallet (option: -simple), eg: /analyze_wallet 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B")
     else:
