@@ -81,7 +81,7 @@ decimals = 1000000000000000000  # that's 18
 TMP_FOLDER = BASE_PATH + 'tmp/'
 supply_file_path = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
 supply_chart_path = BASE_PATH + 'log_files/boo_bot/supply_chart_$TICKER.png'
-
+pie_chart_wallet_path = BASE_PATH + 'log_files/boo_bot/pie_chart_wallet.png'
 
 # web3
 infura_url = os.environ.get('INFURA_URL')
@@ -800,10 +800,11 @@ def analyze_wallet(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text="Provided wallet " + wallet + " is not a valid Ethereum address.")
         else:
             if '-simple' in query_received:
-                res = general_end_functions.get_balance_wallet(wallet.lower(), True)
+                res = general_end_functions.get_balance_wallet(wallet.lower(), pie_chart_wallet_path, True)
             else:
-                res = general_end_functions.get_balance_wallet(wallet.lower(), False)
+                res = general_end_functions.get_balance_wallet(wallet.lower(), pie_chart_wallet_path, False)
             context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
+            context.bot.send_photo(chat_id=chat_id, photo=open(pie_chart_wallet_path, 'rb'))
 
 def error_callback(update, context):
     pprint.pprint(context.error)

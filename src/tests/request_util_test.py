@@ -65,6 +65,9 @@ class TokenOwned:
             bottom += " - <code>$" + pretty_number(self.value_usd) + "</code>"
         return top + '\n' + bottom
 
+    def get_percent(self, total_usd):
+        return self.get_amount_usd_token(0.0) / total_usd
+
 
 
 def get_balance_wallet(wallet: str):
@@ -97,8 +100,30 @@ def get_balance_wallet(wallet: str):
                                           value_usd=maybe_price_token_unit_usd)
                 tokens_owned.append(actual_token)
     tokens_owned_sorted = [eth_token] + sorted(tokens_owned, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
+    total_value = 0
     for token in tokens_owned_sorted:
-        print(token.to_string())
+        total_value += token.get_amount_usd_token(0.0)
+    percents = [(x.ticker, x.get_percent(total_value)) for x in tokens_owned_sorted if x.get_percent(total_value) > 0.03]
+    import matplotlib.pyplot as plt
+
+    # Pie chart, where the slices will be ordered and plotted counter-clockwise:
+
+    labels = [x[0] for x in percents] + ['Other coins']
+    sizes = [x[1] * 100 for x in percents]
+    missing_percent = 100 - sum(sizes)
+    sizes += [missing_percent]
+    explode = [0.05 for x in sizes]  # only "explode" the 2nd slice (i.e. 'Hogs')
+    pprint(explode)
+    fig1, ax1 = plt.subplots()
+
+    ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, pctdistance=0.85)
+    centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+    fig = plt.gcf()
+    fig.gca().add_artist(centre_circle)
+    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+    # plt.show()
+    plt.savefig(path)
 
 
 def get_price_token(maybe_token):

@@ -413,8 +413,11 @@ class TokenOwned:
             bottom += " - <code>$" + util.pretty_number(self.value_usd) + "</code>"
         return top + '\n' + bottom
 
+    def get_percent(self, total_usd):
+        return self.get_amount_usd_token(0.0) / total_usd
 
-def get_balance_wallet(wallet: str, simple=False):
+
+def get_balance_wallet(wallet: str, path: str, simple=False):
     url = "https://api.ethplorer.io/getAddressInfo/$WALLET?apiKey=$API_KEY_ETHEXPLORER"\
         .replace('$WALLET', wallet)\
         .replace('$API_KEY_ETHEXPLORER', API_KEY_ETHEXPLORER)
@@ -437,7 +440,6 @@ def get_balance_wallet(wallet: str, simple=False):
             if maybe_token_descr is not None:
                 decimals = int(maybe_token_descr['decimals'])
                 amount_owned = token_owned_raw / 10 ** decimals
-                maybe_price_unit_token = maybe_token_descr['price']
                 maybe_price_token_unit_usd = get_price_token(maybe_token_descr)
                 actual_token = TokenOwned(name=maybe_token_descr['name'],
                                           ticker=maybe_token_descr['symbol'],
@@ -451,13 +453,16 @@ def get_balance_wallet(wallet: str, simple=False):
         total_value += token.get_amount_usd_token(0.0)
     message = "<b>Total value of wallet: </b><code>$" + util.pretty_number(total_value) + "</code>\n"
     if simple:
-        tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]
+        tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]  # For some reasons filtering on the tokens remove the order
         tokens_owned_sorted = [eth_token] + sorted(tokens_owned_sorted, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
         message_top = "Overview of wallet " + wallet[0:10] + "...:\n"
     else:
         message_top = "Full view of wallet " + wallet[0:10] + "...:\n"
     for token in tokens_owned_sorted:
         message += token.to_string() + "\n"
+
+    graphs_util.get_piechart(tokens_owned, path)
+
     return message_top + message
 
 

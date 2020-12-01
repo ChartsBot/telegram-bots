@@ -21,6 +21,8 @@ from pprint import pprint
 INCREASING_COLOR = '#228B22'
 DECREASING_COLOR = '#FF0000'
 
+import matplotlib.pyplot as plt
+
 
 def __generate_upper_barrier(txt, options=None, width=3200):
     font_size = 40
@@ -452,6 +454,32 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
     img_final = add_border(chart_img, color=border_color)
     img_final.save(file_path)
     return closes[-1]
+
+
+# TODO: at one point migrate to plotly
+def get_piechart(tokens_owned, path: str, percent_thresehold=0.03):
+    total_value = 0
+    for token in tokens_owned:
+        total_value += token.get_amount_usd_token(0.0)
+    percents = [(x.ticker, x.get_percent(total_value)) for x in tokens_owned if x.get_percent(total_value) > percent_thresehold]
+
+    # Pie chart, where the slices will be ordered and plotted counter-clockwise:
+
+    labels = [x[0] for x in percents] + ['Other coins']
+    sizes = [x[1] * 100 for x in percents]
+    missing_percent = 100 - sum(sizes)
+    sizes += [missing_percent]
+    explode = [0.05 for x in sizes]  # only "explode" the 2nd slice (i.e. 'Hogs')
+    pprint(explode)
+    fig1, ax1 = plt.subplots()
+
+    ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, pctdistance=0.85)
+    centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+    fig = plt.gcf()
+    fig.gca().add_artist(centre_circle)
+    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+    plt.savefig(path)
 
 
 def test_print_candlestick(token, t_from, t_to, resolution=1):
