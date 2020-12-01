@@ -801,9 +801,9 @@ def analyze_wallet(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text="Provided wallet " + wallet + " is not a valid Ethereum address.")
         else:
             if '-simple' in query_received:
-                res = general_end_functions.get_balance_wallet(wallet, True)
+                res = general_end_functions.get_balance_wallet(wallet.lower(), True)
             else:
-                res = general_end_functions.get_balance_wallet(wallet, False)
+                res = general_end_functions.get_balance_wallet(wallet.lower(), False)
             context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
 
 def error_callback(update, context):
