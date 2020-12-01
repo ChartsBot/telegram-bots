@@ -318,7 +318,7 @@ def get_biz(update: Update, context: CallbackContext):
             parsed_excerpt = util.cleanhtml(excerpt)
             message += base_url + str(thread_id[0]) + " -- " + parsed_excerpt[0: 100] + "[...] \n"
         if not threads_ids:
-            meme_caption = "No current /biz/ thread containing the word $WORD. Go make one https://boards.4channel.org/biz/.".replace(
+            meme_caption = "No current /biz/ thread containing the word $WORD. You can make one at https://boards.4channel.org/biz/.".replace(
                 "$WORD", word)
             context.bot.send_message(chat_id=chat_id, text=meme_caption, disable_web_page_preview=True)
         else:
@@ -335,7 +335,7 @@ def get_biz(update: Update, context: CallbackContext):
                 excerpt = thread_id[2] + " | " + thread_id[1]
                 message += base_url + str(thread_id[0]) + " -- " + excerpt[0: 100] + "[...] \n"
             if not threads_ids:
-                meme_caption = "No current /biz/ thread containing the word $WORD. Go make one https://boards.4channel.org/biz/.".replace(
+                meme_caption = "No current /biz/ thread containing the word $WORD. You can make one at https://boards.4channel.org/biz/.".replace(
                     "$WORD", word)
                 context.bot.send_message(chat_id=chat_id, text=meme_caption, disable_web_page_preview=True)
             else:
