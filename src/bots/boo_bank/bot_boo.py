@@ -318,7 +318,7 @@ def get_chart_supply(update: Update, context: CallbackContext):
 
     query_received = update.message.text.split(' ')
 
-    if "bbra" in query_received or "BBRA" in query_received:
+    if "bbra" in query_received or "BBRA" in query_received or "BBRA" in update.message.chat.title:
         supply_file_path_general = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
         ticker_supply_file_path = supply_file_path_general.replace("$TICKER", "BBRA")
         time_type, k_hours, k_days, tokens = commands_util.check_query(query_received[1:], ticker)
