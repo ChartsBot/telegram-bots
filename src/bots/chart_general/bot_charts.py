@@ -19,7 +19,7 @@ import re
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler
 from telegram.ext.dispatcher import run_async
-from telegram.error import ChatMigrated
+from telegram.error import ChatMigrated, BadRequest
 import libraries.web3_calls as web3_util
 from cachetools import cached, TTLCache
 
@@ -40,6 +40,8 @@ from libraries.common_values import *
 from web3 import Web3
 from libraries.timer_util import RepeatedTimer
 from threading import Thread
+# from py_w3c.validators.html.validator import HTMLValidator
+
 import zerorpc
 
 import wolframalpha
@@ -518,8 +520,11 @@ def get_the_faq(update: Update, context: CallbackContext):
     res = __get_faq_channel(chat_id)
     if res == "null" or res is None:
         res = message_faq_empty
-    context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
-
+    try:
+        context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
+    except BadRequest:
+        header = "Looks like some html tags are not properly set. Here's the raw faq: \n"
+        context.bot.send_message(chat_id=chat_id, text=header + res, disable_web_page_preview=True)
 
 def __get_faq_channel(channel_id: int):
     res = zerorpc_client_data_aggregator.get_faq(channel_id)
