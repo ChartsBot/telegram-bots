@@ -314,7 +314,7 @@ def get_chart_supply(update: Update, context: CallbackContext):
     if "bbra" in query_received or "BBRA" in query_received:
         supply_file_path_general = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
         ticker_supply_file_path = supply_file_path_general.replace("$TICKER", "BBRA")
-        k_hours, k_days, tokens = commands_util.check_query(query_received[1:], ticker)
+        time_type, k_hours, k_days, tokens = commands_util.check_query(query_received[1:], ticker)
         current_token_nbr = general_end_functions.send_supply_single_pyplot(ticker_supply_file_path,
                                                                             k_days,
                                                                             k_hours,
