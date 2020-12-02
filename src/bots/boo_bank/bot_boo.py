@@ -120,21 +120,21 @@ def get_price_token(update: Update, context: CallbackContext):
     message = general_end_functions.get_price(boob_contract, pair_contract, graphql_client_eth, graphql_client_uni, name, decimals, uni_wrapper)
     chat_id = update.message.chat_id
     util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
-    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price, disable_web_page_preview=True)
+    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
 
 def get_price_ecto(update: Update, context: CallbackContext):
     message = general_end_functions.get_price(ecto_contract, pair_contract, graphql_client_eth, graphql_client_uni, ecto_name, decimals, uni_wrapper)
     chat_id = update.message.chat_id
     util.create_and_send_vote("ECTO", "price", update.message.from_user.name, zerorpc_client_data_aggregator)
-    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price, disable_web_page_preview=True)
+    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
 
 def get_price_bbra(update: Update, context: CallbackContext):
     message = general_end_functions.get_price(bbra_contract, pair_contract, graphql_client_eth, graphql_client_uni, bbra_name, decimals, uni_wrapper)
     chat_id = update.message.chat_id
     util.create_and_send_vote("BBRA", "price", update.message.from_user.name, zerorpc_client_data_aggregator)
-    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price, disable_web_page_preview=True)
+    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
 
 
@@ -176,7 +176,11 @@ def get_help(update: Update, context: CallbackContext):
 
 def get_twitter(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
-    res = scrap_websites_util.get_last_tweets(twitter, ticker)
+    query_received = update.message.text.split(' ')
+    actual_ticker = ticker
+    if len(query_received) == 2:
+        actual_ticker = query_received[1]
+    res = scrap_websites_util.get_last_tweets(twitter, actual_ticker)
     context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
 
 
