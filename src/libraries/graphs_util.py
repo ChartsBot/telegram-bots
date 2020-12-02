@@ -471,7 +471,6 @@ def get_piechart(tokens_owned, path: str, percent_thresehold=0.03):
     values_name += ['Others']
     d = {'amount_usd': values_raw, 'label': values_name}
     df = pd.DataFrame(data=d)
-    pprint(df)
     fig = px.pie(df, values='amount_usd', names='label',
                  color_discrete_sequence=px.colors.sequential.Agsunset)  # https://plotly.com/python/builtin-colorscales/
     fig.update_traces(textposition='inside', textinfo='percent+label+value')
