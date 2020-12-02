@@ -425,9 +425,6 @@ class TokenOwned:
 
 def get_balance_wallet(wallet: str, path: str, simple=False):
     res = requests_util.get_balance_wallet_request(wallet)
-    # pprint(res)
-    pprint("len")
-    pprint(len(res))
     eth = res['ETH']
     eth_token = TokenOwned(name='Ether',
                            ticker='ETH',
@@ -435,7 +432,12 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
                            amount_owned=float(eth['balance']),
                            value_usd=float(eth['price']['rate']))
     tokens_that_were_owned = res['tokens']
-    pprint(len(tokens_that_were_owned))
+
+    too_many_tokens = False
+    if len(tokens_that_were_owned) > 500:
+        tokens_that_were_owned = tokens_that_were_owned[0:500]
+        too_many_tokens = True
+
     tokens_owned = []
     for token in tokens_that_were_owned:
         if token['balance'] != 0:
@@ -460,9 +462,8 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
     for token in tokens_owned:
         total_value += token.get_amount_usd_token(0.0)
     message = ""
-    if len(tokens_owned_sorted) > 100:
-        message = "Too many coins in wallet " + str(len(tokens_owned_sorted)) + " limiting view to 100."
-        tokens_owned_sorted = tokens_owned_sorted[:100]
+    if too_many_tokens:
+        message = "Too many coins in wallet " + str(len(tokens_owned_sorted)) + " limiting view to 500 random tokens."
     message += "<b>Total value of wallet: </b><code>$" + util.pretty_number(total_value) + "</code>\n"
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]  # For some reasons filtering on the tokens remove the order
