@@ -710,7 +710,6 @@ def callback_minute(context: CallbackContext):
                 except ChatMigrated as err:
                     print("CHANNEL ID CHANGED: ", err)
                     pass
-            context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
 def translate_text(update: Update, context: CallbackContext):
