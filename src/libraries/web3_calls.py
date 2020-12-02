@@ -47,3 +47,14 @@ def get_balance_token_wallet_raw(w3, wallet, token):
     decimals = get_decimals_contract(contract)
     res = contract.functions.balanceOf(wallet_checksum).call() / 10 ** decimals
     return res
+
+
+def get_lp_value(uni_wrapper, pair_address):
+    pair_checksum = Web3.toChecksumAddress(pair_address)
+    pair_liq = uni_wrapper.get_pair_liquidity(pair_checksum)
+    t0_balance = pair_liq[0]
+    t1_balance = pair_liq[1]
+    t0_address = uni_wrapper.get_pair_token_address(pair_checksum, 0)
+    t1_address = uni_wrapper.get_pair_token_address(pair_checksum, 1)
+    amount_lp = int(uni_wrapper.get_amount_lp_total(pair_checksum)) / 10**18
+    return [(t0_balance, t0_address), (t1_balance, t1_address), amount_lp]

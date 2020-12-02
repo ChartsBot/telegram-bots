@@ -185,6 +185,9 @@ class Uniswap:
         else:
             return self._load_contract(abi_name="uniswap-v2/pair", address=address).functions.token1().call()
 
+    def get_amount_lp_total(self, address: AddressLike):
+        return self._load_contract(abi_name="uniswap-v2/pair", address=address).functions.totalSupply().call()
+
     @supports([1])
     def get_token(self, address: AddressLike) -> dict:
         # FIXME: This function should always return the same output for the same input

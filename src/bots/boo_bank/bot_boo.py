@@ -361,8 +361,16 @@ def amount_bbra_locked(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
 
     wallet = "0x0000000000000000000000000000000000000000"
-    contract = "0xf76b7146093b7b43c543d2e354a2d9c67d8e206f"
-    amount_raw = web3_util.get_balance_token_wallet_raw(w3, wallet, contract)
+    contract_pair_eth_bbra = "0xf76b7146093b7b43c543d2e354a2d9c67d8e206f"
+    amount_raw = web3_util.get_balance_token_wallet_raw(w3, wallet, contract_pair_eth_bbra)
+    value_lp = web3_util.get_lp_value(uni_wrapper, contract_pair_eth_bbra)
+    bbra_amount = value_lp[0][1]
+    eth_amount = value_lp[1][1]
+    lp_total = value_lp[2]
+    pprint.pprint(bbra_amount)
+    pprint.pprint(eth_amount)
+    pprint.pprint(lp_total)
+
 
     message = "There are " + '{:.2f}'.format(amount_raw) + " BBRA-ETH LP tokens locked forever."
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
