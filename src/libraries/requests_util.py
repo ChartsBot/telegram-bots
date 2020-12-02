@@ -742,7 +742,14 @@ def get_last_actions(pair, graphql_client_uni, options=None, amount=30):
 def pretty_print_last_actions(pair, graphql_client_uni, options=None):
     all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options)
 
-    all_actions_light = all_actions_sorted[0:5]
+    amount = 5
+    # check if amount specified in options
+    for option in options:
+        if option.isdigit():
+            amount = min([29, int(option)])
+            start_message = start_message.replace("Last 5", "Last " + str(amount))
+
+    all_actions_light = all_actions_sorted[0:amount]
     if options is not None:
         if "address" in options or "addr" in options or "a" in options:
             strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
