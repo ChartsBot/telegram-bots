@@ -123,7 +123,7 @@ def get_balance_wallet(wallet: str):
     fig = px.pie(df, values='amount_usd', names='label',
                  color_discrete_sequence=px.colors.sequential.Agsunset)  # https://plotly.com/python/builtin-colorscales/
     fig.update_traces(textposition='inside', textinfo='percent+label+value')
-    fig.update_layout(uniformtext_minsize=16, uniformtext_mode='hide')
+    fig.update_layout(width=1000, height=1000)
     fig.show()
 
 
