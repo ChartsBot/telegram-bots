@@ -31,6 +31,7 @@ from libraries.timer_util import RepeatedTimer
 from libraries.uniswap import Uniswap
 from libraries.common_values import *
 import libraries.time_util as time_util
+import libraries.web3_calls as web3_util
 from web3 import Web3
 import zerorpc
 import html
@@ -355,6 +356,20 @@ def get_chart_supply(update: Update, context: CallbackContext):
                                parse_mode="html")
 
 
+def amount_bbra_locked(update: Update, context: CallbackContext):
+
+    chat_id = update.message.chat_id
+
+    wallet = "0x0000000000000000000000000000000000000000"
+    contract = "0xf76b7146093b7b43c543d2e354a2d9c67d8e206f"
+    amount_raw = web3_util.get_balance_token_wallet_raw(w3, wallet, context)
+
+    message = "There's " + str(amount_raw) + " LP tokens locked forever."
+    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
+    # res = con
+
+
+
 def send_how_to_swap(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     context.bot.send_message(chat_id=chat_id, text=how_to_swap, disable_web_page_preview=True, parse_mode='html')
@@ -417,6 +432,7 @@ def main():
     dp.add_handler(CommandHandler('price', get_price_token))
     dp.add_handler(CommandHandler('boob', get_price_token))
     dp.add_handler(CommandHandler('bbra', get_price_bbra))
+    dp.add_handler(CommandHandler('locked_bbras', amount_bbra_locked))
     dp.add_handler(CommandHandler('timeto', get_time_to))
     dp.add_handler(CommandHandler('ecto', get_price_ecto))
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
@@ -455,6 +471,7 @@ chart - Display a chart of the price.
 boob - Get the current price of $BOOB.
 bbra - Get the current price of $BBRA
 ecto - Get the current price of $ECTO.
+locked_bbras - See how much liquidity is locked forever
 ballad - BBRA music.
 flyer_bbra - Explain bbra.
 chart_supply - Display a chart of the supply (BOOB and ECTO).
