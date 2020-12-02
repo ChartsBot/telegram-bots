@@ -100,8 +100,11 @@ def get_candlestick(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
 
     query_received = update.message.text.split(' ')
+    default_ticker = ticker
+    if "BBRA" in update.message.chat.title:
+        default_ticker = "BBRA"
 
-    time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, ticker)
+    time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_ticker)
     t_to = int(time.time())
     t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
     banner_txt = util.get_banner_txt(zerorpc_client_data_aggregator)
@@ -118,10 +121,13 @@ def get_candlestick(update: Update, context: CallbackContext):
 
 
 def get_price_token(update: Update, context: CallbackContext):
-    message = general_end_functions.get_price(boob_contract, pair_contract, graphql_client_eth, graphql_client_uni, name, decimals, uni_wrapper)
     chat_id = update.message.chat_id
-    util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
-    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
+    if "BBRA" in update.message.chat.title:
+        context.bot.send_message(chat_id=chat_id, text="For BOOB prices and discussions, you can join us at @boobankertoken", parse_mode='html', disable_web_page_preview=True)
+    else:
+        message = general_end_functions.get_price(boob_contract, pair_contract, graphql_client_eth, graphql_client_uni, name, decimals, uni_wrapper)
+        util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
+        context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
 
 def get_price_ecto(update: Update, context: CallbackContext):

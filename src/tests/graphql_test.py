@@ -212,17 +212,69 @@ def parse_pair(pair):
     return token0, token1
 
 
+def test(graphql_client_uni):
+    query = '''
+fragment TokenFields on Token {
+  id
+  name
+  symbol
+  derivedETH
+  tradeVolume
+  tradeVolumeUSD
+  untrackedVolumeUSD
+  totalLiquidity
+  txCount
+  __typename
+}
+
+query tokens {
+  tokens(where: {id: "0xa9c44135b3a87e0688c41cf8c27939a22dd437c9"}) {
+    ...TokenFields
+    __typename
+  }
+  pairs0: pairs(where: {token0: "0xa9c44135b3a87e0688c41cf8c27939a22dd437c9"}, first: 50, orderBy: reserveUSD, orderDirection: desc) {
+    id
+    __typename
+    token0 {
+     symbol
+    }
+    token1 {
+     symbol
+    }
+    reserve0
+    reserve1
+  }
+  pairs1: pairs(where: {token1: "0xa9c44135b3a87e0688c41cf8c27939a22dd437c9"}, first: 50, orderBy: reserveUSD, orderDirection: desc) {
+    id
+    __typename
+    token0 {
+     symbol
+    }
+    token1 {
+     symbol
+    }
+    reserve0
+    reserve1
+  }
+}
+'''
+    res_eth_query = graphql_client_uni.execute(query)
+    json_resp_eth = json.loads(res_eth_query)
+    pprint(json_resp_eth)
+
+
 if __name__ == '__main__':
     pair = "0x6e31ef0b62a8abe30d80d35476ca78897dffa769"
     graphql_client = GraphQLClient('https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2')
-    res = get_latest_actions(pair, graphql_client)
-    parsed_swaps = parse_swaps(res)
-    parsed_swaps_sorted = sorted(parsed_swaps, key=lambda x: x.timestamp, reverse=True)
-    parsed_mints = parse_mint(res)
-    parsed_burns = parse_burns(res)
-    all_actions = parsed_burns + parsed_mints + parsed_swaps
-    all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
-    all_actions_light = all_actions_sorted[0:10]
-    strings = list(map(lambda x: x.to_string(), all_actions_light))
-    string = '\n'.join(strings)
-    print(string)
+    test(graphql_client)
+    # res = get_latest_actions(pair, graphql_client)
+    # parsed_swaps = parse_swaps(res)
+    # parsed_swaps_sorted = sorted(parsed_swaps, key=lambda x: x.timestamp, reverse=True)
+    # parsed_mints = parse_mint(res)
+    # parsed_burns = parse_burns(res)
+    # all_actions = parsed_burns + parsed_mints + parsed_swaps
+    # all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
+    # all_actions_light = all_actions_sorted[0:10]
+    # strings = list(map(lambda x: x.to_string(), all_actions_light))
+    # string = '\n'.join(strings)
+    # print(string)
