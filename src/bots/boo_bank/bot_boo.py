@@ -370,7 +370,7 @@ def amount_bbra_locked(update: Update, context: CallbackContext):
     locked_eth = (eth_amount / lp_total) * amount_locked_lp_raw
     locked_bbra = (bbra_amount / lp_total) * amount_locked_lp_raw
 
-    message = "There are " + '{:.2f}'.format(amount_locked_lp_raw) + " BBRA-ETH LP tokens locked forever = "
+    message = "There are <b>" + '{:.2f}'.format(amount_locked_lp_raw) + " BBRA-ETH LP tokens</b> locked forever = "
     message += "<b>" + '{:.2f}'.format(locked_eth) + " ETH </b> and <b>" + '{:.2f}'.format(locked_bbra) + " BBRA</b>."
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
     # res = con
