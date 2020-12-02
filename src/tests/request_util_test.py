@@ -107,7 +107,7 @@ def get_balance_wallet(wallet: str):
     total_value = 0
     for token in tokens_owned_sorted:
         total_value += token.get_amount_usd_token(0.0)
-    values_usd = [(x.ticker, round(x.get_amount_usd_token(0.0))) for x in tokens_owned_sorted if x.get_percent(total_value) > 0.03]
+    values_usd = [(x.ticker, x.get_amount_usd_token(0.0)) for x in tokens_owned_sorted if x.get_percent(total_value) > 0.03]
     values_raw = [x[1] for x in values_usd]
     values_name = [x[0] for x in values_usd]
 
@@ -122,8 +122,8 @@ def get_balance_wallet(wallet: str):
     pprint(df)
     fig = px.pie(df, values='amount_usd', names='label',
                  color_discrete_sequence=px.colors.sequential.Agsunset)  # https://plotly.com/python/builtin-colorscales/
-    fig.update_traces(textposition='inside', textinfo='percent+label+value')
-    fig.update_layout(width=1000, height=1000)
+    fig.update_traces(texttemplate="%{label}<br>%{percent}<br>%{value:$.2f}")
+    fig.update_layout(uniformtext_minsize=16, uniformtext_mode='hide')
     fig.show()
 
 
