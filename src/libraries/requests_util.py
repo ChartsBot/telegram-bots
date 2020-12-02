@@ -705,8 +705,6 @@ def detect_bots(actions):
     return others + kept_actions
 
 
-
-
 def get_last_actions(pair, graphql_client_uni, options=None, amount=30):
     eth_price = get_eth_price_now()
     last_actions = get_latest_actions(pair.lower(), graphql_client_uni, options, amount)

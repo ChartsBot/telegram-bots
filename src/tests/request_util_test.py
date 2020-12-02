@@ -71,7 +71,7 @@ class TokenOwned:
 
 
 def get_balance_wallet(wallet: str):
-    url = "https://api.ethplorer.io/getAddressInfo/$WALLET?apiKey=".replace('$WALLET', wallet)
+    url = "https://api.ethplorer.io/getAddressInfo/$WALLET?apiKey=freekey".replace('$WALLET', wallet)
     res = requests.get(url)
     # pprint(res)
     res = res.json()
@@ -107,27 +107,24 @@ def get_balance_wallet(wallet: str):
     total_value = 0
     for token in tokens_owned_sorted:
         total_value += token.get_amount_usd_token(0.0)
-    percents = [(x.ticker, x.get_percent(total_value)) for x in tokens_owned_sorted if x.get_percent(total_value) > 0.03]
-    import matplotlib.pyplot as plt
+    values_usd = [(x.ticker, round(x.get_amount_usd_token(0.0))) for x in tokens_owned_sorted if x.get_percent(total_value) > 0.03]
+    values_raw = [x[1] for x in values_usd]
+    values_name = [x[0] for x in values_usd]
 
     # Pie chart, where the slices will be ordered and plotted counter-clockwise:
-
-    labels = [x[0] for x in percents] + ['Other coins']
-    sizes = [x[1] * 100 for x in percents]
-    missing_percent = 100 - sum(sizes)
-    sizes += [missing_percent]
-    explode = [0.05 for x in sizes]  # only "explode" the 2nd slice (i.e. 'Hogs')
-    pprint(explode)
-    fig1, ax1 = plt.subplots()
-
-    ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, pctdistance=0.85)
-    centre_circle = plt.Circle((0, 0), 0.70, fc='white')
-    fig = plt.gcf()
-    fig.gca().add_artist(centre_circle)
-    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-    # plt.show()
-    plt.savefig(path)
+    missing_amount = total_value - sum(values_raw)
+    values_raw += [missing_amount]
+    values_name += ['Others']
+    import plotly.express as px
+    import pandas as pd
+    d = {'amount_usd': values_raw, 'label': values_name}
+    df = pd.DataFrame(data=d)
+    pprint(df)
+    fig = px.pie(df, values='amount_usd', names='label',
+                 color_discrete_sequence=px.colors.sequential.Agsunset)  # https://plotly.com/python/builtin-colorscales/
+    fig.update_traces(textposition='inside', textinfo='percent+label+value')
+    fig.update_layout(uniformtext_minsize=16, uniformtext_mode='hide')
+    fig.show()
 
 
 def get_price_token(maybe_token):
@@ -147,7 +144,7 @@ def get_amount_usd_token(value, amount):
 
 
 if __name__ == '__main__':
-    get_balance_wallet("0x9a6572Cfe43e4529Eff41553166bbb433808a890")
+    get_balance_wallet("0x56B082C827b61dD481A06240e604a13eD4738Ec4")
     # url = "https://api.ethplorer.io/getTokenInfo/0xd08517cd0372cD12B710a554F5025cFD419B43fF"
     # res = requests.get(url).json()
     # pprint(res)
