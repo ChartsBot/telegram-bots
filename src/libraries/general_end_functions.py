@@ -133,7 +133,7 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
 
     msg_vol_24 = "\nVol 24H = $" + vol_24_pretty if vol_24_pretty != "0" else ""
     name_header = "<b>" + name + '</b>'
-    if full_name is not "":
+    if full_name != "":
         name_header = "<b>(" + name + ') ' + full_name + '</b>'
     holders_str = "\nHolders = " + str(holders) if holders != -1 else ""
     links = '<a href="etherscan.io/token/' + contract + '">Etherscan</a>|<a href="https://app.uniswap.org/#/swap?inputCurrency=' + contract + '">Uni</a>'
@@ -426,6 +426,8 @@ class TokenOwned:
 def get_balance_wallet(wallet: str, path: str, simple=False):
     res = requests_util.get_balance_wallet_request(wallet)
     # pprint(res)
+    pprint("len")
+    pprint(len(res))
     eth = res['ETH']
     eth_token = TokenOwned(name='Ether',
                            ticker='ETH',
