@@ -93,10 +93,11 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
 
     token_info = requests_util.get_token_info(contract)
 
-    supply_cap_token, holders = 0, 0
+    supply_cap_token, holders, full_name = 0, 0, ""
     if token_info is not None and 'error' not in token_info:
         supply_cap_token = int(token_info['totalSupply']) / 10 ** int(token_info['decimals'])
         holders = int(token_info['holdersCount'])
+        full_name = token_info['name']
 
     util.write_supply_cap(round(supply_cap_token), name)
     supply_cat_pretty = str(util.number_to_beautiful(round(supply_cap_token)))
@@ -131,11 +132,13 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
     vol_24_pretty = util.number_to_beautiful(vol_24h)
 
     msg_vol_24 = "\nVol 24H = $" + vol_24_pretty if vol_24_pretty != "0" else ""
-
+    name_header = "<b>" + name + '</b>'
+    if full_name is not "":
+        name_header = "<b>(" + name + ') ' + full_name + '</b>'
     holders_str = "\nHolders = " + str(holders) if holders != -1 else ""
     links = '<a href="etherscan.io/token/' + contract + '">Etherscan</a>|<a href="https://app.uniswap.org/#/swap?inputCurrency=' + contract + '">Uni</a>'
     ad = util.get_ad()
-    message = "<b>" + name + '</b><code>' \
+    message = name_header + '<code>' \
               + "\nETH: Ξ" + float_to_str(derivedETH_now)[0:10] \
               + "\nUSD: $" + float_to_str(token_price_now_usd)[0:10] \
               + var_1d_msg \
