@@ -371,9 +371,9 @@ def amount_bbra_locked(update: Update, context: CallbackContext):
     locked_bbra = (bbra_amount / lp_total) * amount_locked_lp_raw
 
     message = "There are <b>" + '{:.2f}'.format(amount_locked_lp_raw) + " BBRA-ETH LP tokens</b> locked forever = "
-    message += "<b>" + '{:.2f}'.format(locked_eth) + " ETH </b> and <b>" + '{:.2f}'.format(locked_bbra) + " BBRA</b> "
-    message += '<a href="https://etherscan.io/token/0xf76b7146093b7b43c543d2e354a2d9c67d8e206f?a=0x0000000000000000000000000000000000000000">proof</a>.'
-    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
+    message += "<b>" + '{:.2f}'.format(locked_eth) + " ETH </b> and <b>" + '{:.2f}'.format(locked_bbra) + " BBRA</b>. "
+    message += '<a href="https://etherscan.io/token/0xf76b7146093b7b43c543d2e354a2d9c67d8e206f?a=0x0000000000000000000000000000000000000000">proof</a>'
+    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
     # res = con
 
 
