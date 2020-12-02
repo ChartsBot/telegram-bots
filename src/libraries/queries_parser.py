@@ -70,6 +70,8 @@ def preprocess_query_last_actions(query):
     for arg in individual_args:
         if arg[0] == "-":
             formatted_args.append(arg)
+        elif arg.isdigit():
+            formatted_args.append("-" + arg)
         else:
             formatted_args.append("--token")
             formatted_args.append(arg)
