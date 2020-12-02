@@ -475,7 +475,6 @@ def get_piechart(tokens_owned, path: str, percent_thresehold=0.03):
     fig = px.pie(df, values='amount_usd', names='label',
                  color_discrete_sequence=px.colors.sequential.Agsunset)  # https://plotly.com/python/builtin-colorscales/
     fig.update_traces(textposition='inside', textinfo='percent+label+value')
-    fig.update_layout(uniformtext_minsize=16, uniformtext_mode='hide')
     pio.write_image(fig=fig, file=path, scale=2)
 
 
