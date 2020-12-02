@@ -362,7 +362,7 @@ def amount_bbra_locked(update: Update, context: CallbackContext):
 
     wallet = "0x0000000000000000000000000000000000000000"
     contract = "0xf76b7146093b7b43c543d2e354a2d9c67d8e206f"
-    amount_raw = web3_util.get_balance_token_wallet_raw(w3, wallet, context)
+    amount_raw = web3_util.get_balance_token_wallet_raw(w3, wallet, contract)
 
     message = "There's " + str(amount_raw) + " LP tokens locked forever."
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
