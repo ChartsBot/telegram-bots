@@ -95,8 +95,8 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
 
     supply_cap_token, holders = 0, 0
     if token_info is not None and 'error' not in token_info:
-        supply_cap_token = token_info['totalSupply'] / 10 ** token_info['decimals']
-        holders = token_info['holdersCount']
+        supply_cap_token = int(token_info['totalSupply']) / 10 ** int(token_info['decimals'])
+        holders = int(token_info['holdersCount'])
 
     util.write_supply_cap(round(supply_cap_token), name)
     supply_cat_pretty = str(util.number_to_beautiful(round(supply_cap_token)))
