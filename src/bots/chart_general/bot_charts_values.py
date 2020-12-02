@@ -21,6 +21,8 @@ This bot is designed to help channels and individuals navigate in the defi world
 
 message_faq_empty = "No faq defined for this channel (yet). Any admin can add one with <code>/set_faq message</code>"
 
+message_faq_additional = 'You can also use the html tags that are defined <a href="https://core.telegram.org/bots/api#html-style">here</a> to make add bold, italic, hyperlinks...'
+
 symbol_gecko = {
     'BTC': 'bitcoin',
     'ETH': 'ethereum',

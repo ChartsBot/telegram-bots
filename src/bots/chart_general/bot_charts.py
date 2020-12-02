@@ -504,7 +504,8 @@ def set_faq(update: Update, context: CallbackContext):
         if query_received != "":
             faq = query_received
             res = zerorpc_client_data_aggregator.set_faq(chat_id, faq)
-            context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
+            message_info = res + '\n' + message_faq_additional
+            context.bot.send_message(chat_id=chat_id, text=message_info, parse_mode='html', disable_web_page_preview=True)
         else:
             context.bot.send_message(chat_id=chat_id, text="Please use the format /set_faq FAQ")
     else:
