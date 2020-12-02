@@ -455,7 +455,11 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
     total_value = eth_token.get_amount_usd_token(0.0)
     for token in tokens_owned:
         total_value += token.get_amount_usd_token(0.0)
-    message = "<b>Total value of wallet: </b><code>$" + util.pretty_number(total_value) + "</code>\n"
+    message = ""
+    if len(tokens_owned_sorted) > 100:
+        message = "Too many coins in wallet " + str(len(tokens_owned_sorted)) + " limiting view to 100."
+        tokens_owned_sorted = tokens_owned_sorted[0:100]
+    message += "<b>Total value of wallet: </b><code>$" + util.pretty_number(total_value) + "</code>\n"
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]  # For some reasons filtering on the tokens remove the order
         tokens_owned_sorted = [eth_token] + sorted(tokens_owned_sorted, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
