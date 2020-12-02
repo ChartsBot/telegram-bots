@@ -847,8 +847,23 @@ def get_balance_wallet_request(wallet):
     return res.json()
 
 
+def get_token_info(contract):
+    url = "https://api.ethplorer.io/getTokenInfo/$CONTRACT?apiKey=$API_KEY_ETHEXPLORER" \
+        .replace('$CONTRACT', contract) \
+        .replace('$API_KEY_ETHEXPLORER', API_KEY_ETHEXPLORER)
+    res = requests.get(url)
+    # pprint(res)
+    return res.json()
+
+
 def main():
-    pass
+    token_info = get_token_info("0x78571accaf24052795f98b11f093b488a2d9eaa4")
+    supply_cap_token, holders = 0, 0
+    if token_info is not None and 'error' not in token_info:
+        supply_cap_token = int(token_info['totalSupply']) / 10 ** int(token_info['decimals'])
+        holders = int(token_info['holdersCount'])
+    pprint.pprint(supply_cap_token)
+    pprint.pprint(holders)
     # token = "HOT.4D5DDC"
     # k_hours = 0
     # k_days = 1

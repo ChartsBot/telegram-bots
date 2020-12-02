@@ -91,7 +91,13 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
      token_price_now_usd) = requests_util.get_price_raw(graphclient_eth, graphclient_uni, contract)
     print("getting price for contract took " + str(round(time.time() - t0)))
 
-    supply_cap_token = requests_util.get_supply_cap_raw(contract, decimals)
+    token_info = requests_util.get_token_info(contract)
+
+    supply_cap_token, holders = 0, 0
+    if token_info is not None and 'error' not in token_info:
+        supply_cap_token = token_info['totalSupply'] / 10 ** token_info['decimals']
+        holders = token_info['holdersCount']
+
     util.write_supply_cap(round(supply_cap_token), name)
     supply_cat_pretty = str(util.number_to_beautiful(round(supply_cap_token)))
     market_cap = util.number_to_beautiful(int(float(supply_cap_token) * token_price_now_usd))
@@ -126,7 +132,6 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
 
     msg_vol_24 = "\nVol 24H = $" + vol_24_pretty if vol_24_pretty != "0" else ""
 
-    holders = requests_util.get_number_holder_token(contract)
     holders_str = "\nHolders = " + str(holders) if holders != -1 else ""
     links = '<a href="etherscan.io/token/' + contract + '">Etherscan</a>|<a href="https://app.uniswap.org/#/swap?inputCurrency=' + contract + '">Uni</a>'
     ad = util.get_ad()
