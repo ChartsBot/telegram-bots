@@ -35,7 +35,7 @@ import libraries.scrap_websites_util as scrap_websites_util
 import libraries.queries_parser as queries_parser
 import libraries.translation_util as translation_util
 from libraries.uniswap import Uniswap
-from bots.chart_general.bot_charts_values import start_message, message_faq_empty, symbol_gecko, message_faq_empty
+from bots.chart_general.bot_charts_values import start_message, message_faq_empty, symbol_gecko, message_faq_additional
 from libraries.common_values import *
 from web3 import Web3
 from libraries.timer_util import RepeatedTimer
