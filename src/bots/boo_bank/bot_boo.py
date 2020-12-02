@@ -311,27 +311,48 @@ def get_chart_supply(update: Update, context: CallbackContext):
 
     query_received = update.message.text.split(' ')
 
-    time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, ticker)
+    if "bbra" in query_received or "BBRA" in query_received:
+        supply_file_path_general = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
+        ticker_supply_file_path = supply_file_path_general.replace("$TICKER", "BBRA")
+        k_hours, k_days, tokens = commands_util.check_query(query_received[1:], ticker)
+        current_token_nbr = general_end_functions.send_supply_single_pyplot(ticker_supply_file_path,
+                                                                            k_days,
+                                                                            k_hours,
+                                                                            "BBRA",
+                                                                            supply_chart_path)
 
-    current_boob_nbr, current_ecto_nbr = general_end_functions.send_supply_two_pyplot(supply_file_path,
-                                                                                      k_days,
-                                                                                      k_hours,
-                                                                                      "BOOB",
-                                                                                      "ECTO",
-                                                                                      supply_chart_path)
+        current_token_str = util.number_to_beautiful(current_token_nbr)
 
-    current_boob_str = util.number_to_beautiful(current_boob_nbr)
-    current_ecto_str = util.number_to_beautiful(current_ecto_nbr)
+        msg_time = " " + str(k_days) + " day(s) " if k_days > 0 else " last " + str(k_hours) + " hour(s) "
 
-    msg_time = " " + str(k_days) + " day(s) " if k_days > 0 else " last " + str(k_hours) + " hour(s) "
+        caption = "Supply of the last " + msg_time + ".\nCurrent supply: \n<b>" + tokens + ":</b> <pre>" + current_token_str + "</pre>"
 
-    caption = "Supply of the last " + msg_time + ".\nCurrent supply: \n<b>BOOB:</b> <pre>" + current_boob_str + \
-              "</pre> \n<b>ECTO:</b> <pre>" + current_ecto_str + "</pre>"
+        context.bot.send_photo(chat_id=chat_id,
+                               photo=open(supply_chart_path, 'rb'),
+                               caption=caption,
+                               parse_mode="html")
+    else:
+        time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, ticker)
 
-    context.bot.send_photo(chat_id=chat_id,
-                           photo=open(supply_chart_path, 'rb'),
-                           caption=caption,
-                           parse_mode="html")
+        current_boob_nbr, current_ecto_nbr = general_end_functions.send_supply_two_pyplot(supply_file_path,
+                                                                                          k_days,
+                                                                                          k_hours,
+                                                                                          "BOOB",
+                                                                                          "ECTO",
+                                                                                          supply_chart_path)
+
+        current_boob_str = util.number_to_beautiful(current_boob_nbr)
+        current_ecto_str = util.number_to_beautiful(current_ecto_nbr)
+
+        msg_time = " " + str(k_days) + " day(s) " if k_days > 0 else " last " + str(k_hours) + " hour(s) "
+
+        caption = "Supply of the last " + msg_time + ".\nCurrent supply: \n<b>BOOB:</b> <pre>" + current_boob_str + \
+                  "</pre> \n<b>ECTO:</b> <pre>" + current_ecto_str + "</pre>"
+
+        context.bot.send_photo(chat_id=chat_id,
+                               photo=open(supply_chart_path, 'rb'),
+                               caption=caption,
+                               parse_mode="html")
 
 
 def send_how_to_swap(update: Update, context: CallbackContext):
