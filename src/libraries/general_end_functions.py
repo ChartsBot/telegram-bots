@@ -454,6 +454,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
                                               amount_owned=amount_owned,
                                               value_usd=maybe_price_token_unit_usd)
                     tokens_owned.append(actual_token)
+    pprint("done analyzing tokens")
     tokens_owned_sorted = [eth_token] + sorted(tokens_owned, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
     total_value = eth_token.get_amount_usd_token(0.0)
     for token in tokens_owned:
