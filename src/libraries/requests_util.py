@@ -15,6 +15,7 @@ sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
 from libraries.util import float_to_str, pretty_number, keep_significant_number_float
 import libraries.time_util as time_util
 
+API_KEY_ETHEXPLORER = os.environ.get('API_KEY_ETHEXPLORER')
 clef = os.environ.get('BINANCE_API_KEY')
 secret = os.environ.get('BINANCE_API_SECRET')
 
@@ -835,6 +836,15 @@ def get_gas_spent(address):
     total_cost = ((total_cost_fail + total_cost_success) / 10 ** 18)
     return GasSpent(len(txs), total_cost, total_gas, avg_price_rounded, (len(txs) - error_number, total_cost_success),
                     (error_number, total_cost_fail))
+
+
+def get_balance_wallet_request(wallet):
+    url = "https://api.ethplorer.io/getAddressInfo/$WALLET?apiKey=$API_KEY_ETHEXPLORER" \
+        .replace('$WALLET', wallet) \
+        .replace('$API_KEY_ETHEXPLORER', API_KEY_ETHEXPLORER)
+    res = requests.get(url)
+    # pprint(res)
+    return res.json()
 
 
 def main():

@@ -27,8 +27,6 @@ from web3 import Web3
 from pprint import pprint
 from dataclasses import dataclass
 
-API_KEY_ETHEXPLORER = os.environ.get('API_KEY_ETHEXPLORER')
-
 last_time_checked_4chan = 0
 
 
@@ -418,12 +416,7 @@ class TokenOwned:
 
 
 def get_balance_wallet(wallet: str, path: str, simple=False):
-    url = "https://api.ethplorer.io/getAddressInfo/$WALLET?apiKey=$API_KEY_ETHEXPLORER"\
-        .replace('$WALLET', wallet)\
-        .replace('$API_KEY_ETHEXPLORER', API_KEY_ETHEXPLORER)
-    res = requests.get(url)
-    # pprint(res)
-    res = res.json()
+    res = requests_util.get_balance_wallet_request(wallet)
     # pprint(res)
     eth = res['ETH']
     eth_token = TokenOwned(name='Ether',
