@@ -318,14 +318,14 @@ def get_chart_supply(update: Update, context: CallbackContext):
 
     query_received = update.message.text.split(' ')
 
-    default_ticker = ticker
-    if "BBRA" in update.message.chat.title:
-        default_ticker = "BBRA"
 
     if "bbra" in query_received or "BBRA" in query_received:
         supply_file_path_general = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
         ticker_supply_file_path = supply_file_path_general.replace("$TICKER", "BBRA")
-        time_type, k_hours, k_days, tokens = commands_util.check_query(query_received[1:], ticker)
+        if "BBRA" in update.message.chat.title:
+            time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, ticker)
+        else:
+            time_type, k_hours, k_days, tokens = commands_util.check_query(query_received[1:], ticker)
         current_token_nbr = general_end_functions.send_supply_single_pyplot(ticker_supply_file_path,
                                                                             k_days,
                                                                             k_hours,
@@ -343,7 +343,7 @@ def get_chart_supply(update: Update, context: CallbackContext):
                                caption=caption,
                                parse_mode="html")
     else:
-        time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_ticker)
+        time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, ticker)
 
         current_boob_nbr, current_ecto_nbr = general_end_functions.send_supply_two_pyplot(supply_file_path,
                                                                                           k_days,
