@@ -6,6 +6,7 @@ import hashlib
 from binascii import hexlify
 import re
 import html
+from py_w3c.validators.html.validator import HTMLValidator
 
 BASE_PATH = os.environ.get('BASE_PATH')
 

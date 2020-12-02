@@ -723,6 +723,7 @@ def translate_text(update: Update, context: CallbackContext):
             language_to = "en"
         else:
             language_to = query_received[1]
+        logging.info("translating " + original_message + " to " + language_to)
         translation = translation_util.pretty_translate(original_message, language_to)
         context.bot.send_message(chat_id=chat_id, text=translation, parse_mode='html', disable_web_page_preview=True)
     else:
@@ -732,6 +733,7 @@ def translate_text(update: Update, context: CallbackContext):
         else:
             language_to = query_received[1]
             original_message = ' '.join(query_received[2:])
+            logging.info("translating " + original_message + " to " + language_to)
             translation = translation_util.pretty_translate(original_message, language_to)
             context.bot.send_message(chat_id=chat_id, text=translation, parse_mode='html', disable_web_page_preview=True)
 
