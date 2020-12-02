@@ -325,7 +325,7 @@ def get_chart_supply(update: Update, context: CallbackContext):
 
         msg_time = " " + str(k_days) + " day(s) " if k_days > 0 else " last " + str(k_hours) + " hour(s) "
 
-        caption = "Supply of the last " + msg_time + ".\nCurrent supply: \n<b>" + tokens + ":</b> <pre>" + current_token_str + "</pre>"
+        caption = "Supply of the last " + msg_time + ".\nCurrent supply: \n<b>" + "BBRA" + ":</b> <pre>" + current_token_str + "</pre>"
 
         context.bot.send_photo(chat_id=chat_id,
                                photo=open(supply_chart_path, 'rb'),
