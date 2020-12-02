@@ -392,7 +392,7 @@ def get_citadel(update: Update, context: CallbackContext):
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True)
     dp = updater.dispatcher
-    dp.add_handler(CommandHandler('chart', get_candlestick))
+    dp.add_handler(CommandHandler(['chart', 'c'], get_candlestick))
     dp.add_handler(CommandHandler('price', get_price_token))
     dp.add_handler(CommandHandler('boob', get_price_token))
     dp.add_handler(CommandHandler('bbra', get_price_bbra))
