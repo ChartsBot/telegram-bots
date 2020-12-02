@@ -35,7 +35,7 @@ import libraries.scrap_websites_util as scrap_websites_util
 import libraries.queries_parser as queries_parser
 import libraries.translation_util as translation_util
 from libraries.uniswap import Uniswap
-from bots.chart_general.bot_charts_values import start_message, message_faq_empty, symbol_gecko
+from bots.chart_general.bot_charts_values import start_message, message_faq_empty, symbol_gecko, message_faq_empty
 from libraries.common_values import *
 from web3 import Web3
 from libraries.timer_util import RepeatedTimer
@@ -525,6 +525,7 @@ def get_the_faq(update: Update, context: CallbackContext):
     except BadRequest:
         header = "Looks like some html tags are not properly set. Here's the raw faq: \n"
         context.bot.send_message(chat_id=chat_id, text=header + res, disable_web_page_preview=True)
+
 
 def __get_faq_channel(channel_id: int):
     res = zerorpc_client_data_aggregator.get_faq(channel_id)
