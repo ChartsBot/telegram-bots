@@ -882,6 +882,7 @@ twitter - <TICKER> Get latests twitter containing $<TICKER>.
 price - <TICKER> get price of the <TICKER> token.
 biz - <WORD> get 4chan/biz threads containing <WORD>.
 gas - Get gas price.
+gas_spent - (/gas_spent WALLET (optional: number of days)) Shows how much gas a wallet has spent on a transaction
 faq - Print the FAQ.
 convert - <AMOUNT> <TICKER> option(<TICKER>) convert amount of ticker to usd (and to the second ticker if specified). 
 balance - <WALLET> <TICKER> check how much an address has of a specific coin.
