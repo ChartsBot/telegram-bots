@@ -490,7 +490,7 @@ def get_gas_spent(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')
     if len(query_received) >= 2:
-        addr, options = queries_parser.analyze_query_gas_spent(query_received)
+        addr, options = queries_parser.analyze_query_gas_spent(update.message.text)
         res = general_end_functions.get_gas_spent(addr, options)
         context.bot.send_message(chat_id=chat_id, text=res)
     else:
