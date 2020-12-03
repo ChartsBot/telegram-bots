@@ -444,6 +444,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
             token_owned_raw = float(token['balance'])
             maybe_token_descr = token['tokenInfo']
             if maybe_token_descr is not None:
+                pprint(maybe_token_descr)
                 if 'decimals' not in maybe_token_descr:
                     pass
                 if maybe_token_descr['decimals'] == 0 or 'name' not in maybe_token_descr:
