@@ -833,7 +833,7 @@ def get_gas_spent(address, options=None):
         for option in options:
             if option.isdigit():
                 since = int(option)
-                ts_min = round(time.time() - 3600 * since)
+                ts_min = round(time.time() - 3600 * 24 * since)
     for tx in txs:
         if int(tx['timeStamp']) < ts_min:
             continue
