@@ -793,6 +793,7 @@ class GasSpent:
     avg_gas_price: float
     success: (int, int)
     fail: (int, int)
+    since: int
 
     def to_string(self):
         eth_price_now = get_eth_price_now()
@@ -803,6 +804,7 @@ class GasSpent:
         eth_fail = keep_significant_number_float(self.fail[1] / 10 ** 18, 3)
         eth_success_dollar = keep_significant_number_float(eth_success * eth_price_now, 3)
         eth_fail_dollar = keep_significant_number_float(eth_fail * eth_price_now, 3)
+        beginning_message = "" if self.since is None else "In the last " + str(self.since) + " days:\n"
         message = "Total number of tx: " + str(self.amountTx) + '\n' \
                   + "Amount spent on gas: Ξ" + str(amount_spent_on_gas_raw) + " = $" + str(
             amount_spent_on_gas_usd) + '\n' \
@@ -811,21 +813,30 @@ class GasSpent:
             eth_success_dollar) + ')\n' \
                   + "Tx failed = " + str(self.fail[0]) + " -> Ξ" + str(eth_fail) + " spent in gas ($" + str(
             eth_fail_dollar) + ')'
-        return message
+        return beginning_message + message
 
 
-def get_gas_spent(address):
+def get_gas_spent(address, options=None):
     url = "https://api.etherscan.io/api?module=account&action=txlist&address=$ADDR&startblock=0&endblock=99999999&sort=asc&apikey=$APIKEY"
     url_prepared = url.replace("$APIKEY", etherscan_api_key).replace("$ADDR", address)
     results = requests.get(url_prepared).json()
     txs = results['result']
     total_gas_success = 0
     total_gas_fail = 0
-    error_number = 0
+    error_number, success_number = 0, 0
     total_cost_success = 0
     total_cost_fail = 0
     avg_price = 0
+    since = None
+    ts_min = 0
+    if options is not None:
+        for option in options:
+            if option.isdigit():
+                since = int(option)
+                ts_min = round(time.time() - 3600 * since)
     for tx in txs:
+        if int(tx['timeStamp']) < ts_min:
+            continue
         gas_price_tx = int(tx['gasPrice'])
         gas_used = int(tx['gasUsed'])
         avg_price += gas_price_tx
@@ -834,14 +845,15 @@ def get_gas_spent(address):
             total_gas_fail += gas_used
             total_cost_fail += gas_used * gas_price_tx
         else:
+            success_number += 1
             total_gas_success += gas_used
             total_cost_success += gas_used * gas_price_tx
     avg_price = round(avg_price / len(txs))
     total_gas = total_gas_success + total_cost_fail
     avg_price_rounded = avg_price / 10 ** 9
     total_cost = ((total_cost_fail + total_cost_success) / 10 ** 18)
-    return GasSpent(len(txs), total_cost, total_gas, avg_price_rounded, (len(txs) - error_number, total_cost_success),
-                    (error_number, total_cost_fail))
+    return GasSpent(success_number + error_number, total_cost, total_gas, avg_price_rounded, (success_number, total_cost_success),
+                    (error_number, total_cost_fail), since)
 
 
 def get_balance_wallet_request(wallet):

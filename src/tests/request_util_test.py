@@ -143,8 +143,82 @@ def get_amount_usd_token(value, amount):
         return None
 
 
+
+@dataclass(frozen=True)
+class GasSpent:
+    amountTx: int
+    eth_spent: float
+    total_gas: int
+    avg_gas_price: float
+    success: (int, int)
+    fail: (int, int)
+    since: int
+
+    def to_string(self):
+        eth_price_now = get_eth_price_now()
+        amount_spent_on_gas_raw = keep_significant_number_float(self.eth_spent, 2)
+        amount_spent_on_gas_usd = keep_significant_number_float(amount_spent_on_gas_raw * eth_price_now, 2)
+        avg_gas_cost = keep_significant_number_float(self.avg_gas_price, 1)
+        eth_success = keep_significant_number_float(self.success[1] / 10 ** 18, 3)
+        eth_fail = keep_significant_number_float(self.fail[1] / 10 ** 18, 3)
+        eth_success_dollar = keep_significant_number_float(eth_success * eth_price_now, 3)
+        eth_fail_dollar = keep_significant_number_float(eth_fail * eth_price_now, 3)
+        beginning_message = "" if self.since is None else "In the last " + str(self.since) + " days:\n"
+        message = "Total number of tx: " + str(self.amountTx) + '\n' \
+                  + "Amount spent on gas: Ξ" + str(amount_spent_on_gas_raw) + " = $" + str(
+            amount_spent_on_gas_usd) + '\n' \
+                  + "Average gas spent per tx = " + str(avg_gas_cost) + '\n' \
+                  + "Tx successful = " + str(self.success[0]) + " -> Ξ" + str(eth_success) + " spent in gas ($" + str(
+            eth_success_dollar) + ')\n' \
+                  + "Tx failed = " + str(self.fail[0]) + " -> Ξ" + str(eth_fail) + " spent in gas ($" + str(
+            eth_fail_dollar) + ')'
+        return beginning_message + message
+
+import time
+
+def get_gas_spent_test(address, options=None):
+    url = "https://api.etherscan.io/api?module=account&action=txlist&address=$ADDR&startblock=0&endblock=99999999&sort=asc&apikey=$APIKEY"
+    url_prepared = url.replace("$APIKEY", 'DX6N2XZ3A45NY4VFAKHIKRAR7KXVYYUN91').replace("$ADDR", address)
+    results = requests.get(url_prepared).json()
+    txs = results['result']
+    total_gas_success = 0
+    total_gas_fail = 0
+    error_number, success_number = 0, 0
+    total_cost_success = 0
+    total_cost_fail = 0
+    avg_price = 0
+    since = None
+    ts_min = 0
+    if options is not None:
+        for option in options:
+            if option.isdigit():
+                since = int(option)
+                ts_min = round(time.time() - 3600 * since)
+    for tx in txs:
+        if int(tx['timeStamp']) < ts_min:
+            continue
+        gas_price_tx = int(tx['gasPrice'])
+        gas_used = int(tx['gasUsed'])
+        avg_price += gas_price_tx
+        if int(tx['isError']) == 1:
+            error_number += 1
+            total_gas_fail += gas_used
+            total_cost_fail += gas_used * gas_price_tx
+        else:
+            success_number += 1
+            total_gas_success += gas_used
+            total_cost_success += gas_used * gas_price_tx
+    avg_price = round(avg_price / len(txs))
+    total_gas = total_gas_success + total_cost_fail
+    avg_price_rounded = avg_price / 10 ** 9
+    total_cost = ((total_cost_fail + total_cost_success) / 10 ** 18)
+    return GasSpent(success_number + error_number, total_cost, total_gas, avg_price_rounded, (success_number, total_cost_success),
+                    (error_number, total_cost_fail), since)
+
+
 if __name__ == '__main__':
-    get_balance_wallet("0x56B082C827b61dD481A06240e604a13eD4738Ec4")
+    res = get_gas_spent_test("0x56B082C827b61dD481A06240e604a13eD4738Ec4", ["5"])
+    pprint(res.to_string())
     # url = "https://api.ethplorer.io/getTokenInfo/0xd08517cd0372cD12B710a554F5025cFD419B43fF"
     # res = requests.get(url).json()
     # pprint(res)

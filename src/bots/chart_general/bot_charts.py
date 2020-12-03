@@ -489,9 +489,9 @@ def get_gas_spent(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "gas_spent")
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')
-    if len(query_received) == 2:
-        addr = query_received[1].lower()
-        res = general_end_functions.get_gas_spent(addr)
+    if len(query_received) >= 2:
+        addr, options = queries_parser.analyze_query_gas_spent(query_received)
+        res = general_end_functions.get_gas_spent(addr, options)
         context.bot.send_message(chat_id=chat_id, text=res)
     else:
         context.bot.send_message(chat_id=chat_id, text="Please use the format /gas_spent address (ex: /gas_spent 0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8)")

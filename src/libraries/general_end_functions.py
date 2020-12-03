@@ -387,11 +387,11 @@ def get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client
         return strings
 
 
-def get_gas_spent(address):
+def get_gas_spent(address, options=None):
     if not Web3.isAddress(address.lower()):
         return "Address " + str(address.lower()) + " not valid."
     else:
-        gas_spent = requests_util.get_gas_spent(address)
+        gas_spent = requests_util.get_gas_spent(address, options)
         return gas_spent.to_string()
 
 

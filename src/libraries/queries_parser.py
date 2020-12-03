@@ -54,7 +54,10 @@ def finalize_query_charts(args, unknown_args, default_token, default_time_period
 
     return token, start_time, time_period, options
 
-# LAST ACTIONS
+# ---------------------------------------------------
+#                  LAST ACTIONS
+# ---------------------------------------------------
+
 
 def analyze_query_last_actions(query, default_token, default_options=None):
     preprocessed_query = preprocess_query_last_actions(query)
@@ -96,14 +99,46 @@ def finalize_query_last_actions(args, unknown_args, default_token, default_optio
     return token, options
 
 
+# ---------------------------------------------------
+#                  GAS SPENT
+# ---------------------------------------------------
 
-# last_actions --token TOKEN --size SIZE (0-20) --whales (--buys --sells --liquidity)
-# -whales
-# -buys
-# -sells
-# -liquidity
-#
-#
-#
-#
-#
+
+def analyze_query_gas_spent(query, default_options=None):
+    preprocessed_query = preprocess_query_last_actions(query)
+    parsed_query = parse_query_charts(preprocessed_query)
+    addr, options = finalize_query_last_actions(parsed_query[0], parsed_query[1], default_options)
+    trimmed_options = [x.replace("-", "") for x in options]
+    return addr, trimmed_options
+
+
+def preprocess_query_gas_spent(query):
+    individual_args = query.split(' ')[1:]
+    formatted_args = []
+    for arg in individual_args:
+        if arg[0] == "-":
+            formatted_args.append(arg)
+        elif arg.isdigit():
+            formatted_args.append("-" + arg)
+        else:
+            formatted_args.append("--addr")
+            formatted_args.append(arg)
+    return formatted_args
+
+
+def parse_query_gas_spent(query):
+    pprint(query)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--addr")
+
+    args, unknown = parser.parse_known_args(query)
+
+    return args, unknown
+
+
+def finalize_query_gas_spent(args, unknown_args, default_options=None):
+
+    addr = args.addr
+    options = unknown_args if unknown_args is not [] else default_options
+
+    return addr, options
