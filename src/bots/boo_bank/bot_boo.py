@@ -122,8 +122,8 @@ def get_candlestick(update: Update, context: CallbackContext):
 
 def get_price_token(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
-    if "BBRA" in update.message.chat.title:
-        context.bot.send_message(chat_id=chat_id, text="For BOOB prices and discussions, you can join us at @boobankertoken", parse_mode='html', disable_web_page_preview=True)
+    if update.message.chat.title == "BBRA":
+        context.bot.send_message(chat_id=chat_id, text="We created a price discussion channel\n you can make the boobanker bot stuff in there @BBRAprice")
     else:
         message = general_end_functions.get_price(boob_contract, pair_contract, graphql_client_eth, graphql_client_uni, name, decimals, uni_wrapper)
         util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
@@ -133,6 +133,9 @@ def get_price_token(update: Update, context: CallbackContext):
 def get_price_ecto(update: Update, context: CallbackContext):
     message = general_end_functions.get_price(ecto_contract, pair_contract, graphql_client_eth, graphql_client_uni, ecto_name, decimals, uni_wrapper)
     chat_id = update.message.chat_id
+    if update.message.chat.title == "BBRA":
+        context.bot.send_message(chat_id=chat_id, text="We created a price discussion channel\n you can make the boobanker bot stuff in there @BBRAprice")
+        return
     util.create_and_send_vote("ECTO", "price", update.message.from_user.name, zerorpc_client_data_aggregator)
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
@@ -140,6 +143,9 @@ def get_price_ecto(update: Update, context: CallbackContext):
 def get_price_bbra(update: Update, context: CallbackContext):
     message = general_end_functions.get_price(bbra_contract, pair_contract, graphql_client_eth, graphql_client_uni, bbra_name, decimals, uni_wrapper)
     chat_id = update.message.chat_id
+    if update.message.chat.title == "BBRA":
+        context.bot.send_message(chat_id=chat_id, text="We created a price discussion channel\n you can make the boobanker bot stuff in there @BBRAprice")
+        return
     util.create_and_send_vote("BBRA", "price", update.message.from_user.name, zerorpc_client_data_aggregator)
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
@@ -318,6 +324,9 @@ def get_chart_supply(update: Update, context: CallbackContext):
 
     query_received = update.message.text.split(' ')
 
+    if update.message.chat.title == "BBRA":
+        context.bot.send_message(chat_id=chat_id, text="We created a price discussion channel\n you can make the boobanker bot price stuff in there @BBRAprice")
+        return
 
     if "bbra" in query_received or "BBRA" in query_received or "BBRA" in update.message.chat.title:
         supply_file_path_general = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
@@ -406,6 +415,9 @@ def delete_meme(update: Update, context: CallbackContext):
 
 def get_latest_actions(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
+    if update.message.chat.title == "BBRA":
+        context.bot.send_message(chat_id=chat_id, text="We created a price discussion channel\n you can make the boobanker bot stuff in there @BBRAprice")
+        return
     query_received = update.message.text.split(' ')
     if len(query_received) == 1:
         token_ticker = "BOOB"
