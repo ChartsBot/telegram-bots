@@ -42,7 +42,32 @@ def datteeesss(t_from, t_to):
 def get_price(ticker, client):
     return client.get_ticker(symbol=ticker)
 
+
+t = """[{'address': '0x1755baa7b6017da5a96d553c2213dfbee140396c',
+ 'holdersCount': 4,
+ 'issuancesCount': 0,
+ 'lastUpdated': 1607020578,
+ 'owner': '0x924f7008ff73c825b711370344fd069fc348ef00',
+ 'price': False,
+ 'totalSupply': '8000000000000000000'}]
+"""
+
+import json
+import src.libraries.requests_util as requests_util
+
 if __name__ == '__main__':
     # pass
-    res = get_price("btcusdt".upper(), client)
-    pprint(res)
+    # res = get_price("btcusdt".upper(), client)
+    # pprint(res)
+    res = requests_util.get_balance_wallet_request("0xd08517cd0372cD12B710a554F5025cFD419B43fF")
+    for token in res['tokens']:
+        if token['balance'] != 0:
+            token_owned_raw = float(token['balance'])
+            maybe_token_descr = token['tokenInfo']
+            if maybe_token_descr is not None:
+                if 'decimals' in maybe_token_descr:
+                    pprint("yeah")
+                else:
+                    pprint("nah")
+                    pprint(maybe_token_descr)
+    res = ''

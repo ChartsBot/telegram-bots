@@ -155,7 +155,7 @@ class GasSpent:
     since: int
 
     def to_string(self):
-        eth_price_now = get_eth_price_now()
+        eth_price_now = 550# get_eth_price_now()
         amount_spent_on_gas_raw = keep_significant_number_float(self.eth_spent, 2)
         amount_spent_on_gas_usd = keep_significant_number_float(amount_spent_on_gas_raw * eth_price_now, 2)
         avg_gas_cost = keep_significant_number_float(self.avg_gas_price, 1)

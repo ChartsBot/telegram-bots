@@ -447,7 +447,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
                 pprint(maybe_token_descr)
                 if 'decimals' not in maybe_token_descr:
                     pass
-                if maybe_token_descr['decimals'] == 0 or 'name' not in maybe_token_descr:
+                elif maybe_token_descr['decimals'] == 0 or 'name' not in maybe_token_descr:
                     pass
                 else:
                     decimals = int(maybe_token_descr['decimals'])
