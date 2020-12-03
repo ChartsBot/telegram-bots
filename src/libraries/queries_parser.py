@@ -105,9 +105,9 @@ def finalize_query_last_actions(args, unknown_args, default_token, default_optio
 
 
 def analyze_query_gas_spent(query, default_options=None):
-    preprocessed_query = preprocess_query_last_actions(query)
-    parsed_query = parse_query_charts(preprocessed_query)
-    addr, options = finalize_query_last_actions(parsed_query[0], parsed_query[1], default_options)
+    preprocessed_query = preprocess_query_gas_spent(query)
+    parsed_query = parse_query_gas_spent(preprocessed_query)
+    addr, options = finalize_query_gas_spent(parsed_query[0], parsed_query[1], default_options)
     trimmed_options = [x.replace("-", "") for x in options]
     return addr, trimmed_options
 
