@@ -99,6 +99,10 @@ supply_chart_path = BASE_PATH + 'log_files/boo_bot/supply_chart.png'
 def get_candlestick(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
 
+    if update.message.chat.title == "BBRA":
+        context.bot.send_message(chat_id=chat_id, text="We created a price discussion channel\n you can make the boobanker bot stuff in there @BBRAprice")
+        return
+
     query_received = update.message.text.split(' ')
     default_ticker = ticker
     if "BBRA" in update.message.chat.title:
