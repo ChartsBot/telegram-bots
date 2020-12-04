@@ -121,7 +121,7 @@ class Swap:
         message = ""
         # time_now = time_util.get_time_diff(self.timestamp)
         if self.is_positif():
-            message += "👍 Buy  " + float_to_str(self.buy[1])[0:6] + " " + self.buy[0] + " for " + float_to_str(self.sell[1])[0:6] + " ETH."
+            message += "👍 Buy " + float_to_str(self.buy[1])[0:6] + " " + self.buy[0] + " for " + float_to_str(self.sell[1])[0:6] + " ETH."
         else:
             message += "👎 Sell " + float_to_str(self.sell[1])[0:6] + " " + self.sell[0] + " for " + float_to_str(self.buy[1])[0:6] + " ETH."
         message += " | " + '<a href=ehterscan.io/tx/' + str(self.id) + '">view</a>'
