@@ -390,6 +390,7 @@ def __preprocess_chartex_data(values, resolution):
                         # print("increasing lows index 0")
                         lows[0] = max(lows[0] * 2, lows[1] / 2)
                 else:
+                    opens[index] = closes[index - 1]
                     if highs[index] > highs[index - 1] * 2 and highs[index] > highs[index + 1] * 2:
                         # print("reducing highs")
                         highs[index] = (highs[index - 1] + highs[index + 1])
