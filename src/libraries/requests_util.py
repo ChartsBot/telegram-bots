@@ -705,8 +705,11 @@ def detect_bots(actions):
     return others + kept_actions
 
 
-def get_last_actions(pair, graphql_client_uni, options=None, amount=30):
+def get_last_actions(pair, graphql_client_uni, options=None, amount=50):
     eth_price = get_eth_price_now()
+    if options is not None:
+        if ("whale" in options or "whales" in options or "w" in options) and amount == 50:
+            amount = 100
     last_actions = get_latest_actions(pair.lower(), graphql_client_uni, options, amount)
 
     parsed_swaps = parse_swaps(last_actions)

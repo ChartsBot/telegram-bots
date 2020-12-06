@@ -457,11 +457,9 @@ def get_latest_actions(update: Update, context: CallbackContext):
     else:
         default_token = __get_default_token_channel(chat_id)
         if default_token is not None:
-            ticker = default_token[0]
-            addr = default_token[1]
+            ticker, addr = default_token[0], default_token[1]
         else:
-            ticker = None
-            addr = None
+            ticker, addr = None, None
         token, options = queries_parser.analyze_query_last_actions(update.message.text, ticker)
         if token is not None:
             if addr is not None:
