@@ -392,7 +392,9 @@ def __preprocess_chartex_data(values, resolution):
                 else:
                     # those 2 lines here to fix strange chartex behaviour
                     opens[index] = closes[index - 1]
-                    lows[index] = opens[index] if opens[index] < lows[index] else lows[index]
+                    pprint("open: " + str(opens[index]) + " - closes before: " + str(closes[index - 1]))
+                    lows[index] = min([opens[index], lows[index], closes[index]])
+                    highs[index] = max([opens[index], highs[index], closes[index]])
                     if highs[index] > highs[index - 1] * 2 and highs[index] > highs[index + 1] * 2:
                         # print("reducing highs")
                         highs[index] = (highs[index - 1] + highs[index + 1])
