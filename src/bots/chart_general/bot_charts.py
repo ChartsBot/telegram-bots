@@ -807,7 +807,6 @@ def analyze_wallet(update: Update, context: CallbackContext):
                 res = general_end_functions.get_balance_wallet(wallet.lower(), pie_chart_wallet_path, True)
             else:
                 res = general_end_functions.get_balance_wallet(wallet.lower(), pie_chart_wallet_path, False)
-                print(res)
             context.bot.send_message(chat_id=chat_id, text=res[:4093], parse_mode='MarkdownV2', disable_web_page_preview=True)
             context.bot.send_photo(chat_id=chat_id, photo=open(pie_chart_wallet_path, 'rb'))
 
