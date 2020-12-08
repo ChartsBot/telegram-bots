@@ -57,12 +57,12 @@ class TokenOwned:
             return default
 
     def to_string(self, complex=False):
-        top = "<b>(" + self.ticker[:6] + ") " + self.name[:15] + "</b>"
+        top = "*(" + self.ticker[:6] + ") " + self.name[:15] + "*"
         if self.get_amount_usd_token() is not None:
-            top += "   -   <code>$" + pretty_number(self.get_amount_usd_token()) + "</code>"
-        bottom = "<code>" + pretty_number(self.amount_owned) + "</code> " + self.ticker[:6]
+            top += "   -   `$" + pretty_number(self.get_amount_usd_token()) + "`"
+        bottom = "`" + pretty_number(self.amount_owned) + "` " + self.ticker[:6]
         if self.value_usd is not None:
-            bottom += " - <code>$" + pretty_number(self.value_usd) + "</code>"
+            bottom += " - `$" + pretty_number(self.value_usd) + "`"
         return top + '\n' + bottom
 
     def get_percent(self, total_usd):
@@ -89,7 +89,9 @@ def get_balance_wallet(wallet: str):
             token_owned_raw = float(token['balance'])
             maybe_token_descr = token['tokenInfo']
             if maybe_token_descr is not None:
-                if maybe_token_descr['decimals'] == 0 or 'name' not in maybe_token_descr:
+                if 'decimals' not in maybe_token_descr:
+                    pass
+                elif maybe_token_descr['decimals'] == 0 or 'name' not in maybe_token_descr:
                     pass
                 else:
                     pprint(maybe_token_descr)
@@ -217,7 +219,8 @@ def get_gas_spent_test(address, options=None):
 
 
 if __name__ == '__main__':
-    res = get_gas_spent_test("0x56B082C827b61dD481A06240e604a13eD4738Ec4", ["5"])
+    # res = get_gas_spent_test("0x56B082C827b61dD481A06240e604a13eD4738Ec4", ["5"])
+    res = get_balance_wallet("0x56B082C827b61dD481A06240e604a13eD4738Ec4")
     pprint(res.to_string())
     # url = "https://api.ethplorer.io/getTokenInfo/0xd08517cd0372cD12B710a554F5025cFD419B43fF"
     # res = requests.get(url).json()
