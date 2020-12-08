@@ -413,10 +413,10 @@ class TokenOwned:
     def to_string(self, complex=False):
         top = "*\(" + self.ticker[:6].replace(".", "\.") + "\) " + self.name[:15].replace(".", "\.") + "*"
         if self.get_amount_usd_token() is not None:
-            top += "   \-   `$" + util.pretty_number(self.get_amount_usd_token()).replace(".", "\.") + "`"
+            top += "   -   `$" + util.pretty_number(self.get_amount_usd_token()).replace(".", "\.") + "`"
         bottom = "`" + util.pretty_number(self.amount_owned).replace(".", "\.") + "` " + self.ticker[:6].replace(".", "\.")
         if self.value_usd is not None:
-            bottom += " \- `$" + util.pretty_number(self.value_usd).replace(".", "\.") + "`"
+            bottom += " - `$" + util.pretty_number(self.value_usd).replace(".", "\.") + "`"
         return top + '\n' + bottom
 
     def get_percent(self, total_usd):
@@ -465,7 +465,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
         total_value += token.get_amount_usd_token(0.0)
     message = ""
     if too_many_tokens:
-        message = "Too many coins in wallet " + str(len(tokens_owned_sorted)) + " limiting view to 500 random tokens.\n"
+        message = "Too many coins in wallet \(" + str(len(tokens_owned_sorted)) + "\) limiting view to 500 random tokens.\n"
     message += "*Total value of wallet:* `$" + util.pretty_number(total_value) + "`\n"
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]  # For some reasons filtering on the tokens remove the order
@@ -478,7 +478,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
 
     graphs_util.get_piechart(tokens_owned_sorted, path)
 
-    return message_top + message
+    return (message_top + message).replace("-", "\-")
 
 
 def get_price_token(maybe_token):
