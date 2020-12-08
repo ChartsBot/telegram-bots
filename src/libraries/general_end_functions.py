@@ -411,12 +411,12 @@ class TokenOwned:
             return default
 
     def to_string(self, complex=False):
-        top = "*(" + self.ticker[:6].replace(".", "\.") + ") " + self.name[:15].replace(".", "\.") + "*"
+        top = "*\(" + self.ticker[:6].replace(".", "\.") + "\) " + self.name[:15].replace(".", "\.") + "*"
         if self.get_amount_usd_token() is not None:
-            top += "   -   `$" + util.pretty_number(self.get_amount_usd_token()).replace(".", "\.") + "`"
+            top += "   \-   `$" + util.pretty_number(self.get_amount_usd_token()).replace(".", "\.") + "`"
         bottom = "`" + util.pretty_number(self.amount_owned).replace(".", "\.") + "` " + self.ticker[:6].replace(".", "\.")
         if self.value_usd is not None:
-            bottom += " - `$" + util.pretty_number(self.value_usd).replace(".", "\.") + "`"
+            bottom += " \- `$" + util.pretty_number(self.value_usd).replace(".", "\.") + "`"
         return top + '\n' + bottom
 
     def get_percent(self, total_usd):
@@ -470,9 +470,9 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]  # For some reasons filtering on the tokens remove the order
         tokens_owned_sorted = [eth_token] + sorted(tokens_owned_sorted, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
-        message_top = "Overview of wallet " + wallet[0:10] + "...:\n"
+        message_top = "Overview of wallet " + wallet[0:10] + "\.\.\.:\n"
     else:
-        message_top = "Full view of wallet " + wallet[0:10] + "...:\n"
+        message_top = "Full view of wallet " + wallet[0:10] + "\.\.\.:\n"
     for token in tokens_owned_sorted:
         message += token.to_string() + "\n"
 
