@@ -411,12 +411,12 @@ class TokenOwned:
             return default
 
     def to_string(self, complex=False):
-        top = "*(" + self.ticker[:6] + ") " + self.name[:15] + "*"
+        top = "*(" + self.ticker[:6].replace(".", "\.") + ") " + self.name[:15].replace(".", "\.") + "*"
         if self.get_amount_usd_token() is not None:
-            top += "   -   `$" + util.pretty_number(self.get_amount_usd_token()) + "`"
-        bottom = "`" + util.pretty_number(self.amount_owned) + "` " + self.ticker[:6]
+            top += "   -   `$" + util.pretty_number(self.get_amount_usd_token()).replace(".", "\.") + "`"
+        bottom = "`" + util.pretty_number(self.amount_owned).replace(".", "\.") + "` " + self.ticker[:6].replace(".", "\.")
         if self.value_usd is not None:
-            bottom += " - `$" + util.pretty_number(self.value_usd) + "`"
+            bottom += " - `$" + util.pretty_number(self.value_usd).replace(".", "\.") + "`"
         return top + '\n' + bottom
 
     def get_percent(self, total_usd):
@@ -466,7 +466,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
     message = ""
     if too_many_tokens:
         message = "Too many coins in wallet " + str(len(tokens_owned_sorted)) + " limiting view to 500 random tokens.\n"
-    message += "*Total value of wallet: *`$" + util.pretty_number(total_value) + "`\n"
+    message += "*Total value of wallet:* `$" + util.pretty_number(total_value) + "`\n"
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]  # For some reasons filtering on the tokens remove the order
         tokens_owned_sorted = [eth_token] + sorted(tokens_owned_sorted, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
