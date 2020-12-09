@@ -433,7 +433,7 @@ def get_time_to(update: Update, context: CallbackContext):
     query_received = update.message.text[7:]
     if query_received == "jackpot" or query_received == " jackpot":
         query_received = "7 pm CST"
-    elif query_received.lower() == "christmas":
+    elif query_received.lower() == "christmas" or query_received.lower() == " christmas":
         logging.info("requesting timeto christmas")
         query_received = "25 december"
 
