@@ -434,6 +434,9 @@ def get_time_to(update: Update, context: CallbackContext):
     if query_received == "jackpot" or query_received == " jackpot":
         query_received = "7 pm CST"
 
+    if query_received.lower() == "christmas":
+        query_received = "25 december"
+
     higher, time_to = time_util.get_time_diff(query_received)
     word = ' is ' if higher else ' was '
     message = str(query_received) + word + str(time_to) + " from now."
@@ -810,8 +813,10 @@ def analyze_wallet(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text=res[:4093], parse_mode='MarkdownV2', disable_web_page_preview=True)
             context.bot.send_photo(chat_id=chat_id, photo=open(pie_chart_wallet_path, 'rb'))
 
+
 def error_callback(update, context):
     pprint.pprint(context.error)
+
 
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
