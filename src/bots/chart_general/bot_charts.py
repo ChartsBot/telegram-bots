@@ -851,7 +851,7 @@ def send_chart_trending(update: Update, context: CallbackContext) -> None:
     charts_time_refresh[token_chat_id] = t_to
     context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
                            reply_markup=reply_markup_chart)
-
+    query.answer()
     # Instead of sending a new message, edit the message that
     # originated the CallbackQuery. This gives the feeling of an
     # interactive menu.
