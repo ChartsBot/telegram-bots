@@ -825,6 +825,12 @@ ONE, TWO = range(2)
 TRENDING = 'TRENDING'
 GAS = 'SHOW_GAS_PRICE'
 
+HOME_KEYBOARD = [
+    [
+        InlineKeyboardButton("🔥 Trending", callback_data=TRENDING),
+        InlineKeyboardButton("🔥 Gas", callback_data=GAS),
+    ]
+]
 
 def send_chart_trending(update: Update, context: CallbackContext) -> None:
     """Prompt same text & keyboard as `start` does but not as new message"""
@@ -877,9 +883,10 @@ def view_trending(update: Update, context: CallbackContext) -> None:
     res = zerorpc_client_data_aggregator.view_trending_raw()
     pprint.pprint(res)
     query.answer()
-    kb = [[], [], []]
+    kb = [[], [], [], []]
     for i in range(0, len(res)):
         kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data=res[i]))
+    kb[3].append(InlineKeyboardButton("Main menu", callback_data="HOME"))
     reply_markup = InlineKeyboardMarkup(kb)
     query.edit_message_text(
         text="Here a the trending tokens:", reply_markup=reply_markup
@@ -898,13 +905,7 @@ def view_gas(update: Update, context: CallbackContext) -> None:
               "\nAvg : " + str(average) + \
               "\nSlow: " + str(low) + "</code>"
     query.answer()
-    keyboard = [
-        [
-            InlineKeyboardButton("🔥 Trending", callback_data=TRENDING),
-            InlineKeyboardButton("🔥 Gas", callback_data=GAS),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
     query.edit_message_text(
         text=message, parse_mode='html', reply_markup=reply_markup
     )
@@ -920,26 +921,21 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     # and a string as callback_data
     # The keyboard is a list of button rows, where each row is in turn
     # a list (hence `[[...]]`).
-    keyboard = [
-        [
-            InlineKeyboardButton("🔥 Trending", callback_data=TRENDING),
-            InlineKeyboardButton("🔥 Gas", callback_data=GAS),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
     # Send message with text and appended InlineKeyboard
     update.message.reply_text("Choose your path", reply_markup=reply_markup)
     # Tell ConversationHandler that we're in state `FIRST` now
     return FIRST
 
 
-def end(update: Update, context: CallbackContext) -> None:
+def home(update: Update, context: CallbackContext) -> None:
     """Returns `ConversationHandler.END`, which tells the
     ConversationHandler that the conversation is over"""
     query = update.callback_query
     query.answer()
-    query.edit_message_text(text="See you next time!")
-    return ConversationHandler.END
+    reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
+    update.message.reply_text("Choose your path", reply_markup=reply_markup)
+    return FIRST
 
 
 def main():
@@ -966,8 +962,8 @@ def main():
                 CallbackQueryHandler(view_gas, pattern=str(GAS)),
             ],
             TRENDING: [
+                CallbackQueryHandler(home, pattern='^' + str(TWO) + '$'),
                 CallbackQueryHandler(send_chart_trending, pattern='(.*)'),
-                CallbackQueryHandler(end, pattern='^' + str(TWO) + '$'),
             ],
         },
         fallbacks=[CommandHandler('start', get_start_message)],
