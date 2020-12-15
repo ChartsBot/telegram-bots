@@ -361,7 +361,7 @@ def __preprocess_gecko_charts_data(values):
     return date_list, opens, closes, highs, lows, volumes
 
 
-def __preprocess_chartex_data(values, resolution):
+def __preprocess_chartex_data(values):
     times_from_chartex = [datetime.datetime.fromtimestamp(round(x)) for x in values['t']]
 
     closes = [float(x) for x in values['c']]
@@ -369,6 +369,9 @@ def __preprocess_chartex_data(values, resolution):
     highs = [float(x) for x in values['h']]
     lows = [float(x) for x in values['l']]
     volumes = [float(x) for x in values['v']]
+    times = [round(x) for x in values['t']]
+
+    resolution = (times[1] - times[0]) / 60
 
     frequency = str(resolution) + "min"
     date_list = pd.date_range(start=times_from_chartex[0], end=times_from_chartex[-1],
@@ -376,6 +379,8 @@ def __preprocess_chartex_data(values, resolution):
 
     last_index = 0
     missing_dates_count = 0
+    last_inserted = None
+
     for date in date_list:
         if date in times_from_chartex:
             index = times_from_chartex.index(date)
@@ -391,27 +396,32 @@ def __preprocess_chartex_data(values, resolution):
                         lows[0] = max(lows[0] * 2, lows[1] / 2)
                 else:
                     # those 2 lines here to fix strange chartex behaviour
-                    opens[index] = closes[index - 1]
+                    opens[last_index] = closes[last_index - 1]
                     # pprint("open: " + str(opens[index]) + " - closes before: " + str(closes[index - 1]))
-                    lows[index] = min([opens[index], lows[index], closes[index]])
-                    highs[index] = max([opens[index], highs[index], closes[index]])
-                    if highs[index] > highs[index - 1] * 2 and highs[index] > highs[index + 1] * 2:
+                    lows[last_index] = min([opens[last_index], lows[last_index], closes[last_index]])
+                    highs[last_index] = max([opens[last_index], highs[last_index], closes[last_index]])
+                    if highs[last_index] > highs[last_index - 1] * 2 and highs[last_index] > highs[last_index + 1] * 2:
                         # print("reducing highs")
-                        highs[index] = (highs[index - 1] + highs[index + 1])
-                    if lows[index] < lows[index - 1] / 2 and lows[index] < lows[index + 1] / 2:
+                        highs[last_index] = (highs[last_index - 1] + highs[last_index + 1])
+                    if lows[last_index] < lows[last_index - 1] / 2 and lows[last_index] < lows[last_index + 1] / 2:
                         # print("increasing lows: from " + str(lows[index]) + ' to ' + str(min(lows[index - 1] - lows[index], lows[index + 1] - lows[index])))
-                        lows[index] = min(lows[index - 1] - lows[index], lows[index + 1] - lows[index])
+                        lows[last_index] = min(lows[last_index - 1] - lows[last_index], lows[last_index + 1] - lows[last_index])
             except IndexError:
                 pass
         else:
             index = last_index + 1
-            price = closes[index - 1]
-            closes.insert(index, price)
-            highs.insert(index, price)
-            lows.insert(index, price)
-            opens.insert(index, price)
+            close = closes[index - 1]
+            open = close
+            if last_inserted is not None:
+                if last_inserted < index - 2:
+                    open = opens[index - 1]
+            closes.insert(index, close)
+            lows.insert(index, close)
+            highs.insert(index, open)
+            opens.insert(index, open)
             volumes.insert(index, 0.0)
-            last_index = last_index + 1
+            last_index = index
+            last_inserted = index  # used to check if we have two consecutive missing dates for opens and close
             missing_dates_count += 1
     return (date_list, opens, closes, highs, lows, volumes)
 
@@ -446,10 +456,24 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
                 (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
             else:  # defaulting to chartex
                 values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
-                (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
+                if len(values['c']) < 20:  # reduce resolution
+                    first_time_returned = values['t'][0] - 100
+                    t_from_fix = first_time_returned if first_time_returned > t_from else t_from
+                    resolution = __calculate_resolution_from_time(t_from_fix, t_to)
+                    values2 = requests_util.get_graphex_data(token, resolution, t_from_fix, t_to).json()
+                    if values2['t'][0] - 100 > t_from:
+                        values = values2
+                (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values)
         else:
             values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
-            (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
+            if len(values['c']) < 20:  # reduce resolution
+                first_time_returned = values['t'][0] - 100
+                t_from_fix = first_time_returned if first_time_returned > t_from else t_from
+                resolution = __calculate_resolution_from_time(t_from_fix, t_to)
+                values2 = requests_util.get_graphex_data(token, resolution, t_from_fix, t_to).json()
+                if values2['t'][0] - 100 > t_from:
+                    values = values2
+            (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values)
     chart_img_raw = __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token,
                                                     options)
     chart_img = Image.open(chart_img_raw)
@@ -488,7 +512,7 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
     t_1 = time.time_ns() // 1000000
     values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
     t_2 = time.time_ns() // 1000000
-    (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
+    (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values)
     print("0 = " + str(date_list[0]))
     print("last = " + str(date_list[-1]))
     print("size = " + str(len(date_list)))
@@ -500,7 +524,7 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
 
 
 def main():
-    token = "bbra"
+    token = "BBV"
     t_to = int(time.time())
     t_from = int(time.time()) - 3600 * 24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
