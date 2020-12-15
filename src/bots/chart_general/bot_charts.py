@@ -825,8 +825,8 @@ ONE, TWO = range(2)
 TRENDING = 'TRENDING'
 GAS = 'SHOW_GAS_PRICE'
 
-TRENDING_TXT = "🔥 Trending"
-GAS_TXT = "⛽ Gas"
+TRENDING_TXT = "\xF0\x9F\x94\xA5 Trending"
+GAS_TXT = "\xE2\x9B\xBD Gas"
 
 HOME_KEYBOARD = [
     [
@@ -976,8 +976,8 @@ def main():
         entry_points=[CommandHandler('start', start_menu_private_conv)],
         states={
             FIRST: [
-                CommandHandler('TRENDING_TXT', view_trending),
-                CommandHandler('GAS_TXT', view_gas),
+                CommandHandler(TRENDING_TXT, view_trending),
+                CommandHandler(GAS_TXT, view_gas),
                 CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'),
                 CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'),
                 CallbackQueryHandler(delete_message, pattern='delete_message')
