@@ -828,7 +828,7 @@ GAS = 'SHOW_GAS_PRICE'
 HOME_KEYBOARD = [
     [
         InlineKeyboardButton("🔥 Trending", callback_data=TRENDING),
-        InlineKeyboardButton("🔥 Gas", callback_data=GAS),
+        InlineKeyboardButton("⛽ Gas", callback_data=GAS),
     ]
 ]
 
