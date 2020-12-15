@@ -17,7 +17,7 @@ import os.path
 import re
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler
+from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler, ConversationHandler
 from telegram.ext.dispatcher import run_async
 from telegram.error import ChatMigrated, BadRequest
 import libraries.web3_calls as web3_util
@@ -818,6 +818,99 @@ def error_callback(update, context):
     pprint.pprint(context.error)
 
 
+# Stages
+FIRST, SECOND = range(2)
+# Callback data
+ONE, TWO = range(2)
+
+
+
+def start_over(update: Update, context: CallbackContext) -> None:
+    """Prompt same text & keyboard as `start` does but not as new message"""
+    # Get CallbackQuery from Update
+    query = update.callback_query
+    # CallbackQueries need to be answered, even if no notification to the user is needed
+    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+    query.answer()
+    keyboard = [
+        [
+            InlineKeyboardButton("1", callback_data=str(ONE)),
+            InlineKeyboardButton("2", callback_data=str(TWO)),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    # Instead of sending a new message, edit the message that
+    # originated the CallbackQuery. This gives the feeling of an
+    # interactive menu.
+    query.edit_message_text(text="Start handler, Choose a route", reply_markup=reply_markup)
+    return FIRST
+
+
+def one(update: Update, context: CallbackContext) -> None:
+    """Show new choice of buttons"""
+    query = update.callback_query
+    query.answer()
+    keyboard = [
+        [
+            InlineKeyboardButton("1", callback_data=str(ONE)),
+            InlineKeyboardButton("2", callback_data=str(TWO)),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text(
+        text="First CallbackQueryHandler, Choose a route", reply_markup=reply_markup
+    )
+    return FIRST
+
+
+def two(update: Update, context: CallbackContext) -> None:
+    """Show new choice of buttons"""
+    query = update.callback_query
+    query.answer()
+    keyboard = [
+        [
+            InlineKeyboardButton("1", callback_data=str(ONE)),
+            InlineKeyboardButton("2", callback_data=str(TWO)),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text(
+        text="Second CallbackQueryHandler, Choose a route", reply_markup=reply_markup
+    )
+    return FIRST
+
+
+def start(update: Update, context: CallbackContext) -> None:
+    """Send message on `/start`."""
+    # Get user that sent /start and log his name
+    user = update.message.from_user
+    logging.info("User %s started the conversation.", user.username)
+    # Build InlineKeyboard where each button has a displayed text
+    # and a string as callback_data
+    # The keyboard is a list of button rows, where each row is in turn
+    # a list (hence `[[...]]`).
+    keyboard = [
+        [
+            InlineKeyboardButton("1", callback_data=str(ONE)),
+            InlineKeyboardButton("2", callback_data=str(TWO)),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    # Send message with text and appended InlineKeyboard
+    update.message.reply_text("Start handler, Choose a route", reply_markup=reply_markup)
+    # Tell ConversationHandler that we're in state `FIRST` now
+    return FIRST
+
+
+def end(update: Update, context: CallbackContext) -> None:
+    """Returns `ConversationHandler.END`, which tells the
+    ConversationHandler that the conversation is over"""
+    query = update.callback_query
+    query.answer()
+    query.edit_message_text(text="See you next time!")
+    return ConversationHandler.END
+
+
 def main():
     global TELEGRAM_KEY
     if len(sys.argv) == 2:
@@ -869,6 +962,21 @@ def main():
     dp.add_handler(CommandHandler('add_channel', add_channel, filters=Filters.user(username='@rotted_ben')))
 
     dp.add_handler(MessageHandler(Filters.command, get_price_direct, run_async=True))
+
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('start', start)],
+        states={
+            FIRST: [
+                CallbackQueryHandler(one, pattern='^' + str(ONE) + '$'),
+                CallbackQueryHandler(two, pattern='^' + str(TWO) + '$'),
+            ],
+            SECOND: [
+                CallbackQueryHandler(start_over, pattern='^' + str(ONE) + '$'),
+                CallbackQueryHandler(end, pattern='^' + str(TWO) + '$'),
+            ],
+        },
+        fallbacks=[CommandHandler('start', start)],
+    )
 
     j = updater.job_queue
     job_minute = j.run_repeating(callback_minute, interval=check_big_buys_interval_seconds, first=15)
