@@ -855,7 +855,7 @@ def send_chart_trending(update: Update, context: CallbackContext) -> None:
     # Instead of sending a new message, edit the message that
     # originated the CallbackQuery. This gives the feeling of an
     # interactive menu.
-    return FIRST
+    return TRENDING
 
 
 def _get_button_name(position, list):
