@@ -895,13 +895,13 @@ def view_trending(update: Update, context: CallbackContext):
     pprint.pprint(res)
     kb = [[], [], [], []]
     for i in range(0, len(res)):
-        kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data=res[i]))
+        kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data="TRD:"+res[i]))
     reply_markup = InlineKeyboardMarkup(kb)
     context.bot.send_message(text="Here's what's trending", chat_id=chat_id, reply_markup=reply_markup)
     # query.edit_message_text(
     #     text="Here a the trending tokens:", reply_markup=reply_markup
     # )
-    return TRENDING
+    return FIRST
 
 
 def view_gas(update: Update, context: CallbackContext):
@@ -978,14 +978,8 @@ def main():
                 CallbackQueryHandler(delete_message, pattern='delete_message'),
                 MessageHandler(Filters.text(TRENDING_TXT), view_trending, run_async=True),
                 MessageHandler(Filters.text(GAS_TXT), view_gas, run_async=True),
-            ],
-            TRENDING: [
-                CallbackQueryHandler(go_home, pattern='^' + 'HOME' + '$'),
-                CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'),
-                CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'),
-                CallbackQueryHandler(delete_message, pattern='delete_message'),
-                CallbackQueryHandler(send_chart_trending, pattern='(.*)'),
-            ],
+                CallbackQueryHandler(send_chart_trending, pattern='TRD:(.*)'),
+            ]
         },
         fallbacks=[CommandHandler('start', get_start_message)],
     )
