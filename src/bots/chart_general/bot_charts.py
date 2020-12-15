@@ -819,6 +819,7 @@ def error_callback(update, context):
 
 
 def main():
+    global TELEGRAM_KEY
     if len(sys.argv) == 2:
         TELEGRAM_KEY = sys.argv[1]
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
