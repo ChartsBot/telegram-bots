@@ -887,7 +887,7 @@ def _get_button_name(position, list):
         return emoji_number_dic.get(position + 1) + " " + list[position]
 
 
-def view_trending(update: Update, context: CallbackContext) -> None:
+def view_trending(update: Update, context: CallbackContext):
     """Show new choice of buttons"""
     logging.info("Viewing trending charts")
     query = update.callback_query
@@ -905,7 +905,7 @@ def view_trending(update: Update, context: CallbackContext) -> None:
     return TRENDING
 
 
-def view_gas(update: Update, context: CallbackContext) -> None:
+def view_gas(update: Update, context: CallbackContext):
     """Show new choice of buttons"""
     logging.info("Viewing gas price")
     query = update.callback_query
