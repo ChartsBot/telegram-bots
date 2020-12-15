@@ -825,8 +825,8 @@ ONE, TWO = range(2)
 TRENDING = 'TRENDING'
 GAS = 'SHOW_GAS_PRICE'
 
-TRENDING_TXT = "Trending"
-GAS_TXT = "Gas"
+TRENDING_TXT = "/Trending"
+GAS_TXT = "/Gas"
 
 HOME_KEYBOARD = [
     [
