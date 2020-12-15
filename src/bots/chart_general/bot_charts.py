@@ -852,6 +852,8 @@ def one(update: Update, context: CallbackContext) -> None:
     res = zerorpc_client_data_aggregator.view_trending_raw()
     pprint.pprint(res)
     query.answer()
+    for i in range(0, len(res)):
+        pprint.pprint(res[i])
     keyboard = [
         [
             InlineKeyboardButton("1", callback_data=str(ONE)),
