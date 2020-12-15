@@ -962,7 +962,7 @@ def main():
                 CallbackQueryHandler(view_gas, pattern=str(GAS)),
             ],
             TRENDING: [
-                CallbackQueryHandler(home, pattern='^' + str(TWO) + '$'),
+                CallbackQueryHandler(home, pattern='^' + 'HOME' + '$'),
                 CallbackQueryHandler(send_chart_trending, pattern='(.*)'),
             ],
         },
