@@ -912,6 +912,18 @@ def view_gas(update: Update, context: CallbackContext) -> None:
     return FIRST
 
 
+def go_home(update: Update, context: CallbackContext) -> None:
+    """Returns `ConversationHandler.END`, which tells the
+    ConversationHandler that the conversation is over"""
+    query = update.callback_query
+    query.answer()
+    reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
+    query.edit_message_text(
+        text="Choose your path", parse_mode='html', reply_markup=reply_markup
+    )
+    return FIRST
+
+
 def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     """Send message on `/start`."""
     # Get user that sent /start and log his name
@@ -925,19 +937,6 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     # Send message with text and appended InlineKeyboard
     update.message.reply_text("Choose your path", reply_markup=reply_markup)
     # Tell ConversationHandler that we're in state `FIRST` now
-    return FIRST
-
-
-def home(update: Update, context: CallbackContext) -> None:
-    """Returns `ConversationHandler.END`, which tells the
-    ConversationHandler that the conversation is over"""
-    query = update.callback_query
-    query.answer()
-    reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
-    query.edit_message_text(
-        text="Choose your path", parse_mode='html', reply_markup=reply_markup
-    )
-    update.message.reply_text("Choose your path", reply_markup=reply_markup)
     return FIRST
 
 
@@ -965,7 +964,7 @@ def main():
                 CallbackQueryHandler(view_gas, pattern=str(GAS)),
             ],
             TRENDING: [
-                CallbackQueryHandler(home, pattern='^' + 'HOME' + '$'),
+                CallbackQueryHandler(go_home, pattern='^' + 'HOME' + '$'),
                 CallbackQueryHandler(send_chart_trending, pattern='(.*)'),
             ],
         },
