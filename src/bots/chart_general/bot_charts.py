@@ -927,6 +927,23 @@ def main():
         update.message.reply_text('Bot is restarting...')
         Thread(target=stop_and_restart).start()
 
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('start', start)],
+        states={
+            FIRST: [
+                CallbackQueryHandler(one, pattern='^' + str(ONE) + '$'),
+                CallbackQueryHandler(two, pattern='^' + str(TWO) + '$'),
+            ],
+            SECOND: [
+                CallbackQueryHandler(start_over, pattern='^' + str(ONE) + '$'),
+                CallbackQueryHandler(end, pattern='^' + str(TWO) + '$'),
+            ],
+        },
+        fallbacks=[CommandHandler('start', start)],
+    )
+
+    dp.add_handler(conv_handler)
+
     # dp.add_error_handler(error_callback)
     dp.add_handler(CommandHandler('start', get_start_message))
     dp.add_handler(CommandHandler(['charts', 'chart', 'c'], get_candlestick, run_async=True))
@@ -963,22 +980,8 @@ def main():
 
     dp.add_handler(MessageHandler(Filters.command, get_price_direct, run_async=True))
 
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
-        states={
-            FIRST: [
-                CallbackQueryHandler(one, pattern='^' + str(ONE) + '$'),
-                CallbackQueryHandler(two, pattern='^' + str(TWO) + '$'),
-            ],
-            SECOND: [
-                CallbackQueryHandler(start_over, pattern='^' + str(ONE) + '$'),
-                CallbackQueryHandler(end, pattern='^' + str(TWO) + '$'),
-            ],
-        },
-        fallbacks=[CommandHandler('start', start)],
-    )
 
-    dp.add_handler(conv_handler)
+
 
     j = updater.job_queue
     job_minute = j.run_repeating(callback_minute, interval=check_big_buys_interval_seconds, first=15)
