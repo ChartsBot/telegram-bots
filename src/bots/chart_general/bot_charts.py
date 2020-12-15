@@ -830,10 +830,11 @@ def send_chart_trending(update: Update, context: CallbackContext) -> None:
     """Prompt same text & keyboard as `start` does but not as new message"""
     # Get CallbackQuery from Update
     logging.info("Sending chart in private")
-    chat_id = update.callback_query.message.chat_id
-    query = update.callback_query.data
-    pprint.pprint(query)
-    token = query
+    query = update.callback_query
+    chat_id = query.message.chat_id
+    text_query = query.data
+    pprint.pprint(text_query)
+    token = text_query
     time_type, k_hours, k_days = 'd', 0, 3
     t_to = int(time.time())
     t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
