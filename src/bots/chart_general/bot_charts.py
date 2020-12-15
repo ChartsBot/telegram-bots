@@ -825,6 +825,9 @@ ONE, TWO = range(2)
 TRENDING = 'TRENDING'
 GAS = 'SHOW_GAS_PRICE'
 
+TRENDING_TXT = "🔥 Trending"
+GAS_TXT = "⛽ Gas"
+
 HOME_KEYBOARD = [
     [
         InlineKeyboardButton("🔥 Trending", callback_data=TRENDING),
@@ -834,8 +837,8 @@ HOME_KEYBOARD = [
 
 REPLY_HOME_KEYBOARD = [
     [
-        "🔥 Trending",
-        "⛽ Gas"
+        TRENDING_TXT,
+        GAS_TXT
     ]
 ]
 
@@ -941,7 +944,7 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     # and a string as callback_data
     # The keyboard is a list of button rows, where each row is in turn
     # a list (hence `[[...]]`).
-    reply_markup = ReplyKeyboardMarkup(REPLY_HOME_KEYBOARD)
+    reply_markup = ReplyKeyboardMarkup(REPLY_HOME_KEYBOARD, resize_keyboard=True)
     # Send message with text and appended InlineKeyboard
     members_count = context.bot.get_chat_members_count(update.message.chat_id)
     if members_count > 2:
@@ -973,8 +976,8 @@ def main():
         entry_points=[CommandHandler('start', start_menu_private_conv)],
         states={
             FIRST: [
-                CallbackQueryHandler(view_trending, pattern=TRENDING),
-                CallbackQueryHandler(view_gas, pattern=GAS),
+                CallbackQueryHandler(view_trending, pattern=TRENDING_TXT),
+                CallbackQueryHandler(view_gas, pattern=GAS_TXT),
                 CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'),
                 CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'),
                 CallbackQueryHandler(delete_message, pattern='delete_message')
