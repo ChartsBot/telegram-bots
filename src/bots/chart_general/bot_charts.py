@@ -846,7 +846,7 @@ def send_chart_trending(update: Update, context: CallbackContext) -> None:
                                                                                         t_to, txt=trending, options=["rsi"],
                                                                                         with_ad=maybe_bottom_text)
 
-    util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
+    util.create_and_send_vote(token, "chart", update.callback_query.message.from_user.name, zerorpc_client_data_aggregator)
     token_chat_id = str(chat_id) + "_" + token
     charts_time_refresh[token_chat_id] = t_to
     context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
