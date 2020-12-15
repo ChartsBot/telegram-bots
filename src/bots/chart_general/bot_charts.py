@@ -849,7 +849,7 @@ def send_chart_trending(update: Update, context: CallbackContext) -> None:
     logging.info("Sending chart in private")
     query = update.callback_query
     chat_id = query.message.chat_id
-    text_query = query.data
+    text_query = query.data[4:]
     pprint.pprint(text_query)
     token = text_query
     time_type, k_hours, k_days = 'd', 0, 3
@@ -873,7 +873,7 @@ def send_chart_trending(update: Update, context: CallbackContext) -> None:
     # Instead of sending a new message, edit the message that
     # originated the CallbackQuery. This gives the feeling of an
     # interactive menu.
-    return TRENDING
+    return FIRST
 
 
 def _get_button_name(position, list):
@@ -915,18 +915,6 @@ def view_gas(update: Update, context: CallbackContext):
               "\nAvg : " + str(average) + \
               "\nSlow: " + str(low) + "</code>"
     context.bot.send_message(text=message, chat_id=chat_id, parse_mode="html")
-    return FIRST
-
-
-def go_home(update: Update, context: CallbackContext) -> None:
-    """Returns `ConversationHandler.END`, which tells the
-    ConversationHandler that the conversation is over"""
-    query = update.callback_query
-    query.answer()
-    reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
-    query.edit_message_text(
-        text="Choose your path", parse_mode='html', reply_markup=reply_markup
-    )
     return FIRST
 
 
