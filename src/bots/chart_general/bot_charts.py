@@ -936,9 +936,14 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     # a list (hence `[[...]]`).
     reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
     # Send message with text and appended InlineKeyboard
-    update.message.reply_text("Choose your path", reply_markup=reply_markup)
-    # Tell ConversationHandler that we're in state `FIRST` now
-    return FIRST
+    members_count = context.bot.get_chat_members_count(update.message.chat_id)
+    if members_count > 2:
+        get_start_message(update, context)
+        return ConversationHandler.END
+    else:
+        update.message.reply_text("Choose your path", reply_markup=reply_markup)
+        # Tell ConversationHandler that we're in state `FIRST` now
+        return FIRST
 
 
 def main():
@@ -961,12 +966,17 @@ def main():
         entry_points=[CommandHandler('start', start_menu_private_conv)],
         states={
             FIRST: [
-                CallbackQueryHandler(view_trending, pattern=str(TRENDING)),
-                CallbackQueryHandler(view_gas, pattern=str(GAS)),
+                CallbackQueryHandler(view_trending, pattern=TRENDING),
+                CallbackQueryHandler(view_gas, pattern=GAS),
+                CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'),
+                CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'),
+                CallbackQueryHandler(delete_message, pattern='delete_message')
             ],
             TRENDING: [
                 CallbackQueryHandler(go_home, pattern='^' + 'HOME' + '$'),
                 CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'),
+                CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'),
+                CallbackQueryHandler(delete_message, pattern='delete_message'),
                 CallbackQueryHandler(send_chart_trending, pattern='(.*)'),
             ],
         },
