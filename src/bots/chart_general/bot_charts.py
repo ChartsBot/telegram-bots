@@ -893,12 +893,12 @@ def start(update: Update, context: CallbackContext) -> None:
     # a list (hence `[[...]]`).
     keyboard = [
         [
-            InlineKeyboardButton("🔥 Trending", callback_data='^' + TRENDING),
+            InlineKeyboardButton("🔥 Trending", callback_data=TRENDING),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     # Send message with text and appended InlineKeyboard
-    update.message.reply_text("Start handler, Choose a route", reply_markup=reply_markup)
+    update.message.reply_text("", reply_markup=reply_markup)
     # Tell ConversationHandler that we're in state `FIRST` now
     return FIRST
 
@@ -932,7 +932,7 @@ def main():
         entry_points=[CommandHandler('start', start)],
         states={
             FIRST: [
-                CallbackQueryHandler(view_trending, pattern='^' + str(TRENDING) + '$'),
+                CallbackQueryHandler(view_trending, pattern=str(TRENDING)),
             ],
             TRENDING: [
                 CallbackQueryHandler(send_chart_trending, pattern='^(.*)'),
