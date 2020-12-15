@@ -914,7 +914,7 @@ def view_gas(update: Update, context: CallbackContext):
               "\nFast: " + str(fast) + \
               "\nAvg : " + str(average) + \
               "\nSlow: " + str(low) + "</code>"
-    context.bot.send_message(text=message, chat_id=chat_id)
+    context.bot.send_message(text=message, chat_id=chat_id, parse_mode="html")
     return FIRST
 
 
