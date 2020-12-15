@@ -819,6 +819,8 @@ def error_callback(update, context):
 
 
 def main():
+    for eachArg in sys.argv:
+        print(eachArg)
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
 
