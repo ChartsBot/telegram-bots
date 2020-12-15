@@ -822,28 +822,38 @@ def error_callback(update, context):
 FIRST, SECOND = range(2)
 # Callback data
 ONE, TWO = range(2)
+TRENDING = 'TRENDING'
 
 
-
-def start_over(update: Update, context: CallbackContext) -> None:
+def send_chart_trending(update: Update, context: CallbackContext) -> None:
     """Prompt same text & keyboard as `start` does but not as new message"""
     # Get CallbackQuery from Update
+    chat_id = update.callback_query.message.chat_id
     query = update.callback_query
-    # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
-    query.answer()
-    keyboard = [
-        [
-            InlineKeyboardButton("1", callback_data=str(ONE)),
-            InlineKeyboardButton("2", callback_data=str(TWO)),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    token = query.split('t:')[1]
+    time_type, k_hours, k_days = 'd', 0, 3
+    t_to = int(time.time())
+    t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
+    trending = util.get_banner_txt(zerorpc_client_data_aggregator)
+
+    maybe_bottom_text = text_if_coin_being_watched(token)
+
+    (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
+                                                                                        k_hours, t_from,
+                                                                                        t_to, txt=trending, options=["rsi"],
+                                                                                        with_ad=maybe_bottom_text)
+
+    util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
+    token_chat_id = str(chat_id) + "_" + token
+    charts_time_refresh[token_chat_id] = t_to
+    context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
+                           reply_markup=reply_markup_chart)
+
     # Instead of sending a new message, edit the message that
     # originated the CallbackQuery. This gives the feeling of an
     # interactive menu.
-    query.edit_message_text(text="Start handler, Choose a route", reply_markup=reply_markup)
     return FIRST
+
 
 def _get_button_name(position, list):
     if position == 0:
@@ -853,9 +863,8 @@ def _get_button_name(position, list):
     elif position == 2:
         return "🥉 " + list[position]
     else:
-        pprint.pprint(emoji_number_dic.get(position + 1))
-
         return emoji_number_dic.get(position + 1) + " " + list[position]
+
 
 def one(update: Update, context: CallbackContext) -> None:
     """Show new choice of buttons"""
@@ -865,30 +874,10 @@ def one(update: Update, context: CallbackContext) -> None:
     query.answer()
     kb = [[], [], []]
     for i in range(0, len(res)):
-        pprint.pprint(res[i])
-        pprint.pprint(i)
-        pprint.pprint(i // 3)
-        kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data=str(ONE)))
+        kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data=res[i]))
     reply_markup = InlineKeyboardMarkup(kb)
     query.edit_message_text(
         text="Here a the trending coins. Select one", reply_markup=reply_markup
-    )
-    return FIRST
-
-
-def two(update: Update, context: CallbackContext) -> None:
-    """Show new choice of buttons"""
-    query = update.callback_query
-    query.answer()
-    keyboard = [
-        [
-            InlineKeyboardButton("1", callback_data=str(ONE)),
-            InlineKeyboardButton("2", callback_data=str(TWO)),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text(
-        text="Second CallbackQueryHandler, Choose a route", reply_markup=reply_markup
     )
     return FIRST
 
@@ -904,8 +893,7 @@ def start(update: Update, context: CallbackContext) -> None:
     # a list (hence `[[...]]`).
     keyboard = [
         [
-            InlineKeyboardButton("1", callback_data=str(ONE)),
-            InlineKeyboardButton("2", callback_data=str(TWO)),
+            InlineKeyboardButton("🔥 Trending", callback_data='^' + TRENDING),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -945,10 +933,9 @@ def main():
         states={
             FIRST: [
                 CallbackQueryHandler(one, pattern='^' + str(ONE) + '$'),
-                CallbackQueryHandler(two, pattern='^' + str(TWO) + '$'),
             ],
-            SECOND: [
-                CallbackQueryHandler(start_over, pattern='^' + str(ONE) + '$'),
+            TRENDING: [
+                CallbackQueryHandler(send_chart_trending, pattern='^(.*)'),
                 CallbackQueryHandler(end, pattern='^' + str(TWO) + '$'),
             ],
         },
