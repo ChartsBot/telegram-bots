@@ -890,18 +890,18 @@ def _get_button_name(position, list):
 def view_trending(update: Update, context: CallbackContext):
     """Show new choice of buttons"""
     logging.info("Viewing trending charts")
-    query = update.callback_query
+    chat_id = update.message.chat_id
     res = zerorpc_client_data_aggregator.view_trending_raw()
     pprint.pprint(res)
-    query.answer()
     kb = [[], [], [], []]
     for i in range(0, len(res)):
         kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data=res[i]))
     kb[3].append(InlineKeyboardButton("Main menu", callback_data="HOME"))
     reply_markup = InlineKeyboardMarkup(kb)
-    query.edit_message_text(
-        text="Here a the trending tokens:", reply_markup=reply_markup
-    )
+    context.bot.send_message(text="Here's what's trending", chat_id=chat_id, reply_markup=reply_markup)
+    # query.edit_message_text(
+    #     text="Here a the trending tokens:", reply_markup=reply_markup
+    # )
     return TRENDING
 
 
