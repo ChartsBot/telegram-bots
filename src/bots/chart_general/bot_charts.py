@@ -907,18 +907,14 @@ def view_trending(update: Update, context: CallbackContext):
 def view_gas(update: Update, context: CallbackContext):
     """Show new choice of buttons"""
     logging.info("Viewing gas price")
-    query = update.callback_query
+    chat_id = update.message.chat_id
     asap, fast, average, low = general_end_functions.get_gas_price()
     message = "<b>Gas price:</b><code>" + \
               "\nASAP: " + str(asap) + \
               "\nFast: " + str(fast) + \
               "\nAvg : " + str(average) + \
               "\nSlow: " + str(low) + "</code>"
-    query.answer()
-    reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
-    query.edit_message_text(
-        text=message, parse_mode='html', reply_markup=reply_markup
-    )
+    context.bot.send_message(text=message, chat_id=chat_id)
     return FIRST
 
 
