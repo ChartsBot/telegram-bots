@@ -849,6 +849,8 @@ def start_over(update: Update, context: CallbackContext) -> None:
 def one(update: Update, context: CallbackContext) -> None:
     """Show new choice of buttons"""
     query = update.callback_query
+    res = zerorpc_client_data_aggregator.view_trending_raw()
+    pprint.pprint(res)
     query.answer()
     keyboard = [
         [
@@ -858,7 +860,7 @@ def one(update: Update, context: CallbackContext) -> None:
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text(
-        text="First CallbackQueryHandler, Choose a route", reply_markup=reply_markup
+        text="Here a the trending coins. Select one", reply_markup=reply_markup
     )
     return FIRST
 
@@ -939,7 +941,7 @@ def main():
                 CallbackQueryHandler(end, pattern='^' + str(TWO) + '$'),
             ],
         },
-        fallbacks=[CommandHandler('start', start)],
+        fallbacks=[CommandHandler('start', get_start_message)],
     )
 
     dp.add_handler(conv_handler)
