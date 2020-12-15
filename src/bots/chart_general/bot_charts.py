@@ -866,7 +866,7 @@ def _get_button_name(position, list):
         return emoji_number_dic.get(position + 1) + " " + list[position]
 
 
-def one(update: Update, context: CallbackContext) -> None:
+def view_trending(update: Update, context: CallbackContext) -> None:
     """Show new choice of buttons"""
     query = update.callback_query
     res = zerorpc_client_data_aggregator.view_trending_raw()
@@ -932,7 +932,7 @@ def main():
         entry_points=[CommandHandler('start', start)],
         states={
             FIRST: [
-                CallbackQueryHandler(one, pattern='^' + str(ONE) + '$'),
+                CallbackQueryHandler(view_trending, pattern='^' + str(TRENDING) + '$'),
             ],
             TRENDING: [
                 CallbackQueryHandler(send_chart_trending, pattern='^(.*)'),
