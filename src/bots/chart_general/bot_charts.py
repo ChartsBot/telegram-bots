@@ -845,6 +845,15 @@ def start_over(update: Update, context: CallbackContext) -> None:
     query.edit_message_text(text="Start handler, Choose a route", reply_markup=reply_markup)
     return FIRST
 
+def _get_button_name(position, list):
+    if position == 0:
+        return "🥇 " + list[position]
+    elif position == 1:
+        return "🥈 " + list[position]
+    elif position == 2:
+        return "🥉 " + list[position]
+    else:
+        return str(position) + " " + list[position]
 
 def one(update: Update, context: CallbackContext) -> None:
     """Show new choice of buttons"""
@@ -857,7 +866,7 @@ def one(update: Update, context: CallbackContext) -> None:
         pprint.pprint(res[i])
         pprint.pprint(i)
         pprint.pprint(i // 3)
-        kb[i // 3].append(InlineKeyboardButton(res[i], callback_data=str(ONE)))
+        kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data=str(ONE)))
     keyboard = [
         [
             InlineKeyboardButton("1", callback_data=str(ONE)),
