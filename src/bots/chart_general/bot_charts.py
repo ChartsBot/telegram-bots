@@ -35,7 +35,7 @@ import libraries.scrap_websites_util as scrap_websites_util
 import libraries.queries_parser as queries_parser
 import libraries.translation_util as translation_util
 from libraries.uniswap import Uniswap
-from bots.chart_general.bot_charts_values import start_message, message_faq_empty, symbol_gecko, message_faq_additional
+from bots.chart_general.bot_charts_values import start_message, message_faq_empty, symbol_gecko, message_faq_additional, emoji_number_dic
 from libraries.common_values import *
 from web3 import Web3
 from libraries.timer_util import RepeatedTimer
@@ -853,7 +853,7 @@ def _get_button_name(position, list):
     elif position == 2:
         return "🥉 " + list[position]
     else:
-        return str(position) + " " + list[position]
+        return emoji_number_dic(position) + " " + list[position]
 
 def one(update: Update, context: CallbackContext) -> None:
     """Show new choice of buttons"""
@@ -867,12 +867,6 @@ def one(update: Update, context: CallbackContext) -> None:
         pprint.pprint(i)
         pprint.pprint(i // 3)
         kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data=str(ONE)))
-    keyboard = [
-        [
-            InlineKeyboardButton("1", callback_data=str(ONE)),
-            InlineKeyboardButton("2", callback_data=str(TWO)),
-        ]
-    ]
     reply_markup = InlineKeyboardMarkup(kb)
     query.edit_message_text(
         text="Here a the trending coins. Select one", reply_markup=reply_markup
