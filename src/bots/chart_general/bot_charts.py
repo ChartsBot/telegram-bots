@@ -16,7 +16,7 @@ import pprint
 import os.path
 import re
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler, ConversationHandler
 from telegram.ext.dispatcher import run_async
 from telegram.error import ChatMigrated, BadRequest
@@ -934,7 +934,7 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     # and a string as callback_data
     # The keyboard is a list of button rows, where each row is in turn
     # a list (hence `[[...]]`).
-    reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
+    reply_markup = ReplyKeyboardMarkup(HOME_KEYBOARD)
     # Send message with text and appended InlineKeyboard
     members_count = context.bot.get_chat_members_count(update.message.chat_id)
     if members_count > 2:
