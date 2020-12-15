@@ -896,7 +896,6 @@ def view_trending(update: Update, context: CallbackContext):
     kb = [[], [], [], []]
     for i in range(0, len(res)):
         kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data=res[i]))
-    kb[3].append(InlineKeyboardButton("Main menu", callback_data="HOME"))
     reply_markup = InlineKeyboardMarkup(kb)
     context.bot.send_message(text="Here's what's trending", chat_id=chat_id, reply_markup=reply_markup)
     # query.edit_message_text(
