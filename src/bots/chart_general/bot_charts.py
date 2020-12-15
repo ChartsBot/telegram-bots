@@ -820,6 +820,7 @@ def error_callback(update, context):
 
 def main():
     if sys.argv is not None:
+        pprint.pprint(sys.argv)
         TELEGRAM_KEY = sys.argv
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
