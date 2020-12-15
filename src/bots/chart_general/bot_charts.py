@@ -832,6 +832,7 @@ def send_chart_trending(update: Update, context: CallbackContext) -> None:
     logging.info("Sending chart in private")
     chat_id = update.callback_query.message.chat_id
     query = update.callback_query
+    pprint.pprint(query)
     token = query.split('t:')[1]
     time_type, k_hours, k_days = 'd', 0, 3
     t_to = int(time.time())
@@ -904,7 +905,7 @@ def view_gas(update: Update, context: CallbackContext) -> None:
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text(
-        text=message, reply_markup=reply_markup
+        text=message, parse_mode='html', reply_markup=reply_markup
     )
     return FIRST
 
