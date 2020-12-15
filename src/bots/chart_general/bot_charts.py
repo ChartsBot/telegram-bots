@@ -832,6 +832,7 @@ HOME_KEYBOARD = [
     ]
 ]
 
+
 def send_chart_trending(update: Update, context: CallbackContext) -> None:
     """Prompt same text & keyboard as `start` does but not as new message"""
     # Get CallbackQuery from Update
@@ -965,6 +966,7 @@ def main():
             ],
             TRENDING: [
                 CallbackQueryHandler(go_home, pattern='^' + 'HOME' + '$'),
+                CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'),
                 CallbackQueryHandler(send_chart_trending, pattern='(.*)'),
             ],
         },
