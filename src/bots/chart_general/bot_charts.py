@@ -956,7 +956,10 @@ def main():
         Thread(target=stop_and_restart).start()
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start_menu_private_conv)],
+        entry_points=[CommandHandler('start', start_menu_private_conv),
+                      MessageHandler(Filters.text(TRENDING_TXT), view_trending, run_async=True),
+                      MessageHandler(Filters.text(GAS_TXT), view_gas, run_async=True),
+                      ],
         states={
             FIRST: [
                 # CommandHandler(TRENDING_TXT, view_trending),
