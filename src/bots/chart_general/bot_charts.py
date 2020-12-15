@@ -976,8 +976,8 @@ def main():
         entry_points=[CommandHandler('start', start_menu_private_conv)],
         states={
             FIRST: [
-                CommandHandler(TRENDING_TXT, view_trending),
-                CommandHandler(GAS_TXT, view_gas),
+                CommandHandler('TRENDING_TXT', view_trending),
+                CommandHandler('GAS_TXT', view_gas),
                 CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'),
                 CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'),
                 CallbackQueryHandler(delete_message, pattern='delete_message')
