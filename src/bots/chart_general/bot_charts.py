@@ -880,7 +880,7 @@ def view_trending(update: Update, context: CallbackContext) -> None:
     query.edit_message_text(
         text="Here a the trending tokens:", reply_markup=reply_markup
     )
-    return FIRST
+    return TRENDING
 
 
 def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
