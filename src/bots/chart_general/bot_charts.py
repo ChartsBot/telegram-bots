@@ -853,7 +853,7 @@ def _get_button_name(position, list):
     elif position == 2:
         return "🥉 " + list[position]
     else:
-        return emoji_number_dic(position) + " " + list[position]
+        return emoji_number_dic.get(position) + " " + list[position]
 
 def one(update: Update, context: CallbackContext) -> None:
     """Show new choice of buttons"""
