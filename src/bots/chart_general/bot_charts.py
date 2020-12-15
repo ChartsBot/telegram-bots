@@ -831,7 +831,7 @@ def send_chart_trending(update: Update, context: CallbackContext) -> None:
     # Get CallbackQuery from Update
     logging.info("Sending chart in private")
     chat_id = update.callback_query.message.chat_id
-    query = update.callback_query.message.text
+    query = update.callback_query.data
     pprint.pprint(query)
     token = query.split('t:')[1]
     time_type, k_hours, k_days = 'd', 0, 3
