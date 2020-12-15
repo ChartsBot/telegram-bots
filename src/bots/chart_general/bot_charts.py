@@ -828,6 +828,7 @@ TRENDING = 'TRENDING'
 def send_chart_trending(update: Update, context: CallbackContext) -> None:
     """Prompt same text & keyboard as `start` does but not as new message"""
     # Get CallbackQuery from Update
+    logging.info("Sending chart in private")
     chat_id = update.callback_query.message.chat_id
     query = update.callback_query
     token = query.split('t:')[1]
@@ -877,7 +878,7 @@ def view_trending(update: Update, context: CallbackContext) -> None:
         kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data=res[i]))
     reply_markup = InlineKeyboardMarkup(kb)
     query.edit_message_text(
-        text="Here a the trending coins. Select one", reply_markup=reply_markup
+        text="Here a the trending tokens:", reply_markup=reply_markup
     )
     return FIRST
 
@@ -886,7 +887,7 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     """Send message on `/start`."""
     # Get user that sent /start and log his name
     user = update.message.from_user
-    logging.info("User %s started the conversation.", user.username)
+    logging.info("User %s started the conversation.", user.name)
     # Build InlineKeyboard where each button has a displayed text
     # and a string as callback_data
     # The keyboard is a list of button rows, where each row is in turn
@@ -900,7 +901,7 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     # Send message with text and appended InlineKeyboard
     update.message.reply_text("Choose your path", reply_markup=reply_markup)
     # Tell ConversationHandler that we're in state `FIRST` now
-    return FIRST
+    return TRENDING
 
 
 def end(update: Update, context: CallbackContext) -> None:
