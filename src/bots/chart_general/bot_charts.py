@@ -978,6 +978,8 @@ def main():
         fallbacks=[CommandHandler('start', start)],
     )
 
+    dp.add_handler(conv_handler)
+
     j = updater.job_queue
     job_minute = j.run_repeating(callback_minute, interval=check_big_buys_interval_seconds, first=15)
 
