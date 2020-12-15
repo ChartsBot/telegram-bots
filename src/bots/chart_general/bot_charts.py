@@ -823,6 +823,7 @@ FIRST, SECOND = range(2)
 # Callback data
 ONE, TWO = range(2)
 TRENDING = 'TRENDING'
+GAS = 'SHOW_GAS_PRICE'
 
 
 def send_chart_trending(update: Update, context: CallbackContext) -> None:
@@ -869,6 +870,7 @@ def _get_button_name(position, list):
 
 def view_trending(update: Update, context: CallbackContext) -> None:
     """Show new choice of buttons"""
+    logging.info("Viewing trending charts")
     query = update.callback_query
     res = zerorpc_client_data_aggregator.view_trending_raw()
     pprint.pprint(res)
@@ -883,6 +885,30 @@ def view_trending(update: Update, context: CallbackContext) -> None:
     return TRENDING
 
 
+def view_gas(update: Update, context: CallbackContext) -> None:
+    """Show new choice of buttons"""
+    logging.info("Viewing gas price")
+    query = update.callback_query
+    asap, fast, average, low = general_end_functions.get_gas_price()
+    message = "<b>Gas price:</b><code>" + \
+              "\nASAP: " + str(asap) + \
+              "\nFast: " + str(fast) + \
+              "\nAvg : " + str(average) + \
+              "\nSlow: " + str(low) + "</code>"
+    query.answer()
+    keyboard = [
+        [
+            InlineKeyboardButton("🔥 Trending", callback_data=TRENDING),
+            InlineKeyboardButton("🔥 Gas", callback_data=GAS),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text(
+        text=message, reply_markup=reply_markup
+    )
+    return FIRST
+
+
 def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     """Send message on `/start`."""
     # Get user that sent /start and log his name
@@ -895,13 +921,14 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     keyboard = [
         [
             InlineKeyboardButton("🔥 Trending", callback_data=TRENDING),
+            InlineKeyboardButton("🔥 Gas", callback_data=GAS),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     # Send message with text and appended InlineKeyboard
     update.message.reply_text("Choose your path", reply_markup=reply_markup)
     # Tell ConversationHandler that we're in state `FIRST` now
-    return TRENDING
+    return FIRST
 
 
 def end(update: Update, context: CallbackContext) -> None:
@@ -934,6 +961,7 @@ def main():
         states={
             FIRST: [
                 CallbackQueryHandler(view_trending, pattern=str(TRENDING)),
+                CallbackQueryHandler(view_gas, pattern=str(GAS)),
             ],
             TRENDING: [
                 CallbackQueryHandler(send_chart_trending, pattern='(.*)'),
