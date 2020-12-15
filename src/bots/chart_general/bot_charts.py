@@ -852,15 +852,19 @@ def one(update: Update, context: CallbackContext) -> None:
     res = zerorpc_client_data_aggregator.view_trending_raw()
     pprint.pprint(res)
     query.answer()
+    kb = [[], [], []]
     for i in range(0, len(res)):
         pprint.pprint(res[i])
+        pprint.pprint(i)
+        pprint.pprint((8 - i) // 3)
+        kb[(8 - i) // 3].append(InlineKeyboardButton(res[i], callback_data=str(ONE)))
     keyboard = [
         [
             InlineKeyboardButton("1", callback_data=str(ONE)),
             InlineKeyboardButton("2", callback_data=str(TWO)),
         ]
     ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = InlineKeyboardMarkup(kb)
     query.edit_message_text(
         text="Here a the trending coins. Select one", reply_markup=reply_markup
     )
