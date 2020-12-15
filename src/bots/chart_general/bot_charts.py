@@ -933,7 +933,7 @@ def home(update: Update, context: CallbackContext) -> None:
     ConversationHandler that the conversation is over"""
     query = update.callback_query
     query.answer()
-    start_menu_private_conv(update, context)
+    start_menu_private_conv(update.callback_query, context)
     # reply_markup = InlineKeyboardMarkup(HOME_KEYBOARD)
     # query.edit_message_text(
     #     text="Choose your path", parse_mode='html', reply_markup=reply_markup
