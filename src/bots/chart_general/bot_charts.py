@@ -832,6 +832,13 @@ HOME_KEYBOARD = [
     ]
 ]
 
+REPLY_HOME_KEYBOARD = [
+    [
+        "🔥 Trending",
+        "⛽ Gas"
+    ]
+]
+
 
 def send_chart_trending(update: Update, context: CallbackContext) -> None:
     """Prompt same text & keyboard as `start` does but not as new message"""
@@ -934,7 +941,7 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     # and a string as callback_data
     # The keyboard is a list of button rows, where each row is in turn
     # a list (hence `[[...]]`).
-    reply_markup = ReplyKeyboardMarkup(HOME_KEYBOARD)
+    reply_markup = ReplyKeyboardMarkup(REPLY_HOME_KEYBOARD)
     # Send message with text and appended InlineKeyboard
     members_count = context.bot.get_chat_members_count(update.message.chat_id)
     if members_count > 2:
