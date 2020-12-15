@@ -856,8 +856,8 @@ def one(update: Update, context: CallbackContext) -> None:
     for i in range(0, len(res)):
         pprint.pprint(res[i])
         pprint.pprint(i)
-        pprint.pprint((8 - i) // 3)
-        kb[(8 - i) // 3].append(InlineKeyboardButton(res[i], callback_data=str(ONE)))
+        pprint.pprint(i // 3)
+        kb[i // 3].append(InlineKeyboardButton(res[i], callback_data=str(ONE)))
     keyboard = [
         [
             InlineKeyboardButton("1", callback_data=str(ONE)),
