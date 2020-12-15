@@ -882,7 +882,7 @@ def view_trending(update: Update, context: CallbackContext) -> None:
     return FIRST
 
 
-def start(update: Update, context: CallbackContext) -> None:
+def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
     """Send message on `/start`."""
     # Get user that sent /start and log his name
     user = update.message.from_user
@@ -929,13 +929,13 @@ def main():
         Thread(target=stop_and_restart).start()
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[CommandHandler('start', start_menu_private_conv)],
         states={
             FIRST: [
                 CallbackQueryHandler(view_trending, pattern=str(TRENDING)),
             ],
             TRENDING: [
-                CallbackQueryHandler(send_chart_trending, pattern='^(.*)'),
+                CallbackQueryHandler(send_chart_trending, pattern='(.*)'),
                 CallbackQueryHandler(end, pattern='^' + str(TWO) + '$'),
             ],
         },
