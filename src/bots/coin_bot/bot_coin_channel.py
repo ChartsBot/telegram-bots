@@ -90,6 +90,7 @@ check_biz_interval_second = 1000
 already_checked_tx = []
 list_channels = {}  # simple kv storage that stores the date of the last action made by the channel
 
+
 @dataclass(frozen=True)
 class Channel:
     channel_id: int
@@ -120,6 +121,7 @@ def get_my_channels(my_name='@coin_chart_bot'):
     if random.randint(0, 100) > 97:  # TODO: use real logging at one point, that's ridiculous
         pprint.pprint("my channels: ")
         pprint.pprint(my_channels)
+        pprint.pprint(list_channels)
     return my_channels
 
 

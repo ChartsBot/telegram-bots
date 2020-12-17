@@ -396,10 +396,10 @@ def __preprocess_chartex_data(values):
                         lows[0] = max(lows[0] * 2, lows[1] / 2)
                 else:
                     # those 2 lines here to fix strange chartex behaviour
-                    opens[last_index] = closes[last_index - 1]
-                    # pprint("open: " + str(opens[index]) + " - closes before: " + str(closes[index - 1]))
-                    lows[last_index] = min([opens[last_index], lows[last_index], closes[last_index]])
-                    highs[last_index] = max([opens[last_index], highs[last_index], closes[last_index]])
+                    # opens[last_index] = closes[last_index - 1]
+                    # # pprint("open: " + str(opens[index]) + " - closes before: " + str(closes[index - 1]))
+                    # lows[last_index] = min([opens[last_index], lows[last_index], closes[last_index]])
+                    # highs[last_index] = max([opens[last_index], highs[last_index], closes[last_index]])
                     if highs[last_index] > highs[last_index - 1] * 2 and highs[last_index] > highs[last_index + 1] * 2:
                         # print("reducing highs")
                         highs[last_index] = (highs[last_index - 1] + highs[last_index + 1])
@@ -411,18 +411,22 @@ def __preprocess_chartex_data(values):
         else:
             index = last_index + 1
             close = closes[index - 1]
-            open = close
-            if last_inserted is not None:
-                if last_inserted < index - 2:
-                    open = opens[index - 1]
+            # open = close
+            # if last_inserted is not None:
+            #     if last_inserted < index - 2:
+            #         open = opens[index - 1]
             closes.insert(index, close)
             lows.insert(index, close)
-            highs.insert(index, open)
-            opens.insert(index, open)
+            highs.insert(index, close)
+            opens.insert(index, close)
             volumes.insert(index, 0.0)
             last_index = index
             last_inserted = index  # used to check if we have two consecutive missing dates for opens and close
             missing_dates_count += 1
+    for i in range(1, len(closes)):
+        opens[i] = closes[i - 1]
+        lows[i] = min(lows[i], opens[i])
+        highs[i] = max(highs[i], opens[i], closes[i])
     return (date_list, opens, closes, highs, lows, volumes)
 
 
@@ -524,11 +528,11 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
 
 
 def main():
-    token = "BBV"
+    token = "api3"
     t_to = int(time.time())
     t_from = int(time.time()) - 3600 * 24
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
-    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark", "rsi"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark"])
 
 
 if __name__ == '__main__':
