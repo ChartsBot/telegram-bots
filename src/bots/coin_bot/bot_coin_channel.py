@@ -186,7 +186,7 @@ def get_twitter(context: CallbackContext):
     for channel in get_my_channels():
         tweets_of_the_last_minutes = int(check_tweets_interval_second / 60) * 2
         res = scrap_websites_util.get_last_tweets(twitter, channel.ticker, tweets_of_the_last_minutes)
-        if "unable to find" not in res:
+        if "Unable to find" not in res:
             context.bot.send_message(chat_id=channel.channel_id, text=res, parse_mode='html', disable_web_page_preview=True)
 
 

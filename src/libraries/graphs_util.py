@@ -385,21 +385,15 @@ def __preprocess_chartex_data(values):
         if date in times_from_chartex:
             index = times_from_chartex.index(date)
             last_index = index + missing_dates_count
-            # check if "too big" value and remove it in this case
+            # check if "too big" or "too low" value and remove it in this case
             try:
                 if index == 0:
                     if highs[0] > highs[1] * 2:
-                        # print("reducing highs index 0")
                         highs[0] = min(highs[1] * 3, highs[0] / 2)
                     if lows[0] < lows[1] / 2:
-                        # print("increasing lows index 0")
                         lows[0] = max(lows[0] * 2, lows[1] / 2)
                 else:
                     # those 2 lines here to fix strange chartex behaviour
-                    # opens[last_index] = closes[last_index - 1]
-                    # # pprint("open: " + str(opens[index]) + " - closes before: " + str(closes[index - 1]))
-                    # lows[last_index] = min([opens[last_index], lows[last_index], closes[last_index]])
-                    # highs[last_index] = max([opens[last_index], highs[last_index], closes[last_index]])
                     if highs[last_index] > highs[last_index - 1] * 2 and highs[last_index] > highs[last_index + 1] * 2:
                         # print("reducing highs")
                         highs[last_index] = (highs[last_index - 1] + highs[last_index + 1])
@@ -408,13 +402,9 @@ def __preprocess_chartex_data(values):
                         lows[last_index] = min(lows[last_index - 1] - lows[last_index], lows[last_index + 1] - lows[last_index])
             except IndexError:
                 pass
-        else:
+        else:  # add missing values
             index = last_index + 1
             close = closes[index - 1]
-            # open = close
-            # if last_inserted is not None:
-            #     if last_inserted < index - 2:
-            #         open = opens[index - 1]
             closes.insert(index, close)
             lows.insert(index, close)
             highs.insert(index, close)
@@ -423,6 +413,7 @@ def __preprocess_chartex_data(values):
             last_index = index
             last_inserted = index  # used to check if we have two consecutive missing dates for opens and close
             missing_dates_count += 1
+    # fix strange chartex behaviour
     for i in range(1, len(closes)):
         opens[i] = closes[i - 1]
         lows[i] = min(lows[i], opens[i])
