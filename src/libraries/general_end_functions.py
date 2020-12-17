@@ -156,11 +156,11 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
 def get_price_gecko(name):
     price_usd_now, change_percentage, volume_24_usd, mcap_usd = requests_util.get_price_now_full(name)
     price_usd_7_d = requests_util.get_price_at(name, 7)
-    change_percentage_str = "🟢+" + str(change_percentage)[0:5] if change_percentage > 0 else "🔻" + str(change_percentage)[0:5]
+    change_percentage_str = "▴+" + str(change_percentage)[0:5] if change_percentage > 0 else "🔻" + str(change_percentage)[0:5]
     ad = util.get_ad()
 
     var_7d = - int(((price_usd_7_d - price_usd_now) / price_usd_7_d) * 100) if price_usd_7_d > price_usd_now else int(((price_usd_now - price_usd_7_d) / price_usd_7_d) * 100)
-    var_7d_str = "🟢+" + str(var_7d) + "%" if var_7d > 0 else "🔻" + str(var_7d) + "%"
+    var_7d_str = "▴+" + str(var_7d) + "%" if var_7d > 0 else "🔻" + str(var_7d) + "%"
     message = "<b>" + name + '</b><code>' \
               + "\nUSD: $" + util.pretty_number(price_usd_now) \
               + "\n24H:  " + change_percentage_str + "%"  \
