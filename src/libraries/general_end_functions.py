@@ -91,6 +91,8 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
      token_price_now_usd) = requests_util.get_price_raw(graphclient_eth, graphclient_uni, contract)
     print("getting price for contract took " + str(round(time.time() - t0)))
 
+    msg_one_eth = "1 Ξ: " + float_to_str(1 / derivedETH_now)[0:10]
+
     token_info = requests_util.get_token_info(contract)
 
     supply_cap_token, holders, full_name = 0, 0, ""
@@ -117,13 +119,13 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
     if token_price_7d_usd is not None and token_price_7d_usd != 0.0:
         var_7d = - int(((token_price_7d_usd - token_price_now_usd) / token_price_7d_usd) * 100) if token_price_7d_usd > token_price_now_usd else int(((token_price_now_usd - token_price_7d_usd) / token_price_7d_usd) * 100)
         var_7d_str = "👆+" + str(var_7d) + "%" if var_7d > 0 else '👇' + str(var_7d) + "%"
-        var_7d_msg = "\n7D :  " + var_7d_str
+        var_7d_msg = "\n7D : " + var_7d_str
     else:
         var_7d_msg = ""
     if token_price_1d_usd is not None and token_price_1d_usd != 0.0:
         var_1d = - int(((token_price_1d_usd - token_price_now_usd) / token_price_1d_usd) * 100) if token_price_1d_usd > token_price_now_usd else int(((token_price_now_usd - token_price_1d_usd) / token_price_1d_usd) * 100)
         var_1d_str = "👆+" + str(var_1d) + "%" if var_1d > 0 else '👇' + str(var_1d) + "%"
-        var_1d_msg = "\n24H:  " + var_1d_str
+        var_1d_msg = "\n24H: " + var_1d_str
     else:
         var_1d_msg = ""
 
@@ -144,6 +146,7 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
               + var_1d_msg \
               + var_7d_msg \
               + "\n" \
+              + msg_one_eth \
               + msg_vol_24 \
               + "\nS.  Cap = " + supply_cat_pretty \
               + "\nM.  Cap = $" + market_cap \
