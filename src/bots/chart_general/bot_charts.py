@@ -957,8 +957,8 @@ def main():
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start_menu_private_conv),
-                      MessageHandler(Filters.text(TRENDING_TXT), view_trending, run_async=True),
-                      MessageHandler(Filters.text(GAS_TXT), view_gas, run_async=True),
+                      MessageHandler(Filters.text([TRENDING_TXT]), view_trending, run_async=True),
+                      MessageHandler(Filters.text([GAS_TXT]), view_gas, run_async=True),
                       ],
         states={
             FIRST: [
@@ -973,6 +973,7 @@ def main():
             ]
         },
         fallbacks=[CommandHandler('start', get_start_message)],
+        allow_reentry=True
     )
 
     dp.add_handler(conv_handler)
