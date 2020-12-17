@@ -379,7 +379,6 @@ def __preprocess_chartex_data(values):
 
     last_index = 0
     missing_dates_count = 0
-    last_inserted = None
 
     for date in date_list:
         if date in times_from_chartex:
@@ -411,7 +410,6 @@ def __preprocess_chartex_data(values):
             opens.insert(index, close)
             volumes.insert(index, 0.0)
             last_index = index
-            last_inserted = index  # used to check if we have two consecutive missing dates for opens and close
             missing_dates_count += 1
     # fix strange chartex behaviour
     for i in range(1, len(closes)):
