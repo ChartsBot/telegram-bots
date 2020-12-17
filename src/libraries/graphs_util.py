@@ -451,23 +451,23 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
                 (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
             else:  # defaulting to chartex
                 values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
-                if len(values['c']) < 20:  # reduce resolution
-                    first_time_returned = values['t'][0] - 100
-                    t_from_fix = first_time_returned if first_time_returned > t_from else t_from
-                    resolution = __calculate_resolution_from_time(t_from_fix, t_to)
-                    values2 = requests_util.get_graphex_data(token, resolution, t_from_fix, t_to).json()
-                    if values2['t'][0] - 100 > t_from:
-                        values = values2
+                # if len(values['c']) < 20:  # reduce resolution
+                #     first_time_returned = values['t'][0] - 100
+                #     t_from_fix = first_time_returned if first_time_returned > t_from else t_from
+                #     resolution = __calculate_resolution_from_time(t_from_fix, t_to)
+                #     values2 = requests_util.get_graphex_data(token, resolution, t_from_fix, t_to).json()
+                #     if values2['t'][0] - 100 > t_from:
+                #         values = values2
                 (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values)
         else:
             values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
-            if len(values['c']) < 20:  # reduce resolution
-                first_time_returned = values['t'][0] - 100
-                t_from_fix = first_time_returned if first_time_returned > t_from else t_from
-                resolution = __calculate_resolution_from_time(t_from_fix, t_to)
-                values2 = requests_util.get_graphex_data(token, resolution, t_from_fix, t_to).json()
-                if values2['t'][0] - 100 > t_from:
-                    values = values2
+            # if len(values['c']) < 20:  # reduce resolution
+            #     first_time_returned = values['t'][0] - 100
+            #     t_from_fix = first_time_returned if first_time_returned > t_from else t_from
+            #     resolution = __calculate_resolution_from_time(t_from_fix, t_to)
+            #     values2 = requests_util.get_graphex_data(token, resolution, t_from_fix, t_to).json()
+            #     if values2['t'][0] - 100 > t_from:
+            #         values = values2
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values)
     chart_img_raw = __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token,
                                                     options)
