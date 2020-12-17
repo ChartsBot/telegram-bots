@@ -33,7 +33,9 @@ import zerorpc
 from dataclasses import dataclass
 from cachetools import cached, TTLCache
 
-
+import logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # charts delete
 charts_time_refresh = {}
@@ -205,12 +207,10 @@ def get_trending(context: CallbackContext):
 
 
 def get_actions(context: CallbackContext):
-    print("checking monitors")
     global already_checked_tx
 
     for channel in get_my_channels():
         try:
-            pprint.pprint("checking channel ")
             pprint.pprint(channel)
             now = round(time.time())
             last_min = now - 200
