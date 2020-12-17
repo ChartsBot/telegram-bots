@@ -91,7 +91,7 @@ def get_price(contract, pair_contract, graphclient_eth, graphclient_uni, name, d
      token_price_now_usd) = requests_util.get_price_raw(graphclient_eth, graphclient_uni, contract)
     print("getting price for contract took " + str(round(time.time() - t0)))
 
-    msg_one_eth = "1 Ξ: " + float_to_str(1 / derivedETH_now)[0:10] + ' ' + name[:5]
+    msg_one_eth = "\n1 Ξ: " + float_to_str(1 / derivedETH_now)[0:10] + ' ' + name[:5]
 
     token_info = requests_util.get_token_info(contract)
 
