@@ -203,9 +203,9 @@ def get_gas_average(context: CallbackContext):
 
 def get_trending(context: CallbackContext):
     for channel in get_my_channels():
-
-        res = zerorpc_client_data_aggregator.view_trending()
-        context.bot.send_message(chat_id=channel.channel_id, text=res)
+        if _should_send(channel):
+            res = zerorpc_client_data_aggregator.view_trending()
+            context.bot.send_message(chat_id=channel.channel_id, text=res)
 
 
 def get_actions(context: CallbackContext):
