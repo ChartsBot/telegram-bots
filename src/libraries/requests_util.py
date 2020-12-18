@@ -487,13 +487,13 @@ class Swap:
         if self.is_positif():
             price_usd_raw = self.buy[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
-            emoji = round(self.buy[1]) * "🟢" + "🟢"
+            emoji = min(round(self.buy[1]), 30) * "🟢" + "🟢"
             main_part = "Buy <b>" + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + "</b> for <b>" \
                         + pretty_number(self.buy[1])[0:9] + " ETH</b> <code>($" + price_usd[0:6] + ")</code>"
         else:
             price_usd_raw = self.sell[1] * eth_price
             price_usd = pretty_number(price_usd_raw)
-            emoji = round(self.sell[1]) * "🔴" + "🔴"
+            emoji = min(round(self.buy[1]), 30) * "🔴" + "🔴"
             main_part = "Sell <b>" + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + "</b> for <b>" \
                         + pretty_number(self.sell[1])[0:9] + " ETH</b> <code>($" + price_usd[0:6] + ")</code>"
         first_row = emoji + '\n'
@@ -515,7 +515,7 @@ class BotSwap:
 
     def to_string(self, eth_price):
         price_usd_pretty = pretty_number(self.price_usd(eth_price))
-        emoji = "🤖" * (round(self.amount_eth * 10) + 1)
+        emoji = "🤖" * min((round(self.amount_eth * 10) + 1), 30)
         main_part = "Bot stole <b>" + pretty_number(self.amount_eth) + " ETH</b> <code>($" + price_usd_pretty + ")</code>"
         end = " | " + '<a href="etherscan.io/tx/' + str(self.swap_buy.id) + '">buy tx</a> - ' + '<a href="etherscan.io/tx/' + str(self.swap_sell.id) + '">sell tx</a>'
         return emoji + '\n' + main_part + end
@@ -559,7 +559,7 @@ class Mint:
     def to_string_complex(self, eth_price):
         price_usd_raw = self.price_usd(eth_price)
         price_usd = pretty_number(price_usd_raw)
-        emoji = (round(self.amount_eth())) * "💚" + "💚"
+        emoji = min((round(self.amount_eth())), 30) * "💚" + "💚"
         time_since = time_util.get_minute_diff(self.timestamp)
         first_row = emoji + '\n'
         main_part = "Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " + \
@@ -604,7 +604,7 @@ class Burn:
     def to_string_complex(self, eth_price):
         price_usd_raw = self.price_usd(eth_price)
         price_usd = pretty_number(price_usd_raw)
-        emoji = (round(self.amount_eth())) * "💔" + "💔"
+        emoji = min((round(self.amount_eth())), 30) * "💔" + "💔"
         time_since = time_util.get_minute_diff(self.timestamp)
         first_row = emoji + '\n'
         main_part = "Removed " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " \
