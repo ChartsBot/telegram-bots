@@ -300,8 +300,10 @@ def __calculate_resolution_from_time(t_from, t_to):
         return 1
     elif delta < 24 * 3600:
         return 5
-    elif delta < 24 * 3600 * 7 + 100:
+    elif delta < 24 * 3600 * 4 + 100:
         return 15
+    elif delta < 24 * 3600 * 10 + 100:
+        return 30
     else:
         return 60
 
@@ -517,9 +519,9 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
 
 
 def main():
-    token = "api3"
+    token = "coin"
     t_to = int(time.time())
-    t_from = int(time.time()) - 3600 * 24
+    t_from = int(time.time()) - 3600 * 24 * 3
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
     print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark"])
 
