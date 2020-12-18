@@ -418,6 +418,7 @@ def __preprocess_chartex_data(values):
         opens[i] = closes[i - 1]
         lows[i] = min(lows[i], opens[i])
         highs[i] = max(highs[i], opens[i], closes[i])
+    pprint("len values close = " + str(len(closes)) + ". dates = " + str(len(times_from_chartex)) + ". fixed dates = " + str(len(date_list)))
     return (date_list, opens, closes, highs, lows, volumes)
 
 
