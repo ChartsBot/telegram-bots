@@ -363,7 +363,7 @@ def __preprocess_gecko_charts_data(values):
     return date_list, opens, closes, highs, lows, volumes
 
 
-def __preprocess_chartex_data(values):
+def __preprocess_chartex_data(values, resolution):
     times_from_chartex = [datetime.datetime.fromtimestamp(round(x)) for x in values['t']]
 
     closes = [float(x) for x in values['c']]
@@ -373,7 +373,7 @@ def __preprocess_chartex_data(values):
     volumes = [float(x) for x in values['v']]
     times = [round(x) for x in values['t']]
 
-    resolution = (times[1] - times[0]) / 60
+    # resolution = (times[1] - times[0]) / 60
 
     frequency = str(resolution) + "min"
     date_list = pd.date_range(start=times_from_chartex[0], end=times_from_chartex[-1],
@@ -459,7 +459,7 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
                 #     values2 = requests_util.get_graphex_data(token, resolution, t_from_fix, t_to).json()
                 #     if values2['t'][0] - 100 > t_from:
                 #         values = values2
-                (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values)
+                (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
         else:
             values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
             # if len(values['c']) < 20:  # reduce resolution
@@ -469,7 +469,7 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
             #     values2 = requests_util.get_graphex_data(token, resolution, t_from_fix, t_to).json()
             #     if values2['t'][0] - 100 > t_from:
             #         values = values2
-            (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values)
+            (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
     chart_img_raw = __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token,
                                                     options)
     chart_img = Image.open(chart_img_raw)
@@ -508,7 +508,7 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
     t_1 = time.time_ns() // 1000000
     values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
     t_2 = time.time_ns() // 1000000
-    (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values)
+    (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
     print("0 = " + str(date_list[0]))
     print("last = " + str(date_list[-1]))
     print("size = " + str(len(date_list)))
