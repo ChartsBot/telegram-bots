@@ -232,7 +232,7 @@ def get_actions(context: CallbackContext):
                 message = "🚀Actions of the last minute: \n\n" + latest_actions_pretty + '\n\n' + links
 
                 try:
-                    context.bot.send_message(chat_id=channel.channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
+                    context.bot.send_message(chat_id=channel.channel_id, text=message[0:4095], disable_web_page_preview=True, parse_mode='html')
                 except ChatMigrated as err:
                     print("CHANNEL ID CHANGED: ", err)
                     pass
