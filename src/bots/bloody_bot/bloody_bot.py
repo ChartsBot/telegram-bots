@@ -26,7 +26,7 @@ import libraries.scrap_websites_util as scrap_websites_util
 import libraries.git_util as git_util
 import libraries.requests_util as requests_util
 import libraries.util as util
-from bots.boo_bank.bot_boo_values import links, test_error_token, how_to_swap
+from bots.boo_bank.bot_boo_values import links, how_to_swap
 from libraries.timer_util import RepeatedTimer
 from libraries.uniswap import Uniswap
 from libraries.common_values import *
@@ -331,13 +331,13 @@ def handle_new_image(update: Update, context: CallbackContext):
 def __send_message_if_ocr(update, context):
     message_id = update.message.message_id
     chat_id = update.message.chat_id
-    try:
-        text_in_ocr = general_end_functions.ocr_image(update, context, TMP_FOLDER)
-        if ('transaction cannot succeed' and 'one of the tokens' in text_in_ocr) or (
-                'transaction will not succeed' and 'price movement or' in text_in_ocr):
-            context.bot.send_message(chat_id=chat_id, text=test_error_token, reply_to_message_id=message_id)
-    except IndexError:
-        pass
+    # try:
+    #     text_in_ocr = general_end_functions.ocr_image(update, context, TMP_FOLDER)
+    #     if ('transaction cannot succeed' and 'one of the tokens' in text_in_ocr) or (
+    #             'transaction will not succeed' and 'price movement or' in text_in_ocr):
+    #         context.bot.send_message(chat_id=chat_id, text="", reply_to_message_id=message_id)
+    # except IndexError:
+    #     pass
 
 
 def send_meme_to_chat(update: Update, context: CallbackContext):
