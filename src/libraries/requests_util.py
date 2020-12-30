@@ -766,6 +766,8 @@ def get_pair_info_from_pair_contract(token_ticker, pair_contract: str, uni_wrapp
     """
     # First from the pair contract we get both contract of the tokens
     t1_contract, t2_contract = web3_util.get_pair_tokens_contracts(uni_wrapper, pair_contract)
+    pprint.pprint(t1_contract)
+    pprint.pprint(t2_contract)
     # Then we check which one is the token ticker
     t1_info = web3_util.get_token_info(t1_contract)
     t2_info = web3_util.get_token_info(t2_contract)
