@@ -769,8 +769,8 @@ def get_pair_info_from_pair_contract(token_ticker, pair_contract: str, uni_wrapp
     pprint.pprint(t1_contract)
     pprint.pprint(t2_contract)
     # Then we check which one is the token ticker
-    t1_info = web3_util.get_token_info(t1_contract)
-    t2_info = web3_util.get_token_info(t2_contract)
+    t1_info = web3_util.get_token_info(uni_wrapper, t1_contract)
+    t2_info = web3_util.get_token_info(uni_wrapper, t2_contract)
     if t1_info['symbol'] != token_ticker.upper():
         symbol = t1_info['symbol']
         price = general_end_functions.convert_to_usd_raw(1, symbol, graphqlclient_uni, graphqlclient_eth)
