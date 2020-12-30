@@ -32,6 +32,7 @@ from threading import Thread
 import zerorpc
 from dataclasses import dataclass
 from cachetools import cached, TTLCache
+from json import JSONDecodeError
 
 import logging
 logging.basicConfig(level=logging.INFO,
@@ -237,7 +238,8 @@ def get_actions(context: CallbackContext):
                 except ChatMigrated as err:
                     print("CHANNEL ID CHANGED: ", err)
                     pass
-        except KeyError:
+        except (KeyError, JSONDecodeError) as e:
+            pprint.pprint(e)
             pass
 
 
