@@ -483,7 +483,7 @@ class Swap:
             price_usd = pretty_number(self.buy[1] * self.paired_with.price_usd)
             emoji = "🟢" if custom_emoji is None else custom_emoji
             message += emoji + " Buy " + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + " for " \
-                       + pretty_number(self.buy[1])[0:9] + " " + self.sell[0] + " <code>($" + price_usd[0:6] + ")</code> " \
+                       + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + " <code>($" + price_usd[0:6] + ")</code> " \
                        + date_msg
         else:
             emoji = "🔴" if custom_emoji is None else custom_emoji
