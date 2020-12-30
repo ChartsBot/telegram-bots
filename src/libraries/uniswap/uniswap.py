@@ -188,7 +188,6 @@ class Uniswap:
     def get_amount_lp_total(self, address: AddressLike):
         return self._load_contract(abi_name="uniswap-v2/pair", address=address).functions.totalSupply().call()
 
-    @supports([1, 2])
     def get_token(self, address: AddressLike) -> dict:
         # FIXME: This function should always return the same output for the same input
         #        and would therefore benefit from caching
@@ -236,7 +235,7 @@ class Uniswap:
 
     @functools.lru_cache()
     def erc20_contract(self, token_addr: AddressLike) -> Contract:
-        return self._load_contract(abi_name="erc20", address=token_addr)
+        return self._load_contract(abi_name="erc20_2", address=token_addr)
 
     @functools.lru_cache()
     @supports([2])
