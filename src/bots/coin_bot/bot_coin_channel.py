@@ -198,7 +198,8 @@ def get_gas_average(context: CallbackContext):
               "\nAvg : " + str(average) + \
               " --- Slow: " + str(low) + "</code>"
     for channel in get_my_channels():
-        context.bot.send_message(chat_id=channel.channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
+        if _should_send(channel):
+            context.bot.send_message(chat_id=channel.channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
 
 
 def get_trending(context: CallbackContext):
@@ -219,8 +220,8 @@ def get_actions(context: CallbackContext):
 
             options = ["print_complex"]
 
-            latest_actions_pretty, ids = requests_util.pretty_print_monitor_last_actions(last_min, channel.pair_contract.lower(),
-                                                                                    graphql_client_uni, options, amount=100, blacklist=already_checked_tx)
+            latest_actions_pretty, ids = requests_util.pretty_print_monitor_last_actions(last_min, channel.ticker, channel.pair_contract.lower(),
+                                                                                    graphql_client_uni, graphql_client_eth, uni_wrapper, options, amount=100, blacklist=already_checked_tx)
             already_checked_tx += ids
             if latest_actions_pretty is not None:
 

@@ -14,6 +14,9 @@ sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
 
 from libraries.util import float_to_str, pretty_number, keep_significant_number_float
 import libraries.time_util as time_util
+import libraries.web3_calls as web3_util
+import libraries.general_end_functions as general_end_functions
+from web3 import Web3
 
 API_KEY_ETHEXPLORER = os.environ.get('API_KEY_ETHEXPLORER')
 clef = os.environ.get('BINANCE_API_KEY')
@@ -446,56 +449,64 @@ def get_gas_price_raw():
 
 
 @dataclass(frozen=True)
+class PairedWith:
+    ticker: str
+    contract: str
+    price_usd: float
+
+
+@dataclass(frozen=True)
 class Swap:
     buy: (str, int)
     sell: (str, int)
     id: str
     timestamp: int
+    paired_with: PairedWith
 
-    def value_raw_eth(self):
-        return self.amount_eth()
+    def value_raw_paired_with(self):
+        return self.amount_paired_with()
 
     def is_positif(self):
-        return self.buy[0] == 'WETH'
+        return self.buy[0] == self.paired_with.ticker
 
-    def amount_eth(self):
+    def amount_paired_with(self):
         if self.is_positif():
-            return self.buy[1]
-        else:
             return self.sell[1]
+        else:
+            return self.buy[1]
 
-    def to_string(self, eth_price, custom_emoji=None, with_date=True):
+    def to_string(self, custom_emoji=None, with_date=True):
         message = ""
         time_since = time_util.get_minute_diff(self.timestamp)
         date_msg = str(time_since) + " mins ago." if with_date else ""
         if self.is_positif():
-            price_usd = pretty_number(self.buy[1] * eth_price)
+            price_usd = pretty_number(self.buy[1] * self.paired_with.price_usd)
             emoji = "🟢" if custom_emoji is None else custom_emoji
             message += emoji + " Buy " + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + " for " \
-                       + pretty_number(self.buy[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
+                       + pretty_number(self.buy[1])[0:9] + " " + self.sell[0] + " <code>($" + price_usd[0:6] + ")</code> " \
                        + date_msg
         else:
             emoji = "🔴" if custom_emoji is None else custom_emoji
-            price_usd = pretty_number(self.sell[1] * eth_price)
+            price_usd = pretty_number(self.sell[1] * self.paired_with.price_usd)
             message += emoji + " Sell " + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + " for " \
-                       + pretty_number(self.sell[1])[0:9] + " ETH <code>($" + price_usd[0:6] + ")</code> " \
+                       + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + " <code>($" + price_usd[0:6] + ")</code> " \
                        + date_msg
         message += " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
         return message
 
-    def to_string_complex(self, eth_price):
+    def to_string_complex(self):
         if self.is_positif():
-            price_usd_raw = self.buy[1] * eth_price
+            price_usd_raw = self.buy[1] * self.paired_with.price_usd
             price_usd = pretty_number(price_usd_raw)
             emoji = min(round(self.buy[1]), 30) * "🟢" + "🟢"
             main_part = "Buy <b>" + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + "</b> for <b>" \
-                        + pretty_number(self.buy[1])[0:9] + " ETH</b> <code>($" + price_usd[0:6] + ")</code>"
+                        + pretty_number(self.buy[1])[0:9] + ' ' + self.buy[0] + " </b> <code>($" + price_usd[0:6] + ")</code>"
         else:
-            price_usd_raw = self.sell[1] * eth_price
+            price_usd_raw = self.sell[1] * self.paired_with.price_usd
             price_usd = pretty_number(price_usd_raw)
             emoji = min(round(self.sell[1]), 30) * "🔴" + "🔴"
             main_part = "Sell <b>" + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + "</b> for <b>" \
-                        + pretty_number(self.sell[1])[0:9] + " ETH</b> <code>($" + price_usd[0:6] + ")</code>"
+                        + pretty_number(self.sell[1])[0:9] + ' ' + self.sell[0] + " </b> <code>($" + price_usd[0:6] + ")</code>"
         first_row = emoji + '\n'
         end = " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
         return first_row + main_part + end
@@ -505,23 +516,24 @@ class Swap:
 class BotSwap:
     swap_buy: Swap
     swap_sell: Swap
-    amount_eth: int
+    amount_token_pair_stolen: int
+    paired_with: PairedWith
 
-    def value_raw_eth(self):
-        return self.amount_eth
+    def value_raw_token_paired_with(self):
+        return self.amount_token_pair_stolen
 
-    def price_usd(self, eth_price):
-        return self.amount_eth * eth_price
+    def price_usd(self):
+        return self.amount_token_pair_stolen * self.paired_with.price_usd
 
-    def to_string(self, eth_price):
-        price_usd_pretty = pretty_number(self.price_usd(eth_price))
-        emoji = "🤖" * min((round(self.amount_eth * 10) + 1), 30)
-        main_part = "Bot stole <b>" + pretty_number(self.amount_eth) + " ETH</b> <code>($" + price_usd_pretty + ")</code>"
+    def to_string(self):
+        price_usd_pretty = pretty_number(self.price_usd())
+        emoji = "🤖" * min((round(self.price_usd() * 10) + 1), 30)
+        main_part = "Bot stole <b>" + pretty_number(self.amount_token_pair_stolen) + ' ' + self.paired_with.ticker + "</b> <code>($" + price_usd_pretty + ")</code>"
         end = " | " + '<a href="etherscan.io/tx/' + str(self.swap_buy.id) + '">buy tx</a> - ' + '<a href="etherscan.io/tx/' + str(self.swap_sell.id) + '">sell tx</a>'
         return emoji + '\n' + main_part + end
 
     def to_string_complex(self, eth_price):
-        return self.to_string(eth_price)
+        return self.to_string()
 
 
 
@@ -531,23 +543,24 @@ class Mint:
     token_1: (str, int)
     id: str
     timestamp: int
+    paired_with: PairedWith
 
-    def value_raw_eth(self):
-        return self.amount_eth()
+    def value_raw_paired_with(self):
+        return self.amount_paired_with()
 
-    def price_usd(self, eth_price):
-        return self.amount_eth() * eth_price
+    def price_usd(self):
+        return self.amount_paired_with() * self.paired_with.price_usd
 
-    def amount_eth(self):
-        if self.token_0[0] == 'WETH':
+    def amount_paired_with(self):
+        if self.token_0[0] == self.paired_with.ticker:
             amount_eth = self.token_0[1] * 2
         else:
             amount_eth = self.token_1[1] * 2
         return amount_eth
 
-    def to_string(self, eth_price, custom_emoji=None):
+    def to_string(self, custom_emoji=None):
         emoji = "💚" if custom_emoji is None else custom_emoji
-        price_usd = pretty_number(self.price_usd(eth_price))
+        price_usd = pretty_number(self.price_usd())
         time_since = time_util.get_minute_diff(self.timestamp)
         message = emoji + " Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " + \
                   pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
@@ -556,10 +569,10 @@ class Mint:
         message += " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
         return message
 
-    def to_string_complex(self, eth_price):
-        price_usd_raw = self.price_usd(eth_price)
+    def to_string_complex(self):
+        price_usd_raw = self.price_usd()
         price_usd = pretty_number(price_usd_raw)
-        emoji = min((round(self.amount_eth())), 30) * "💚" + "💚"
+        emoji = min((round(self.price_usd() / 300)), 30) * "💚" + "💚"
         time_since = time_util.get_minute_diff(self.timestamp)
         first_row = emoji + '\n'
         main_part = "Add " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " + \
@@ -576,23 +589,24 @@ class Burn:
     token_1: (str, int)
     id: str
     timestamp: int
+    paired_with: PairedWith
 
-    def value_raw_eth(self):
-        return self.amount_eth()
+    def value_raw_paired_with(self):
+        return self.amount_paired_with()
 
-    def price_usd(self, eth_price):
-        return self.amount_eth() * eth_price
+    def price_usd(self):
+        return self.amount_paired_with() * self.paired_with.price_usd
 
-    def amount_eth(self):
-        if self.token_0[0] == 'WETH':
+    def amount_paired_with(self):
+        if self.token_0[0] == self.paired_with.ticker:
             amount_eth = self.token_0[1] * 2
         else:
             amount_eth = self.token_1[1] * 2
         return amount_eth
 
-    def to_string(self, eth_price, custom_emoji=None):
+    def to_string(self, custom_emoji=None):
         emoji = "💔" if custom_emoji is None else custom_emoji
-        price_usd = pretty_number(self.price_usd(eth_price))
+        price_usd = pretty_number(self.price_usd())
         time_since = time_util.get_minute_diff(self.timestamp)
         message = emoji + " Removed " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " \
                   + pretty_number(self.token_1[1])[0:6] + ' ' + self.token_1[0] + " in liquidity" \
@@ -601,10 +615,10 @@ class Burn:
         message += " | " + '<a href="etherscan.io/tx/' + str(self.id) + '">view</a>'
         return message
 
-    def to_string_complex(self, eth_price):
-        price_usd_raw = self.price_usd(eth_price)
+    def to_string_complex(self):
+        price_usd_raw = self.price_usd()
         price_usd = pretty_number(price_usd_raw)
-        emoji = min((round(self.amount_eth())), 30) * "💔" + "💔"
+        emoji = min((round(self.price_usd()) / 300), 30) * "💔" + "💔"
         time_since = time_util.get_minute_diff(self.timestamp)
         first_row = emoji + '\n'
         main_part = "Removed " + pretty_number(self.token_0[1])[0:6] + ' ' + self.token_0[0] + " and " \
@@ -622,7 +636,7 @@ def get_latest_actions(pair, graphql_client_uni, options=None, amount=30):
     return json_resp_eth
 
 
-def parse_swaps(res):
+def parse_swaps(res, paired_with: PairedWith):
     swaps = res['data']['swaps']
     l_swaps = []
     for swap in swaps:
@@ -634,9 +648,9 @@ def parse_swaps(res):
         id = swap['id'][:-2]
         token0, token1 = parse_pair(swap['pair'])
         if amount0In > 0:
-            l_swaps.append(Swap((token0, amount0In), (token1, amount1Out), id, timestamp))
+            l_swaps.append(Swap((token0, amount0In), (token1, amount1Out), id, timestamp, paired_with))
         else:
-            l_swaps.append(Swap((token1, amount1In), (token0, amount0Out), id, timestamp))
+            l_swaps.append(Swap((token1, amount1In), (token0, amount0Out), id, timestamp, paired_with))
     # detect bots:
     # l_swaps = sorted(l_swaps, key=lambda x: x.timestamp, reverse=True)
     # for swap in l_swaps:
@@ -644,7 +658,7 @@ def parse_swaps(res):
     return l_swaps
 
 
-def parse_mint(res):
+def parse_mint(res, paired_with: PairedWith):
     mints = res['data']['mints']
     l_mints = []
     for mint in mints:
@@ -653,11 +667,11 @@ def parse_mint(res):
         timestamp = int(mint['transaction']['timestamp'])
         id = mint['transaction']['id']
         token0, token1 = parse_pair(mint['pair'])
-        l_mints.append(Mint((token0, amount0), (token1, amount1), id, timestamp))
+        l_mints.append(Mint((token0, amount0), (token1, amount1), id, timestamp, paired_with))
     return l_mints
 
 
-def parse_burns(res):
+def parse_burns(res, paired_with: PairedWith):
     burns = res['data']['burns']
     l_burns = []
     for burn in burns:
@@ -666,7 +680,7 @@ def parse_burns(res):
         timestamp = int(burn['transaction']['timestamp'])
         id = burn['transaction']['id']
         token0, token1 = parse_pair(burn['pair'])
-        l_burns.append(Burn((token0, amount0), (token1, amount1), id, timestamp))
+        l_burns.append(Burn((token0, amount0), (token1, amount1), id, timestamp, paired_with))
     return l_burns
 
 
@@ -695,7 +709,7 @@ def detect_bots(actions):
 
                     yeeted_sells.append(similar_sell)
                     eth_drained = similar_sell.sell[1] - action.buy[1]
-                    bot_action = BotSwap(action, similar_sell, eth_drained)
+                    bot_action = BotSwap(action, similar_sell, eth_drained, similar_sell.paired_with)
                     kept_actions.append(bot_action)
                 else:
                     kept_actions.append(action)
@@ -705,19 +719,19 @@ def detect_bots(actions):
     return others + kept_actions
 
 
-def get_last_actions(pair, graphql_client_uni, options=None, amount=50):
-    eth_price = get_eth_price_now()
+def get_last_actions(token_ticker, paired_with: PairedWith, graphql_client_uni, options=None, amount=50):
+    # use this: general end functions convert_to_usd_raw(
     if options is not None:
         if ("whale" in options or "whales" in options or "w" in options) and amount == 50:
             amount = 100
-    last_actions = get_latest_actions(pair.lower(), graphql_client_uni, options, amount)
+    last_actions = get_latest_actions(paired_with.contract.lower(), graphql_client_uni, options, amount)
 
-    parsed_swaps = parse_swaps(last_actions)
-    parsed_mints = parse_mint(last_actions)
-    parsed_burns = parse_burns(last_actions)
+    parsed_swaps = parse_swaps(last_actions, paired_with)
+    parsed_mints = parse_mint(last_actions, paired_with)
+    parsed_burns = parse_burns(last_actions, paired_with)
     all_actions = parsed_burns + parsed_mints + parsed_swaps
 
-    start_message = "Last 5 actions for pair: " + str(pair)[0:5] + "[...]\n"
+    start_message = "Last 5 actions of " + token_ticker + " with pair " + paired_with.ticker + "/" + token_ticker + " " + str(paired_with.contract)[0:8] + "[...]\n"
     if options is not None:
         if "buy" in options or "buys" in options or "b" in options:
             start_message = start_message.replace("actions", "buys")
@@ -733,17 +747,47 @@ def get_last_actions(pair, graphql_client_uni, options=None, amount=50):
             start_message = start_message + "Showing only actions <b>> 10 Eth:</b>\n"
             to_keep_if_whales = []
             for action in all_actions:
-                if action.amount_eth() > 10:
+                if action.amount_paired_with() > 10:
                     to_keep_if_whales.append(action)
             all_actions = to_keep_if_whales
 
     all_actions_sorted = sorted(all_actions, key=lambda x: x.timestamp, reverse=True)
-    return all_actions_sorted, start_message, eth_price
+    return all_actions_sorted, start_message
+
+
+def get_pair_info_from_pair_contract(token_ticker, pair_contract: str, uni_wrapper, graphqlclient_uni, graphqlclient_eth) -> PairedWith:
+    """
+    Given a ticker and a pair contract, will return a PairedWith object containing informations about the other ticker
+    in the pair
+    :param token_ticker:
+    :param pair_contract:
+    :param uni_wrapper:
+    :return: None if not found, else a PairedWith object
+    """
+    # First from the pair contract we get both contract of the tokens
+    t1_contract, t2_contract = web3_util.get_pair_tokens_contracts(uni_wrapper, pair_contract)
+    # Then we check which one is the token ticker
+    t1_info = web3_util.get_token_info(t1_contract)
+    t2_info = web3_util.get_token_info(t2_contract)
+    if t1_info['symbol'] != token_ticker.upper():
+        symbol = t1_info['symbol']
+        price = general_end_functions.convert_to_usd_raw(1, symbol, graphqlclient_uni, graphqlclient_eth)
+        return PairedWith(symbol, t1_contract, price)
+    elif t2_info['symbol'] != token_ticker.upper():
+        symbol = t2_info['symbol']
+        price = general_end_functions.convert_to_usd_raw(1, symbol, graphqlclient_uni, graphqlclient_eth)
+        return PairedWith(symbol, t1_contract, price)
+    else:
+        return None
 
 
 # TODO: stuff will need to be moved from here
-def pretty_print_last_actions(pair, graphql_client_uni, options=None):
-    all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options)
+def pretty_print_last_actions(token_ticker, pair_contract, graphql_client_uni, graphqlclient_eth, uni_wrapper, options=None):
+    paired_with = get_pair_info_from_pair_contract(token_ticker, pair_contract, uni_wrapper, graphql_client_uni, graphqlclient_eth)
+    if paired_with is None:
+        pprint.pprint("Error fetching pair for token " + token_ticker + " and pair contract " + pair_contract)
+        return None
+    all_actions_sorted, start_message = get_last_actions(token_ticker, paired_with, graphql_client_uni, options)
 
     amount = 5
     # check if amount specified in options
@@ -756,24 +800,26 @@ def pretty_print_last_actions(pair, graphql_client_uni, options=None):
     all_actions_light = all_actions_sorted[0:amount]
     if options is not None:
         if "address" in options or "addr" in options or "a" in options:
-            strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
+            strings = list(map(lambda x: x.to_string(), all_actions_light))
         else:
-            strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
+            strings = list(map(lambda x: x.to_string(), all_actions_light))
     else:
-        strings = list(map(lambda x: x.to_string(eth_price), all_actions_light))
+        strings = list(map(lambda x: x.to_string(), all_actions_light))
     string = '\n'.join(strings)
     return start_message + string
 
 
-def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, options=["whale"], amount=30, blacklist=[]):
-    if pair is None:
+def pretty_print_monitor_last_actions(acceptable_ts, token_ticker, pair_contract, graphql_client_uni, graphqlclient_eth, uni_wrapper, options=["whale"], amount=30, blacklist=[]):
+    paired_with = get_pair_info_from_pair_contract(token_ticker, pair_contract, uni_wrapper, graphql_client_uni, graphqlclient_eth)
+    if paired_with is None:
+        pprint.pprint("Error fetching pair for token " + token_ticker + " and pair contract " + pair_contract)
         return None
-    all_actions_sorted, start_message, eth_price = get_last_actions(pair, graphql_client_uni, options, amount)
+    all_actions_sorted, start_message = get_last_actions(token_ticker, paired_with, graphql_client_uni, options, amount)
     all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts and x.id not in blacklist]
     if 'print_complex' in options:
         actions_with_bots = detect_bots(all_actions_kept)
-        all_actions_kept_sorted = sorted(actions_with_bots, key=lambda x: x.value_raw_eth(), reverse=True)
-        strings = list(map(lambda x: x.to_string_complex(eth_price), all_actions_kept_sorted))
+        all_actions_kept_sorted = sorted(actions_with_bots, key=lambda x: x.value_raw_paired_with(), reverse=True)
+        strings = list(map(lambda x: x.to_string_complex(), all_actions_kept_sorted))
         if len(strings) == 0:
             return None, []
         else:
@@ -781,7 +827,7 @@ def pretty_print_monitor_last_actions(acceptable_ts, pair, graphql_client_uni, o
             return '\n\n'.join(strings), ids
 
     else:
-        strings = list(map(lambda x: x.to_string(eth_price, '🐋', with_date=False), all_actions_kept))
+        strings = list(map(lambda x: x.to_string('🐋', with_date=False), all_actions_kept))
     if len(strings) == 0:
         return None
     else:

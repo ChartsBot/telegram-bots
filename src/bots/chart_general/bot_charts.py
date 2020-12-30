@@ -262,9 +262,28 @@ def delete_message(update: Update, context: CallbackContext):
     context.bot.delete_message(chat_id=chat_id, message_id=message_id)
 
 
+def _stop_if_refreshing_too_early(context, chat_id, token_chat_id, t_to) -> bool:
+    global charts_time_refresh
+    members_count = context.bot.get_chat_members_count(chat_id)
+    logging.info("members count: " + str(members_count))
+    if members_count >= 100:
+        if token_chat_id not in charts_time_refresh:
+            charts_time_refresh[token_chat_id] = t_to
+            return False
+        else:
+            last_time = charts_time_refresh[token_chat_id]
+            if t_to - last_time < 30:
+                logging.debug("requesting chart refresh too early")
+                return False
+            else:
+                charts_time_refresh[token_chat_id] = t_to
+                return True
+    else:
+        return False
+
+
 def refresh_chart(update: Update, context: CallbackContext):
     __log_channel(update.callback_query.message.chat, "refresh_chart")
-    global charts_time_refresh
     print("refreshing chart")
     query = update.callback_query.data
     chat_id = update.callback_query.message.chat_id
@@ -275,21 +294,7 @@ def refresh_chart(update: Update, context: CallbackContext):
     token_chat_id = str(chat_id) + "_" + token
 
     t_to = int(time.time())
-    ok = True
-    members_count = context.bot.get_chat_members_count(chat_id)
-    pprint.pprint("members count: " + str(members_count))
-    if members_count >= 100:
-        if token_chat_id not in charts_time_refresh:
-            charts_time_refresh[token_chat_id] = t_to
-        else:
-            last_time = charts_time_refresh[token_chat_id]
-            if t_to - last_time < 30:
-                print("requesting chart refresh too early")
-                ok = False
-            else:
-                charts_time_refresh[token_chat_id] = t_to
-
-    if ok:
+    if not _stop_if_refreshing_too_early(context, chat_id, token_chat_id, t_to):
         t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
 
         message_id = update.callback_query.message.message_id
@@ -320,9 +325,9 @@ def get_biz(update: Update, context: CallbackContext):
             parsed_excerpt = util.cleanhtml(excerpt)
             message += base_url + str(thread_id[0]) + " -- " + parsed_excerpt[0: 100] + "[...] \n"
         if not threads_ids:
-            meme_caption = "No current /biz/ thread containing the word $WORD. You can make one at https://boards.4channel.org/biz/.".replace(
+            no_thread_message = "No current /biz/ thread containing the word $WORD. You can make one at https://boards.4channel.org/biz/.".replace(
                 "$WORD", word)
-            context.bot.send_message(chat_id=chat_id, text=meme_caption, disable_web_page_preview=True)
+            context.bot.send_message(chat_id=chat_id, text=no_thread_message, disable_web_page_preview=True)
         else:
             context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True)
             context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True)
@@ -337,9 +342,9 @@ def get_biz(update: Update, context: CallbackContext):
                 excerpt = thread_id[2] + " | " + thread_id[1]
                 message += base_url + str(thread_id[0]) + " -- " + excerpt[0: 100] + "[...] \n"
             if not threads_ids:
-                meme_caption = "No current /biz/ thread containing the word $WORD. You can make one at https://boards.4channel.org/biz/.".replace(
+                no_thread_message = "No current /biz/ thread containing the word $WORD. You can make one at https://boards.4channel.org/biz/.".replace(
                     "$WORD", word)
-                context.bot.send_message(chat_id=chat_id, text=meme_caption, disable_web_page_preview=True)
+                context.bot.send_message(chat_id=chat_id, text=no_thread_message, disable_web_page_preview=True)
             else:
                 context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True)
                 context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True)
@@ -451,7 +456,7 @@ def get_latest_actions(update: Update, context: CallbackContext):
     if len(query_received) == 1:
         default_token = __get_default_token_channel(chat_id)
         if default_token is not None:
-            latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(default_token[0], uni_wrapper, graphql_client_uni)
+            latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(default_token[0], uni_wrapper, graphql_client_uni, graphql_client_eth)
             util.create_and_send_vote(default_token[0], "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
             context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
             context.bot.send_message(chat_id=announcement_channel_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
@@ -466,9 +471,9 @@ def get_latest_actions(update: Update, context: CallbackContext):
         token, options = queries_parser.analyze_query_last_actions(update.message.text, ticker)
         if token is not None:
             if addr is not None:
-                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, None, options)
+                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, graphql_client_eth, None, options)
             else:
-                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, None, options)
+                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, graphql_client_eth, None, options)
             util.create_and_send_vote(token, "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
             context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
             context.bot.send_message(chat_id=announcement_channel_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')

@@ -320,7 +320,7 @@ def keep_dates(values_list):
 
 
 def convert_to_usd_raw(amount, currency_ticker, graphqlclient_uni, graphqlclient_eth):
-    if currency_ticker.lower() == 'eth':
+    if currency_ticker.lower() == 'eth' or currency_ticker.lower() == 'weth':
         eth_price = requests_util.get_eth_price_now()
         return amount * eth_price
     elif currency_ticker.lower() == "lambo":
@@ -378,7 +378,7 @@ def get_gas_price():
     return asap, fast, average, low
 
 
-def get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client_uni, contract: str = None, options=None):
+def get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client_uni, graphql_client_eth, contract: str = None, options=None):
     print("options: ")
     pprint(options)
     token_contract = contract if contract is not None else requests_util.get_token_contract_address(token_ticker)
@@ -387,7 +387,7 @@ def get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client
     if pair is None:
         return None
     else:
-        strings = requests_util.pretty_print_last_actions(pair.lower(), graphql_client_uni, options)
+        strings = requests_util.pretty_print_last_actions(token_ticker, pair.lower(), graphql_client_uni, graphql_client_eth, uni_wrapper, options)
         return strings
 
 

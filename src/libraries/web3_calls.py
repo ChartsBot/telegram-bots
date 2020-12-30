@@ -29,11 +29,17 @@ def __get_pair_tokens(token0, token1, uni_wrapper):
 
 @cached(cache=TTLCache(maxsize=1024, ttl=60))
 def does_pair_token_eth_exist(token, uni_wrapper):
+    """
+    Check if there's a pair between eth and the token passed as a argument. If true, returns the pair contract
+    :param token: Contract (0xblabla) of the token
+    :param uni_wrapper: web3.py thingy
+    :return: None if not found, pair contract if found
+    """
     res1 = __get_pair_tokens(weth_checksum, token, uni_wrapper)
     if res1 != '0x0000000000000000000000000000000000000000':
         return res1
     else:
-        res2 = __get_pair_tokens(token, weth_checksum,uni_wrapper)
+        res2 = __get_pair_tokens(token, weth_checksum, uni_wrapper)
         if res2 != '0x0000000000000000000000000000000000000000':
             return res2
         else:
@@ -58,3 +64,19 @@ def get_lp_value(uni_wrapper, pair_address):
     t1_address = uni_wrapper.get_pair_token_address(pair_checksum, 1)
     amount_lp = int(uni_wrapper.get_amount_lp_total(pair_checksum)) / 10**18
     return [(t0_balance, t0_address), (t1_balance, t1_address), amount_lp]
+
+
+def get_pair_tokens_contracts(uni_wrapper, pair_address) -> (str, str):
+    pair_checksum = Web3.toChecksumAddress(pair_address)
+    t0_address = uni_wrapper.get_pair_token_address(pair_checksum, 0)
+    t1_address = uni_wrapper.get_pair_token_address(pair_checksum, 1)
+    return t0_address, t1_address
+
+
+def get_token_info(uni_wrapper, token_address) -> dict:
+    """
+    :return: dict ["sumbol": ticker, "name": name]
+    """
+    token_checksum = Web3.toChecksumAddress(token_address)
+    token_info = uni_wrapper.get_token(token_checksum)
+    return token_info
