@@ -551,7 +551,7 @@ class Mint:
         return self.amount_paired_with() * self.paired_with.price_usd
 
     def amount_paired_with(self):
-        if self.token_0[0] == self.paired_with.ticker:
+        if self.token_0[0].lower() == self.paired_with.ticker.lower():
             amount_eth = self.token_0[1] * 2
         else:
             amount_eth = self.token_1[1] * 2
