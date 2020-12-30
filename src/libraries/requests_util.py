@@ -536,7 +536,6 @@ class BotSwap:
         return self.to_string()
 
 
-
 @dataclass(frozen=True)
 class Mint:
     token_0: (str, int)
@@ -724,10 +723,7 @@ def get_last_actions(pair_contract, token_ticker, paired_with: PairedWith, graph
     if options is not None:
         if ("whale" in options or "whales" in options or "w" in options) and amount == 50:
             amount = 100
-    pprint.pprint(paired_with.contract.lower())
-    pprint.pprint(paired_with)
     last_actions = get_latest_actions(pair_contract, graphql_client_uni, options, amount)
-    pprint.pprint(last_actions)
 
     parsed_swaps = parse_swaps(last_actions, paired_with)
     parsed_mints = parse_mint(last_actions, paired_with)

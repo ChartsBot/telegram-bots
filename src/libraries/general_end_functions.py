@@ -382,7 +382,7 @@ def get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client
     print("options: ")
     pprint(options)
     token_contract = contract if contract is not None else requests_util.get_token_contract_address(token_ticker)
-    pair = web3_util.does_pair_token_eth_exist(token_contract, uni_wrapper)
+    pair = web3_util.does_pair_token_eth_exist(token_contract, uni_wrapper)  # TODO: in the future, use pair with the highest liquidity
     print("pair: " + str(pair))
     if pair is None:
         return None
