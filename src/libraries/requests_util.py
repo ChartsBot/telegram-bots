@@ -719,14 +719,14 @@ def detect_bots(actions):
     return others + kept_actions
 
 
-def get_last_actions(token_ticker, paired_with: PairedWith, graphql_client_uni, options=None, amount=50):
+def get_last_actions(pair_contract, token_ticker, paired_with: PairedWith, graphql_client_uni, options=None, amount=50):
     # use this: general end functions convert_to_usd_raw(
     if options is not None:
         if ("whale" in options or "whales" in options or "w" in options) and amount == 50:
             amount = 100
     pprint.pprint(paired_with.contract.lower())
     pprint.pprint(paired_with)
-    last_actions = get_latest_actions(paired_with.contract.lower(), graphql_client_uni, options, amount)
+    last_actions = get_latest_actions(pair_contract, graphql_client_uni, options, amount)
     pprint.pprint(last_actions)
 
     parsed_swaps = parse_swaps(last_actions, paired_with)
@@ -792,7 +792,7 @@ def pretty_print_last_actions(token_ticker, pair_contract, graphql_client_uni, g
     if paired_with is None:
         pprint.pprint("Error fetching pair for token " + token_ticker + " and pair contract " + pair_contract)
         return None
-    all_actions_sorted, start_message = get_last_actions(token_ticker, paired_with, graphql_client_uni, options)
+    all_actions_sorted, start_message = get_last_actions(pair_contract, token_ticker, paired_with, graphql_client_uni, options)
 
     amount = 5
     # check if amount specified in options
@@ -819,7 +819,7 @@ def pretty_print_monitor_last_actions(acceptable_ts, token_ticker, pair_contract
     if paired_with is None:
         pprint.pprint("Error fetching pair for token " + token_ticker + " and pair contract " + pair_contract)
         return None
-    all_actions_sorted, start_message = get_last_actions(token_ticker, paired_with, graphql_client_uni, options, amount)
+    all_actions_sorted, start_message = get_last_actions(pair_contract, token_ticker, paired_with, graphql_client_uni, options, amount)
     all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts and x.id not in blacklist]
     if 'print_complex' in options:
         actions_with_bots = detect_bots(all_actions_kept)
