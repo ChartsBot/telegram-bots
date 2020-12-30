@@ -725,13 +725,14 @@ def get_last_actions(token_ticker, paired_with: PairedWith, graphql_client_uni, 
         if ("whale" in options or "whales" in options or "w" in options) and amount == 50:
             amount = 100
     last_actions = get_latest_actions(paired_with.contract.lower(), graphql_client_uni, options, amount)
+    pprint.pprint(last_actions)
 
     parsed_swaps = parse_swaps(last_actions, paired_with)
     parsed_mints = parse_mint(last_actions, paired_with)
     parsed_burns = parse_burns(last_actions, paired_with)
     all_actions = parsed_burns + parsed_mints + parsed_swaps
 
-    start_message = "Last 5 actions of " + token_ticker + " with pair " + paired_with.ticker + "/" + token_ticker + " " + str(paired_with.contract)[0:8] + "[...]\n"
+    start_message = "Last 5 actions of " + token_ticker.upper() + " with pair " + paired_with.ticker + "/" + token_ticker + " " + str(paired_with.contract)[0:8] + "[...]\n"
     if options is not None:
         if "buy" in options or "buys" in options or "b" in options:
             start_message = start_message.replace("actions", "buys")

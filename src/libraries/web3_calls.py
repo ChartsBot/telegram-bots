@@ -66,6 +66,7 @@ def get_lp_value(uni_wrapper, pair_address):
     return [(t0_balance, t0_address), (t1_balance, t1_address), amount_lp]
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=3600))
 def get_pair_tokens_contracts(uni_wrapper, pair_address) -> (str, str):
     pair_checksum = Web3.toChecksumAddress(pair_address)
     t0_address = uni_wrapper.get_pair_token_address(pair_checksum, 0)
@@ -73,9 +74,10 @@ def get_pair_tokens_contracts(uni_wrapper, pair_address) -> (str, str):
     return t0_address, t1_address
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=3600))
 def get_token_info(uni_wrapper, token_address) -> dict:
     """
-    :return: dict ["sumbol": ticker, "name": name]
+    :return: dict ["symbol": ticker, "name": name]
     """
     token_checksum = Web3.toChecksumAddress(token_address)
     token_info = uni_wrapper.get_token(token_checksum)
