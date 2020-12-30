@@ -475,9 +475,6 @@ class Swap:
         else:
             return self.buy[1]
 
-    def price_usd(self):
-        return self.amount_paired_with() * self.paired_with.price_usd
-
     def to_string(self, custom_emoji=None, with_date=True):
         message = ""
         time_since = time_util.get_minute_diff(self.timestamp)
@@ -502,14 +499,14 @@ class Swap:
             price_usd_raw = self.buy[1] * self.paired_with.price_usd
             price_usd = pretty_number(price_usd_raw)
             # emoji = min(round(self.buy[1]), 30) * "🟢" + "🟢"
-            emoji = min((round(self.price_usd() / 300)), 30) * "🟢" + "🟢"
+            emoji = min((round(price_usd_raw / 300)), 30) * "🟢" + "🟢"
             main_part = "Buy <b>" + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + "</b> for <b>" \
                         + pretty_number(self.buy[1])[0:9] + ' ' + self.buy[0] + " </b> <code>($" + price_usd[0:6] + ")</code>"
         else:
             price_usd_raw = self.sell[1] * self.paired_with.price_usd
             price_usd = pretty_number(price_usd_raw)
             # emoji = min(round(self.sell[1]), 30) * "🔴" + "🔴"
-            emoji = min((round(self.price_usd() / 300)), 30) * "🔴" + "🔴"
+            emoji = min((round(price_usd_raw / 300)), 30) * "🔴" + "🔴"
             main_part = "Sell <b>" + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + "</b> for <b>" \
                         + pretty_number(self.sell[1])[0:9] + ' ' + self.sell[0] + " </b> <code>($" + price_usd[0:6] + ")</code>"
         first_row = emoji + '\n'
