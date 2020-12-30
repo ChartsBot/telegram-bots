@@ -475,6 +475,9 @@ class Swap:
         else:
             return self.buy[1]
 
+    def price_usd(self):
+        return self.amount_paired_with() * self.paired_with.price_usd
+
     def to_string(self, custom_emoji=None, with_date=True):
         message = ""
         time_since = time_util.get_minute_diff(self.timestamp)
@@ -498,13 +501,15 @@ class Swap:
         if self.is_positif():
             price_usd_raw = self.buy[1] * self.paired_with.price_usd
             price_usd = pretty_number(price_usd_raw)
-            emoji = min(round(self.buy[1]), 30) * "🟢" + "🟢"
+            # emoji = min(round(self.buy[1]), 30) * "🟢" + "🟢"
+            emoji = min((round(self.price_usd() / 300)), 30) * "🟢" + "🟢"
             main_part = "Buy <b>" + pretty_number(self.sell[1])[0:9] + " " + self.sell[0] + "</b> for <b>" \
                         + pretty_number(self.buy[1])[0:9] + ' ' + self.buy[0] + " </b> <code>($" + price_usd[0:6] + ")</code>"
         else:
             price_usd_raw = self.sell[1] * self.paired_with.price_usd
             price_usd = pretty_number(price_usd_raw)
-            emoji = min(round(self.sell[1]), 30) * "🔴" + "🔴"
+            # emoji = min(round(self.sell[1]), 30) * "🔴" + "🔴"
+            emoji = min((round(self.price_usd() / 300)), 30) * "🔴" + "🔴"
             main_part = "Sell <b>" + pretty_number(self.buy[1])[0:9] + " " + self.buy[0] + "</b> for <b>" \
                         + pretty_number(self.sell[1])[0:9] + ' ' + self.sell[0] + " </b> <code>($" + price_usd[0:6] + ")</code>"
         first_row = emoji + '\n'
@@ -811,6 +816,31 @@ def pretty_print_last_actions(token_ticker, pair_contract, graphql_client_uni, g
 
 
 def pretty_print_monitor_last_actions(acceptable_ts, token_ticker, pair_contract, graphql_client_uni, graphqlclient_eth, uni_wrapper, options=["whale"], amount=30, blacklist=[]):
+    paired_with = get_pair_info_from_pair_contract(token_ticker, pair_contract, uni_wrapper, graphql_client_uni, graphqlclient_eth)
+    if paired_with is None:
+        pprint.pprint("Error fetching pair for token " + token_ticker + " and pair contract " + pair_contract)
+        return None
+    all_actions_sorted, start_message = get_last_actions(pair_contract, token_ticker, paired_with, graphql_client_uni, options, amount)
+    all_actions_kept = [x for x in all_actions_sorted if x.timestamp > acceptable_ts and x.id not in blacklist]
+    if 'print_complex' in options:
+        actions_with_bots = detect_bots(all_actions_kept)
+        all_actions_kept_sorted = sorted(actions_with_bots, key=lambda x: x.value_raw_paired_with(), reverse=True)
+        strings = list(map(lambda x: x.to_string_complex(), all_actions_kept_sorted))
+        if len(strings) == 0:
+            return None, []
+        else:
+            ids = [x.id for x in all_actions_kept]
+            return '\n\n'.join(strings), ids
+
+    else:
+        strings = list(map(lambda x: x.to_string('🐋', with_date=False), all_actions_kept))
+    if len(strings) == 0:
+        return None
+    else:
+        return '\n'.join(strings)
+
+
+def monitor_last_actions_raw(acceptable_ts, token_ticker, pair_contract, graphql_client_uni, graphqlclient_eth, uni_wrapper, options=["whale"], amount=30, blacklist=[]):
     paired_with = get_pair_info_from_pair_contract(token_ticker, pair_contract, uni_wrapper, graphql_client_uni, graphqlclient_eth)
     if paired_with is None:
         pprint.pprint("Error fetching pair for token " + token_ticker + " and pair contract " + pair_contract)
