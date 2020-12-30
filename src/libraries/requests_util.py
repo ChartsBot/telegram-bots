@@ -724,6 +724,8 @@ def get_last_actions(token_ticker, paired_with: PairedWith, graphql_client_uni, 
     if options is not None:
         if ("whale" in options or "whales" in options or "w" in options) and amount == 50:
             amount = 100
+    pprint.pprint(paired_with.contract.lower())
+    pprint.pprint(paired_with)
     last_actions = get_latest_actions(paired_with.contract.lower(), graphql_client_uni, options, amount)
     pprint.pprint(last_actions)
 
