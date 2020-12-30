@@ -320,7 +320,9 @@ def keep_dates(values_list):
 
 
 def convert_to_usd_raw(amount, currency_ticker, graphqlclient_uni, graphqlclient_eth):
-    if currency_ticker.lower() == 'eth' or currency_ticker.lower() == 'weth':
+    if currency_ticker.lower() == 'usdt' or currency_ticker.lower == 'usd' or currency_ticker.lower == 'dai' or currency_ticker.lower == 'usdc':
+        return amount
+    elif currency_ticker.lower() == 'eth' or currency_ticker.lower() == 'weth':
         eth_price = requests_util.get_eth_price_now()
         return amount * eth_price
     elif currency_ticker.lower() == "lambo":
