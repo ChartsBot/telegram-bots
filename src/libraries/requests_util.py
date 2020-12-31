@@ -748,7 +748,7 @@ def get_last_actions(pair_contract, token_ticker, paired_with: PairedWith, graph
             start_message = start_message + "Showing only actions <b>> 10 Eth:</b>\n"
             to_keep_if_whales = []
             for action in all_actions:
-                if action.amount_paired_with() > 10:
+                if action.amount_paired_with() > 10 * get_eth_price_now():
                     to_keep_if_whales.append(action)
             all_actions = to_keep_if_whales
 
