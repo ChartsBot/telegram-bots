@@ -371,13 +371,19 @@ def get_balance_token_wallet(w3, wallet, ticker, graphqlclient_uni, graphqlclien
     return amount, amount_usd
 
 
-def get_gas_price():
+def get_gas_price(full: bool = False):
     gas_price_raw = requests_util.get_gas_price_raw()
     asap = int(gas_price_raw['fastest'] / 10)
     fast = int(gas_price_raw['fast'] / 10)
     average = int(gas_price_raw['average'] / 10)
     low = int(gas_price_raw['safeLow'] / 10)
-    return asap, fast, average, low
+    if full:
+        eth_price = requests_util.get_eth_price_now()
+        price_one_tx_asap_eth = asap * 21000 / 1000000000
+        price_one_tx_asap_usd = price_one_tx_asap_eth * eth_price
+        return asap, fast, average, low, price_one_tx_asap_eth, price_one_tx_asap_usd
+    else:
+        return asap, fast, average, low
 
 
 def get_last_actions_token_in_eth_pair(token_ticker, uni_wrapper, graphql_client_uni, graphql_client_eth, contract: str = None, options=None):

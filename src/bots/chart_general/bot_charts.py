@@ -914,12 +914,13 @@ def view_gas(update: Update, context: CallbackContext):
     """Show new choice of buttons"""
     logging.info("Viewing gas price")
     chat_id = update.message.chat_id
-    asap, fast, average, low = general_end_functions.get_gas_price()
+    asap, fast, average, low, price_one_tx_asap_eth, price_one_tx_asap_usd = general_end_functions.get_gas_price(True)
     message = "<b>Gas price:</b><code>" + \
               "\nASAP: " + str(asap) + \
               "\nFast: " + str(fast) + \
               "\nAvg : " + str(average) + \
-              "\nSlow: " + str(low) + "</code>"
+              "\nSlow: " + str(low) + \
+              "\nBasic tx = Ξ" + str(price_one_tx_asap_eth[0:10]) + " | $" + str(price_one_tx_asap_usd[0:10]) + "</code>"
     context.bot.send_message(text=message, chat_id=chat_id, parse_mode="html")
     return FIRST
 
