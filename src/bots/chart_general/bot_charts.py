@@ -920,7 +920,7 @@ def view_gas(update: Update, context: CallbackContext):
               "\nFast: " + str(fast) + \
               "\nAvg : " + str(average) + \
               "\nSlow: " + str(low) + \
-              "\nBasic tx = Ξ" + str(price_one_tx_asap_eth)[0:10] + " | $" + str(price_one_tx_asap_usd)[0:10] + "</code>"
+              "\nASAP tx = Ξ" + str(price_one_tx_asap_eth)[0:8] + " | $" + str(price_one_tx_asap_usd)[0:4] + "</code>"
     context.bot.send_message(text=message, chat_id=chat_id, parse_mode="html")
     return FIRST
 
