@@ -120,7 +120,8 @@ check_big_buys_interval_seconds = 60
 with open(GRPC_FILE_HANDLER_CA_PATH, 'rb') as f:
     grpc_file_handler_creds = grpc.ssl_channel_credentials(f.read())
 grpc_file_handler_channel = grpc.secure_channel(GRPC_FILE_HANDLER_HOST, grpc_file_handler_creds,
-                                                options=(('grpc.ssl_target_name_override', 'foo.test.google.fr'),))
+                                                options=(('grpc.ssl_target_name_override', 'foo.test.google.fr'),
+                                                         ('grpc.enable_http_proxy', 0),))
 
 # create a stub (client)
 grpc_file_handler_client = filehandler_pb2_grpc.FileHandlerAkkaServiceStub(grpc_file_handler_channel)
