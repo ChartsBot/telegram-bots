@@ -116,6 +116,11 @@ rejection_no_default_ticker_message = "No default token found for this chat. Ple
 # CONFIG OPTION repeated task
 check_big_buys_interval_seconds = 60
 
+if os.environ.get('https_proxy'):
+    del os.environ['https_proxy']
+if os.environ.get('http_proxy'):
+    del os.environ['http_proxy']
+
 # grpc stuff
 with open(GRPC_FILE_HANDLER_CA_PATH, 'rb') as f:
     grpc_file_handler_creds = grpc.ssl_channel_credentials(f.read())
