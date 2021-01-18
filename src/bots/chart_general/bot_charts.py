@@ -40,8 +40,8 @@ from libraries.common_values import *
 from web3 import Web3
 from libraries.timer_util import RepeatedTimer
 from threading import Thread
-import src.libraries.protobuf.filehandler.fileHandler_pb2 as filehandler_pb2
-import src.libraries.protobuf.filehandler.fileHandler_pb2_grpc as filehandler_pb2_grpc
+import libraries.protobuf.filehandler.fileHandler_pb2 as filehandler_pb2
+import libraries.protobuf.filehandler.fileHandler_pb2_grpc as filehandler_pb2_grpc
 import grpc
 
 # from py_w3c.validators.html.validator import HTMLValidator
