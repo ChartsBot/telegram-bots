@@ -260,8 +260,10 @@ def handle_new_image(update: Update, context: CallbackContext):
                                                          file=bytes(file_as_bytes))
                 response = grpc_file_handler_client.UploadFile(file)
                 pprint.pprint(response)
-
-                context.bot.send_message(chat_id=chat_id, text="done good sir")
+                if response.status == False:
+                    context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
+                else:
+                    context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
             except IndexError:
                 error_msg = "Adding image failed: no image provided. Make sure to send it as a file and not an image."
                 context.bot.send_message(chat_id=chat_id, text=error_msg)
