@@ -259,6 +259,7 @@ def handle_new_image(update: Update, context: CallbackContext):
                                                          timeCreation=timeCreation,
                                                          file=bytes(file_as_bytes))
                 response = grpc_file_handler_client.UploadFile(file)
+                pprint.pprint(response)
 
                 context.bot.send_message(chat_id=chat_id, text="done good sir")
             except IndexError:
