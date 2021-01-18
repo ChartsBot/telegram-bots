@@ -252,7 +252,7 @@ def handle_new_image(update: Update, context: CallbackContext):
                                                          fileType=file_type,
                                                          author=author,
                                                          timeCreation=timeCreation,
-                                                         file=file_as_bytes)
+                                                         file=bytes(file_as_bytes))
                 response = grpc_file_handler_client.UploadFile(file)
 
                 context.bot.send_message(chat_id=chat_id, text="done good sir")
