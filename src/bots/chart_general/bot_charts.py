@@ -244,7 +244,7 @@ def handle_new_image(update: Update, context: CallbackContext):
                 file_classification = "meme"
                 file_type = "image"
                 author = "unknown"
-                timeCreation = time.gmtime()
+                timeCreation = int(time.time())
                 logging.info("adding dank meme")
                 file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
                                                          chatTitle=chat_title,
