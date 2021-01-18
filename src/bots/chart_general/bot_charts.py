@@ -116,17 +116,11 @@ rejection_no_default_ticker_message = "No default token found for this chat. Ple
 # CONFIG OPTION repeated task
 check_big_buys_interval_seconds = 60
 
-if os.environ.get('https_proxy'):
-    del os.environ['https_proxy']
-if os.environ.get('http_proxy'):
-    del os.environ['http_proxy']
-
 # grpc stuff
 with open(GRPC_FILE_HANDLER_CA_PATH, 'rb') as f:
     grpc_file_handler_creds = grpc.ssl_channel_credentials(f.read())
-grpc_file_handler_channel = grpc.secure_channel(GRPC_FILE_HANDLER_HOST, grpc_file_handler_creds,
-                                                options=(('grpc.ssl_target_name_override', 'foo.test.google.fr'),
-                                                         ('grpc.enable_http_proxy', 0),))
+grpc_file_handler_channel = grpc.secure_channel('127.0.0.1:8081', grpc_file_handler_creds,
+                                                options=(('grpc.ssl_target_name_override', 'foo.test.google.fr'),))
 
 # create a stub (client)
 grpc_file_handler_client = filehandler_pb2_grpc.FileHandlerAkkaServiceStub(grpc_file_handler_channel)
