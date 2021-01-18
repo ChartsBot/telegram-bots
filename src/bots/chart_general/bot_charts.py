@@ -119,7 +119,7 @@ check_big_buys_interval_seconds = 60
 # grpc stuff
 with open(GRPC_FILE_HANDLER_CA_PATH, 'rb') as f:
     grpc_file_handler_creds = grpc.ssl_channel_credentials(f.read())
-grpc_file_handler_channel = grpc.secure_channel('127.0.0.1:8081', grpc_file_handler_creds,
+grpc_file_handler_channel = grpc.secure_channel('localhost:8081', grpc_file_handler_creds,
                                                 options=(('grpc.ssl_target_name_override', 'foo.test.google.fr'),))
 
 # create a stub (client)
