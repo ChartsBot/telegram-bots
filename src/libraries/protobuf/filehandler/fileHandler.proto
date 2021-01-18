@@ -5,7 +5,7 @@ option java_multiple_files = true;
 option java_package = "com.chartsbot.services";
 option java_outer_classname = "FileHandlerProto";
 
-// The greeting service definition.
+// The file handler service definition.
 service FileHandlerAkkaService {
   // Sends a greeting
   rpc UploadFile (FileUploadRequest) returns (FileUploadResponse) {}
@@ -33,7 +33,7 @@ message FileUploadRequest {
   string fileType = 4;  // video, image, ...
   string author = 5;
   uint32 timeCreation = 6;
-  string pathOnDisk = 7;
+  bytes file = 7;
 }
 
 // The response message containing the greetings
@@ -59,18 +59,15 @@ message FileGetResponse {
   string fileType = 4;  // video, image, ...
   string author = 5;
   uint32 timeCreation = 6;
-  string pathOnDisk = 7;
+  bytes file = 7;
 }
 
 
 message FileDeleteRequest {
   int32 chatId = 1;
-  string chatTitle = 2;
   string fileClassification = 3;  // meme or doc
   string fileType = 4;  // video, image, ...
-  string author = 5;
-  uint32 timeCreation = 6;
-  string pathOnDisk = 7;
+  string name = 5;
 }
 
 message FileDeleteResponse {

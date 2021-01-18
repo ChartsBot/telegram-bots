@@ -195,6 +195,13 @@ def download_image(update: Update, context: CallbackContext, path):
     return img_path
 
 
+def download_image_bytearray(update: Update, context: CallbackContext):
+    image = context.bot.getFile(update.message.photo[-1])
+    image_id = str(image.file_id)
+    print("file_id: " + image_id)
+    return image.download_as_bytearray()
+
+
 def ocr_image(update: Update, context: CallbackContext, tmp_path):
     img_path = download_image(update, context, tmp_path)
     ocr = Ocr(img_path)

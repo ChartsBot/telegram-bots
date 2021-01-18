@@ -40,6 +40,10 @@ from libraries.common_values import *
 from web3 import Web3
 from libraries.timer_util import RepeatedTimer
 from threading import Thread
+import src.libraries.protobuf.filehandler.fileHandler_pb2 as filehandler_pb2
+import src.libraries.protobuf.filehandler.fileHandler_pb2_grpc as filehandler_pb2_grpc
+import grpc
+
 # from py_w3c.validators.html.validator import HTMLValidator
 
 import zerorpc
@@ -85,6 +89,10 @@ supply_file_path = BASE_PATH + 'log_files/chart_bot/supply_log_$TICKER.txt'
 supply_chart_path = BASE_PATH + 'log_files/boo_bot/supply_chart_$TICKER.png'
 pie_chart_wallet_path = BASE_PATH + 'log_files/boo_bot/pie_chart_wallet.png'
 
+# grpc
+GRPC_FILE_HANDLER_CA_PATH = os.environ.get('GRPC_FILE_HANDLER_CA_PATH')
+GRPC_FILE_HANDLER_HOST = os.environ.get('GRPC_FILE_HANDLER_HOST')
+
 # web3
 infura_url = os.environ.get('INFURA_URL')
 w3 = Web3(Web3.HTTPProvider(infura_url))
@@ -107,6 +115,15 @@ rejection_no_default_ticker_message = "No default token found for this chat. Ple
 
 # CONFIG OPTION repeated task
 check_big_buys_interval_seconds = 60
+
+# grpc stuff
+with open(GRPC_FILE_HANDLER_CA_PATH, 'rb') as f:
+    grpc_file_handler_creds = grpc.ssl_channel_credentials(f.read())
+grpc_file_handler_channel = grpc.secure_channel(GRPC_FILE_HANDLER_HOST, grpc_file_handler_creds,
+                                                options=(('grpc.ssl_target_name_override', 'foo.test.google.fr'),))
+
+# create a stub (client)
+grpc_file_handler_client = filehandler_pb2_grpc.FileHandlerAkkaServiceStub(grpc_file_handler_channel)
 
 
 def get_start_message(update: Update, context: CallbackContext):
@@ -217,7 +234,35 @@ def get_price_token(update: Update, context: CallbackContext):
 
 
 def handle_new_image(update: Update, context: CallbackContext):
-    __send_message_if_ocr(update, context)
+    try:
+        caption = update['message']['caption']
+        if caption == "/add_meme":
+            try:
+                file_as_bytes = general_end_functions.download_image_bytearray(update, context)
+                chat_id = update.message.chat_id
+                chat_title = "hey hey HEYYYY"
+                file_classification = "meme"
+                file_type = "image"
+                author = "unknown"
+                timeCreation = time.gmtime()
+                logging.info("adding dank meme")
+                file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
+                                                         chatTitle=chat_title,
+                                                         fileClassification=file_classification,
+                                                         fileType=file_type,
+                                                         author=author,
+                                                         timeCreation=timeCreation,
+                                                         file=file_as_bytes)
+                response = grpc_file_handler_client.UploadFile(file)
+
+                context.bot.send_message(chat_id=chat_id, text="done good sir")
+            except IndexError:
+                error_msg = "Adding image failed: no image provided. Make sure to send it as a file and not an image."
+                context.bot.send_message(chat_id=chat_id, text=error_msg)
+        else:
+            __send_message_if_ocr(update, context)
+    except KeyError:
+        __send_message_if_ocr(update, context)
 
 
 def __send_message_if_ocr(update, context):
@@ -1002,6 +1047,7 @@ def main():
     dp.add_handler(CommandHandler(['tr', 'translate'], translate_text, run_async=True))
     dp.add_handler(CommandHandler(['ask'], ask_wolfram, run_async=True))
     dp.add_handler(CommandHandler(['analyze_wallet'], analyze_wallet, run_async=True))
+    # dank memes
     # customoization stuff
     dp.add_handler(CommandHandler('set_default_token', set_default_token))
     dp.add_handler(CommandHandler('get_default_token', get_default_token))
@@ -1021,8 +1067,6 @@ def main():
     dp.add_handler(CommandHandler('add_channel', add_channel, filters=Filters.user(username='@rotted_ben')))
 
     dp.add_handler(MessageHandler(Filters.command, get_price_direct, run_async=True))
-
-
 
 
     j = updater.job_queue

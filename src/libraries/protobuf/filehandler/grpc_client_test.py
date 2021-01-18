@@ -9,19 +9,22 @@ import src.libraries.protobuf.filehandler.fileHandler_pb2_grpc as filehandler_pb
 # open a gRPC channel
 # channel = grpc.insecure_channel('localhost:8080')
 
-with open('ca.pem', 'rb') as f:
-    creds = grpc.ssl_channel_credentials(f.read())
-channel = grpc.secure_channel('127.0.0.1:8080', creds,
-                              options=(('grpc.ssl_target_name_override', 'foo.test.google.fr'),))
+GRPC_FILE_HANDLER_CA_PATH = os.environ.get('GRPC_FILE_HANDLER_CA_PATH')
+GRPC_FILE_HANDLER_HOST = os.environ.get('GRPC_FILE_HANDLER_HOST')
+
+with open(GRPC_FILE_HANDLER_CA_PATH, 'rb') as f:
+    grpc_file_handler_creds = grpc.ssl_channel_credentials(f.read())
+grpc_file_handler_channel = grpc.secure_channel(GRPC_FILE_HANDLER_HOST, grpc_file_handler_creds,
+                                                options=(('grpc.ssl_target_name_override', 'foo.test.google.fr'),))
 
 # create a stub (client)
-stub = filehandler_pb2_grpc.FileHandlerAkkaServiceStub(channel)
+grpc_file_handler_client = filehandler_pb2_grpc.FileHandlerAkkaServiceStub(grpc_file_handler_channel)
 
 # create a valid request message
 number = filehandler_pb2.SayHelloMessage(message="hey it's a me")
 
 # make the call
-response = stub.Greet(number)
+response = grpc_file_handler_client.Greet(number)
 
 # et voilà
 pprint(response.message)
@@ -37,7 +40,7 @@ file = filehandler_pb2.FileUploadRequest(chatId=12345,
                                          timeCreation=1,
                                          pathOnDisk=img2)
 
-response = stub.UploadFile(file)
+response = grpc_file_handler_client.UploadFile(file)
 
 pprint(response)
 
