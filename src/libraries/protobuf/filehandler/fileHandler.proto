@@ -59,7 +59,8 @@ message FileGetResponse {
   string fileType = 4;  // video, image, ...
   string author = 5;
   uint32 timeCreation = 6;
-  bytes file = 7;
+  string name = 7;
+  bytes file = 8;
 }
 
 

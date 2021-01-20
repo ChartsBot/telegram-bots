@@ -2,6 +2,7 @@ import locale
 import sys
 import os
 from gevent import monkey
+
 monkey.patch_all()  # REALLY IMPORTANT: ALLOWS ZERORPC AND TG TO WORK TOGETHER
 
 from twython import Twython
@@ -15,14 +16,15 @@ from datetime import datetime
 import pprint
 import os.path
 import re
+import io
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler, ConversationHandler
+from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler, \
+    ConversationHandler
 from telegram.ext.dispatcher import run_async
 from telegram.error import ChatMigrated, BadRequest
 import libraries.web3_calls as web3_util
 from cachetools import cached, TTLCache
-
 
 import libraries.graphs_util as graphs_util
 import libraries.general_end_functions as general_end_functions
@@ -35,7 +37,8 @@ import libraries.scrap_websites_util as scrap_websites_util
 import libraries.queries_parser as queries_parser
 import libraries.translation_util as translation_util
 from libraries.uniswap import Uniswap
-from bots.chart_general.bot_charts_values import start_message, message_faq_empty, symbol_gecko, message_faq_additional, emoji_number_dic
+from bots.chart_general.bot_charts_values import start_message, message_faq_empty, symbol_gecko, message_faq_additional, \
+    emoji_number_dic
 from libraries.common_values import *
 from web3 import Web3
 from libraries.timer_util import RepeatedTimer
@@ -51,6 +54,7 @@ import zerorpc
 import wolframalpha
 
 import logging
+
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -61,7 +65,6 @@ try:
 except Exception:
     logging.info("Worlfram struggling to connect, trying again")
     wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
-
 
 announcement_channel_id = -1001478326834
 
@@ -112,7 +115,6 @@ graphql_client_eth = GraphQLClient('https://api.thegraph.com/subgraphs/name/bloc
 
 rejection_no_default_ticker_message = "No default token found for this chat. Please ask an admin to add one with /set_default_token <TICKER>"
 
-
 # CONFIG OPTION repeated task
 check_big_buys_interval_seconds = 60
 
@@ -154,7 +156,8 @@ def get_candlestick(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
             return
 
-    token, start_time, time_period, options = queries_parser.analyze_query_charts(update.message.text, default_default_token)
+    token, start_time, time_period, options = queries_parser.analyze_query_charts(update.message.text,
+                                                                                  default_default_token)
     options = None if options == [] else options
 
     # time_type, k_hours, k_days, tokens = commands_util.check_query(query_received, default_default_token)
@@ -167,7 +170,8 @@ def get_candlestick(update: Update, context: CallbackContext):
 
     (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
                                                                                         k_hours, t_from,
-                                                                                        t_to, txt=trending, options=options,
+                                                                                        t_to, txt=trending,
+                                                                                        options=options,
                                                                                         with_ad=maybe_bottom_text)
 
     util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
@@ -200,13 +204,15 @@ def get_price_token(update: Update, context: CallbackContext):
             if contract_from_ticker is None:
                 context.bot.send_message(chat_id=chat_id, text='Contract address for ticker ' + ticker + ' not found.')
             else:
-                util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
+                util.create_and_send_vote(ticker, "price", update.message.from_user.name,
+                                          zerorpc_client_data_aggregator)
                 button_list_price = [
                     [InlineKeyboardButton('refresh', callback_data='r_p_' + contract_from_ticker + "_t_" + ticker)]]
                 reply_markup_price = InlineKeyboardMarkup(button_list_price)
                 message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
                                                           graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
-                context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', reply_markup=reply_markup_price,
+                context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html',
+                                         reply_markup=reply_markup_price,
                                          disable_web_page_preview=True)
                 if not __did_user_vote_too_much(update.message.from_user.name, "price", ticker):
                     context.bot.send_message(chat_id=announcement_channel_id, text=message, parse_mode='html',
@@ -220,7 +226,8 @@ def get_price_token(update: Update, context: CallbackContext):
             if addr is None or addr == "":
                 context.bot.send_message(chat_id=chat_id, text='Contract address for ticker ' + ticker + ' not found.')
             else:
-                util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
+                util.create_and_send_vote(ticker, "price", update.message.from_user.name,
+                                          zerorpc_client_data_aggregator)
                 button_list_price = [
                     [InlineKeyboardButton('refresh', callback_data='r_p_' + addr + "_t_" + ticker)]]
                 reply_markup_price = InlineKeyboardMarkup(button_list_price)
@@ -238,6 +245,33 @@ def get_price_token(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text='Please specify the ticker of the desired token.')
 
 
+def get_meme(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "get_meme")
+    chat_id = update.message.chat_id
+    query_received = update.message.text.split(' ')
+    fileRequest = filehandler_pb2.FileGetRequest(chatId=chat_id,
+                                                 fileClassification="meme",
+                                                 fileType="image",
+                                                 author="whatever")
+    response = grpc_file_handler_client.GetFile(fileRequest)
+    if response.status:
+        if response.fileType == "image":
+            tmp_meme_path = TMP_FOLDER + 'tmp_meme.png'
+            f = open(tmp_meme_path, 'wb')
+            f.write(response.file)
+            f.close()
+            context.bot.send_photo(chat_id=chat_id,
+                                   photo=io.BytesIO(response.file),
+                                   caption="Dank meme " + response.name
+                                   )
+        else:
+            context.bot.send_message(chat_id=chat_id,
+                                     text="file type received: " + response.fileType)
+    else:
+        context.bot.send_message(chat_id=chat_id,
+                                 text="No meme found in this chat")
+
+
 def handle_new_image(update: Update, context: CallbackContext):
     try:
         caption = update['message']['caption']
@@ -249,15 +283,15 @@ def handle_new_image(update: Update, context: CallbackContext):
                 file_classification = "meme"
                 file_type = "image"
                 author = "unknown"
-                timeCreation = int(time.time())
+                time_creation = int(time.time())
                 logging.info("adding dank meme")
                 file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
-                                                         chatTitle=chat_title,
-                                                         fileClassification=file_classification,
-                                                         fileType=file_type,
-                                                         author=author,
-                                                         timeCreation=timeCreation,
-                                                         file=bytes(file_as_bytes))
+                                          chatTitle=chat_title,
+                                          fileClassification=file_classification,
+                                          fileType=file_type,
+                                          author=author,
+                                          timeCreation=time_creation,
+                                          file=bytes(file_as_bytes))
                 response = grpc_file_handler_client.UploadFile(file)
                 pprint.pprint(response)
                 if response.status == False:
@@ -355,7 +389,8 @@ def refresh_chart(update: Update, context: CallbackContext):
         maybe_bottom_text = text_if_coin_being_watched(token)
         (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
                                                                                             k_hours, t_from, t_to,
-                                                                                            txt=trending, with_ad=maybe_bottom_text)
+                                                                                            txt=trending,
+                                                                                            with_ad=maybe_bottom_text)
         context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
                                reply_markup=reply_markup_chart)
         context.bot.delete_message(chat_id=chat_id, message_id=message_id)
@@ -387,7 +422,8 @@ def get_biz(update: Update, context: CallbackContext):
     elif len(query_received) == 1:  # TODO: merge all that
         word, addr = __get_default_token_channel(chat_id)
         if word is None or word.lower() == "null":
-            context.bot.send_message(chat_id=chat_id, text='No default ticker set up for this channel. An admin can add one with the /set_default_token command. In the meantime, you can use /biz by doing /biz KEYWORD')
+            context.bot.send_message(chat_id=chat_id,
+                                     text='No default ticker set up for this channel. An admin can add one with the /set_default_token command. In the meantime, you can use /biz by doing /biz KEYWORD')
         else:
             word_regex_friendly = word.replace('$', '\\$')
             threads_ids = scrap_websites_util.get_biz_threads(re.compile(word_regex_friendly))
@@ -416,15 +452,18 @@ def get_twitter(update: Update, context: CallbackContext):
         ticker = query_received[-1]
         res = scrap_websites_util.get_last_tweets(twitter, ticker)
         context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
-        context.bot.send_message(chat_id=announcement_channel_id, text=res, parse_mode='html', disable_web_page_preview=True)
+        context.bot.send_message(chat_id=announcement_channel_id, text=res, parse_mode='html',
+                                 disable_web_page_preview=True)
     elif len(query_received) == 1:
         ticker, addr = __get_default_token_channel(chat_id)
         if ticker is None or ticker.lower() == "null":
-            context.bot.send_message(chat_id=chat_id, text='No default ticker set up for this channel. An admin can add one with the /set_default_token command. In the meantime, you can use /twitter by doing /twitter TOKEN')
+            context.bot.send_message(chat_id=chat_id,
+                                     text='No default ticker set up for this channel. An admin can add one with the /set_default_token command. In the meantime, you can use /twitter by doing /twitter TOKEN')
         else:
             res = scrap_websites_util.get_last_tweets(twitter, ticker)
             context.bot.send_message(chat_id=chat_id, text=res, parse_mode='html', disable_web_page_preview=True)
-            context.bot.send_message(chat_id=announcement_channel_id, text=res, parse_mode='html', disable_web_page_preview=True)
+            context.bot.send_message(chat_id=announcement_channel_id, text=res, parse_mode='html',
+                                     disable_web_page_preview=True)
     else:
         context.bot.send_message(chat_id=chat_id, text="Please use the format /twitter TOKEN_TICKER.",
                                  parse_mode='html', disable_web_page_preview=True)
@@ -447,7 +486,8 @@ def balance_token_in_wallet(update: Update, context: CallbackContext):
         ticker = query_received[2]
         amount, amount_usd = general_end_functions.get_balance_token_wallet(w3, wallet, ticker, graphql_client_uni,
                                                                             graphql_client_eth)
-        message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(util.pretty_number(amount)) + " " + ticker + " = " + str(amount_usd) + " usd</b>."
+        message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(
+            util.pretty_number(amount)) + " " + ticker + " = " + str(amount_usd) + " usd</b>."
         context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
         # res = con
     elif len(query_received) == 2 and query_received[1] == "jackpot":
@@ -465,11 +505,11 @@ def balance_token_in_wallet(update: Update, context: CallbackContext):
             ticker = channel_token[0]
             amount, amount_usd = general_end_functions.get_balance_token_wallet(w3, wallet, ticker, graphql_client_uni,
                                                                                 graphql_client_eth)
-            message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(util.pretty_number(amount)) + " " + ticker + " = " + str(amount_usd) + " usd</b>."
+            message = "wallet " + str(wallet)[0:3] + '[...]' + " contains <b>" + str(
+                util.pretty_number(amount)) + " " + ticker + " = " + str(amount_usd) + " usd</b>."
             context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html')
     else:
         context.bot.send_message(chat_id=chat_id, text="Wrong arguments. Please use /balance WALLET TOKEN")
-
 
 
 def get_gas_average(update: Update, context: CallbackContext):
@@ -483,7 +523,8 @@ def get_gas_average(update: Update, context: CallbackContext):
               "\nSlow: " + str(low) + \
               "\nASAP tx: Ξ" + str(price_one_tx_asap_eth)[0:8] + " | $" + str(price_one_tx_asap_usd)[0:4] + "</code>"
     context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True, parse_mode='html')
-    context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True, parse_mode='html')
+    context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True,
+                             parse_mode='html')
 
 
 def get_time_to(update: Update, context: CallbackContext):
@@ -510,10 +551,16 @@ def get_latest_actions(update: Update, context: CallbackContext):
     if len(query_received) == 1:
         default_token = __get_default_token_channel(chat_id)
         if default_token is not None:
-            latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(default_token[0], uni_wrapper, graphql_client_uni, graphql_client_eth)
-            util.create_and_send_vote(default_token[0], "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
-            context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
-            context.bot.send_message(chat_id=announcement_channel_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
+            latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(default_token[0],
+                                                                                             uni_wrapper,
+                                                                                             graphql_client_uni,
+                                                                                             graphql_client_eth)
+            util.create_and_send_vote(default_token[0], "actions", update.message.from_user.name,
+                                      zerorpc_client_data_aggregator)
+            context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True,
+                                     parse_mode='html')
+            context.bot.send_message(chat_id=announcement_channel_id, text=latest_actions_pretty,
+                                     disable_web_page_preview=True, parse_mode='html')
         else:
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
     else:
@@ -525,12 +572,20 @@ def get_latest_actions(update: Update, context: CallbackContext):
         token, options = queries_parser.analyze_query_last_actions(update.message.text, ticker)
         if token is not None:
             if addr is not None:
-                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, graphql_client_eth, None, options)
+                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper,
+                                                                                                 graphql_client_uni,
+                                                                                                 graphql_client_eth,
+                                                                                                 None, options)
             else:
-                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper, graphql_client_uni, graphql_client_eth, None, options)
+                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper,
+                                                                                                 graphql_client_uni,
+                                                                                                 graphql_client_eth,
+                                                                                                 None, options)
             util.create_and_send_vote(token, "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
-            context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
-            context.bot.send_message(chat_id=announcement_channel_id, text=latest_actions_pretty, disable_web_page_preview=True, parse_mode='html')
+            context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True,
+                                     parse_mode='html')
+            context.bot.send_message(chat_id=announcement_channel_id, text=latest_actions_pretty,
+                                     disable_web_page_preview=True, parse_mode='html')
         else:
             context.bot.send_message(chat_id=chat_id, text=rejection_no_default_ticker_message)
 
@@ -552,7 +607,8 @@ def get_gas_spent(update: Update, context: CallbackContext):
         res = general_end_functions.get_gas_spent(addr, options)
         context.bot.send_message(chat_id=chat_id, text=res)
     else:
-        context.bot.send_message(chat_id=chat_id, text="Please use the format /gas_spent address (ex: /gas_spent 0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8)")
+        context.bot.send_message(chat_id=chat_id,
+                                 text="Please use the format /gas_spent address (ex: /gas_spent 0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8)")
 
 
 # ADMIN STUFF
@@ -565,7 +621,8 @@ def set_faq(update: Update, context: CallbackContext):
             faq = query_received
             res = zerorpc_client_data_aggregator.set_faq(chat_id, faq)
             message_info = res + '\n' + message_faq_additional
-            context.bot.send_message(chat_id=chat_id, text=message_info, parse_mode='html', disable_web_page_preview=True)
+            context.bot.send_message(chat_id=chat_id, text=message_info, parse_mode='html',
+                                     disable_web_page_preview=True)
         else:
             context.bot.send_message(chat_id=chat_id, text="Please use the format /set_faq FAQ")
     else:
@@ -639,13 +696,15 @@ def set_monitor(update: Update, context: CallbackContext):
         if len(query_received) == 2:
             ticker = query_received[1].upper()
             token_addr = requests_util.get_token_contract_address(ticker)
-            message = "setting watcher for token actions (buys > 10eth) with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS"
+            message = "setting watcher for token actions (buys > 10eth) with address " + str(
+                token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS"
             res = zerorpc_client_data_aggregator.add_monitor(chat_id, token_addr, "buy")
             context.bot.send_message(chat_id=chat_id, text=message)
         elif len(query_received) == 3:
             ticker = query_received[1].upper()
             token_addr = query_received[2].lower()
-            message = "setting watcher for token actions (buys > 10eth) with address " + str(token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS"
+            message = "setting watcher for token actions (buys > 10eth) with address " + str(
+                token_addr) + ". If it is not the correct address, please define it explicitly with /set_default_token TICKER ADDRESS"
             res = zerorpc_client_data_aggregator.add_monitor(chat_id, token_addr, "buy")
             context.bot.send_message(chat_id=chat_id, text=message)
     else:
@@ -722,8 +781,10 @@ def __log_channel(chat, method):
     chat_id = chat.id
     channel_type = chat.type
     chat_name = chat.title
-    print("chat_id = " + str(chat_id) + " - type = " + str(channel_type) + " - chat_name =  " + str(chat_name) + " - method " + method)
-    zerorpc_client_data_aggregator.log_action(chat_id, channel_type, str(chat_name), now, method)  # casting chat name to str in case it's None
+    print("chat_id = " + str(chat_id) + " - type = " + str(channel_type) + " - chat_name =  " + str(
+        chat_name) + " - method " + method)
+    zerorpc_client_data_aggregator.log_action(chat_id, channel_type, str(chat_name), now,
+                                              method)  # casting chat name to str in case it's None
 
 
 def __did_user_vote_too_much(username, method, token):
@@ -753,7 +814,8 @@ def callback_minute(context: CallbackContext):
         options = ["buy", "whale"]
         pair = web3_util.does_pair_token_eth_exist(coin, uni_wrapper)
         latest_actions_pretty = requests_util.pretty_print_monitor_last_actions(last_min, coin, pair.lower(),
-                                                                                graphql_client_uni, graphql_client_eth, uni_wrapper, options)
+                                                                                graphql_client_uni, graphql_client_eth,
+                                                                                uni_wrapper, options)
         if latest_actions_pretty is not None:
             maybe_bottom_text = text_if_coin_being_watched(coin)
             if maybe_bottom_text is not None and maybe_bottom_text != "":
@@ -765,7 +827,8 @@ def callback_minute(context: CallbackContext):
             for channel in new_list[coin]:
                 logging.info("sent latest actions to channel: " + str(channel))
                 try:
-                    context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True, parse_mode='html')
+                    context.bot.send_message(chat_id=channel, text=message, disable_web_page_preview=True,
+                                             parse_mode='html')
                 except ChatMigrated as err:
                     print("CHANNEL ID CHANGED: ", err)
                     pass
@@ -793,7 +856,8 @@ def translate_text(update: Update, context: CallbackContext):
             original_message = ' '.join(query_received[2:])
             logging.info("translating " + original_message + " to " + language_to)
             translation = translation_util.pretty_translate(original_message, language_to)
-            context.bot.send_message(chat_id=chat_id, text=translation, parse_mode='html', disable_web_page_preview=True)
+            context.bot.send_message(chat_id=chat_id, text=translation, parse_mode='html',
+                                     disable_web_page_preview=True)
 
 
 def ask_wolfram(update: Update, context: CallbackContext):
@@ -809,9 +873,9 @@ def ask_wolfram(update: Update, context: CallbackContext):
 
 def get_price_direct(update: Update, context: CallbackContext):
     command_list = ["p", "start", "charts", "chart", "c", "price", "twitter", "t", "biz", "b", "convert", "gas", "g",
-                   "balance", "timeto", "last_actions", "l", "trending", "gas_spent", "tr", "translate", "ask",
-                   "set_default_token", "get_default_token", "set_faq", "faq", "chart_supply", "set_monitor",
-                   "restart", "ban"]
+                    "balance", "timeto", "last_actions", "l", "trending", "gas_spent", "tr", "translate", "ask",
+                    "set_default_token", "get_default_token", "set_faq", "faq", "chart_supply", "set_monitor",
+                    "restart", "ban"]
     chat_id = update.message.chat_id
     ticker = update.message.text.split(' ')[0][1:]
     if ticker not in command_list:  # should not be needed but keeping it just in case
@@ -827,7 +891,8 @@ def get_price_direct(update: Update, context: CallbackContext):
         else:
             contract_from_ticker = requests_util.get_token_contract_address(ticker)
             if contract_from_ticker is not None:
-                util.create_and_send_vote(ticker, "price", update.message.from_user.name, zerorpc_client_data_aggregator)
+                util.create_and_send_vote(ticker, "price", update.message.from_user.name,
+                                          zerorpc_client_data_aggregator)
                 button_list_price = [
                     [InlineKeyboardButton('refresh', callback_data='r_p_' + contract_from_ticker + "_t_" + ticker)]]
                 reply_markup_price = InlineKeyboardMarkup(button_list_price)
@@ -860,17 +925,20 @@ def analyze_wallet(update: Update, context: CallbackContext):
     query_received = update.message.text.split(' ')
     logging.info("Analyzing wallet ")
     if len(query_received) < 2:
-        context.bot.send_message(chat_id=chat_id, text="To use this command, please use the syntax /analyze_wallet wallet (option: -simple), eg: /analyze_wallet 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B")
+        context.bot.send_message(chat_id=chat_id,
+                                 text="To use this command, please use the syntax /analyze_wallet wallet (option: -simple), eg: /analyze_wallet 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B")
     else:
         wallet = query_received[1]
         if not Web3.isAddress(wallet.lower()):
-            context.bot.send_message(chat_id=chat_id, text="Provided wallet " + wallet + " is not a valid Ethereum address.")
+            context.bot.send_message(chat_id=chat_id,
+                                     text="Provided wallet " + wallet + " is not a valid Ethereum address.")
         else:
             if '-simple' in query_received:
                 res = general_end_functions.get_balance_wallet(wallet.lower(), pie_chart_wallet_path, True)
             else:
                 res = general_end_functions.get_balance_wallet(wallet.lower(), pie_chart_wallet_path, False)
-            context.bot.send_message(chat_id=chat_id, text=res[:4093], parse_mode='MarkdownV2', disable_web_page_preview=True)
+            context.bot.send_message(chat_id=chat_id, text=res[:4093], parse_mode='MarkdownV2',
+                                     disable_web_page_preview=True)
             context.bot.send_photo(chat_id=chat_id, photo=open(pie_chart_wallet_path, 'rb'))
 
 
@@ -921,10 +989,12 @@ def send_chart_trending(update: Update, context: CallbackContext) -> None:
 
     (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
                                                                                         k_hours, t_from,
-                                                                                        t_to, txt=trending, options=["rsi"],
+                                                                                        t_to, txt=trending,
+                                                                                        options=["rsi"],
                                                                                         with_ad=maybe_bottom_text)
 
-    util.create_and_send_vote(token, "chart", update.callback_query.message.from_user.name, zerorpc_client_data_aggregator)
+    util.create_and_send_vote(token, "chart", update.callback_query.message.from_user.name,
+                              zerorpc_client_data_aggregator)
     token_chat_id = str(chat_id) + "_" + token
     charts_time_refresh[token_chat_id] = t_to
     context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
@@ -955,7 +1025,7 @@ def view_trending(update: Update, context: CallbackContext):
     pprint.pprint(res)
     kb = [[], [], [], []]
     for i in range(0, len(res)):
-        kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data="TRD:"+res[i]))
+        kb[i // 3].append(InlineKeyboardButton(_get_button_name(i, res), callback_data="TRD:" + res[i]))
     reply_markup = InlineKeyboardMarkup(kb)
     context.bot.send_message(text="Here's what's trending", chat_id=chat_id, reply_markup=reply_markup)
     # query.edit_message_text(
@@ -1056,6 +1126,7 @@ def main():
     dp.add_handler(CommandHandler(['ask'], ask_wolfram, run_async=True))
     dp.add_handler(CommandHandler(['analyze_wallet'], analyze_wallet, run_async=True))
     # dank memes
+    dp.add_handler(CommandHandler(['get_meme'], get_meme, run_async=True))
     # customoization stuff
     dp.add_handler(CommandHandler('set_default_token', set_default_token))
     dp.add_handler(CommandHandler('get_default_token', get_default_token))
@@ -1075,7 +1146,6 @@ def main():
     dp.add_handler(CommandHandler('add_channel', add_channel, filters=Filters.user(username='@rotted_ben')))
 
     dp.add_handler(MessageHandler(Filters.command, get_price_direct, run_async=True))
-
 
     j = updater.job_queue
     job_minute = j.run_repeating(callback_minute, interval=check_big_buys_interval_seconds, first=15)
