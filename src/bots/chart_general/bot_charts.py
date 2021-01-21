@@ -246,6 +246,7 @@ def get_price_token(update: Update, context: CallbackContext):
 
 
 def delete_meme(update: Update, context: CallbackContext):
+    __log_channel(update.message.chat, "delete_meme")
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')
     can_delete = False
