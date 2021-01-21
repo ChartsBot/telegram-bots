@@ -275,6 +275,8 @@ def handle_new_video(update: Update, context: CallbackContext):
     try:
         caption = update['message']['caption']
         if caption == "/add_meme":
+            chat_id = update.message.chat_id
+
             try:
                 pprint.pprint(update.message)
                 pprint.pprint(update.message.video[-1])
