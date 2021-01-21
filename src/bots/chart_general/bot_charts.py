@@ -382,6 +382,7 @@ def add_meme_reply(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id,
                                  text="Memes are not activated on this channel. An admin can turn them on with /set_function meme")
 
+
 def handle_new_video(update: Update, context: CallbackContext):
     try:
         caption = update['message']['caption']
@@ -1282,7 +1283,7 @@ def main():
     dp.add_handler(CommandHandler('faq', get_the_faq, run_async=True))
     dp.add_handler(CommandHandler('chart_supply', get_chart_supply, run_async=True))
     dp.add_handler(CommandHandler('set_monitor', set_monitor, run_async=False))
-    dp.add_handler(CommandHandler('set_function', set_monitor, run_async=False))
+    dp.add_handler(CommandHandler('set_function', set_function, run_async=False))
     # dp.add_handler(CommandHandler('stop_monitor', stop_monitor, run_async=False))
     # callbacks queries
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
