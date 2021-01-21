@@ -275,31 +275,36 @@ def delete_meme(update: Update, context: CallbackContext):
 def get_meme(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "get_meme")
     chat_id = update.message.chat_id
-    fileRequest = filehandler_pb2.FileGetRequest(chatId=chat_id,
-                                                 fileClassification="meme",
-                                                 fileType="image",
-                                                 author="whatever")
-    response = grpc_file_handler_client.GetFile(fileRequest)
-    pprint.pprint("got nice meme")
-    if response.status:
-        if response.fileType == "image":
-            tmp_meme_path = TMP_FOLDER + 'tmp_meme.png'
-            context.bot.send_photo(chat_id=chat_id,
-                                   photo=io.BytesIO(response.file),
-                                   caption="Dank meme " + response.name
-                                   )
-        elif response.fileType == "video":
-            tmp_meme_path = TMP_FOLDER + 'tmp_meme.mp4'
-            context.bot.send_video(chat_id=chat_id,
-                                   video=io.BytesIO(response.file),
-                                   caption="Dank meme " + response.name
-                                   )
+
+    if _is_meme_authorized_on_channel(chat_id):
+        fileRequest = filehandler_pb2.FileGetRequest(chatId=chat_id,
+                                                     fileClassification="meme",
+                                                     fileType="image",
+                                                     author="whatever")
+        response = grpc_file_handler_client.GetFile(fileRequest)
+        pprint.pprint("got nice meme")
+        if response.status:
+            if response.fileType == "image":
+                tmp_meme_path = TMP_FOLDER + 'tmp_meme.png'
+                context.bot.send_photo(chat_id=chat_id,
+                                       photo=io.BytesIO(response.file),
+                                       caption="Dank meme " + response.name
+                                       )
+            elif response.fileType == "video":
+                tmp_meme_path = TMP_FOLDER + 'tmp_meme.mp4'
+                context.bot.send_video(chat_id=chat_id,
+                                       video=io.BytesIO(response.file),
+                                       caption="Dank meme " + response.name
+                                       )
+            else:
+                context.bot.send_message(chat_id=chat_id,
+                                         text="file type received: " + response.fileType)
         else:
             context.bot.send_message(chat_id=chat_id,
-                                     text="file type received: " + response.fileType)
+                                     text="No meme found in this chat")
     else:
         context.bot.send_message(chat_id=chat_id,
-                                 text="No meme found in this chat")
+                                 text="Memes are not activated on this channel. An admin can turn them on with /set_function meme")
 
 
 def _add_meme_video(message, context: CallbackContext):
@@ -348,31 +353,34 @@ def _add_meme_photo(message, context: CallbackContext):
 def add_meme_reply(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     # check if quoted message
-    if update.message.reply_to_message is not None:
-        original_message = update.message.reply_to_message
-        pprint.pprint(original_message.photo)
-        pprint.pprint(original_message.video)
-        if original_message.photo:
-            response = _add_meme_photo(original_message, context)
-            pprint.pprint(response)
-            if not response.status:
-                context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
+    if _is_meme_authorized_on_channel(chat_id):
+        if update.message.reply_to_message is not None:
+            original_message = update.message.reply_to_message
+            pprint.pprint(original_message.photo)
+            pprint.pprint(original_message.video)
+            if original_message.photo:
+                response = _add_meme_photo(original_message, context)
+                pprint.pprint(response)
+                if not response.status:
+                    context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
+                else:
+                    context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
+            elif original_message.video:
+                response = _add_meme_video(original_message, context)
+                pprint.pprint(response)
+                if not response.status:
+                    context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
+                else:
+                    context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
             else:
-                context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
-        elif original_message.video:
-            response = _add_meme_video(original_message, context)
-            pprint.pprint(response)
-            if not response.status:
-                context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
-            else:
-                context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
+                context.bot.send_message(chat_id=chat_id,
+                                         text="Message replied to doesn't seem to contain accepted media (video or photo)")
         else:
             context.bot.send_message(chat_id=chat_id,
                                      text="Message replied to doesn't seem to contain accepted media (video or photo)")
     else:
         context.bot.send_message(chat_id=chat_id,
-                                 text="Message replied to doesn't seem to contain accepted media (video or photo)")
-
+                                 text="Memes are not activated on this channel. An admin can turn them on with /set_function meme")
 
 def handle_new_video(update: Update, context: CallbackContext):
     try:
@@ -401,16 +409,20 @@ def handle_new_image(update: Update, context: CallbackContext):
         caption = update['message']['caption']
         if caption == "/add_meme":
             chat_id = update.message.chat_id
-            try:
-                response = _add_meme_photo(update.message, context)
-                pprint.pprint(response)
-                if response.status == False:
-                    context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
+            if _is_meme_authorized_on_channel(chat_id):
+                try:
+                    response = _add_meme_photo(update.message, context)
+                    pprint.pprint(response)
+                    if response.status == False:
+                        context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
+                    else:
+                        context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
+                except IndexError:
+                    error_msg = "Adding image failed: no image provided. Make sure to send it as a file and not an image."
+                    context.bot.send_message(chat_id=chat_id, text=error_msg)
                 else:
-                    context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
-            except IndexError:
-                error_msg = "Adding image failed: no image provided. Make sure to send it as a file and not an image."
-                context.bot.send_message(chat_id=chat_id, text=error_msg)
+                    context.bot.send_message(chat_id=chat_id,
+                                             text="Memes are not activated on this channel. An admin can turn them on with /set_function meme")
         else:
             __send_message_if_ocr(update, context)
     except KeyError:
@@ -797,6 +809,22 @@ def __get_default_token_channel(channel_id: int):
     return res
 
 
+def set_function(update: Update, context: CallbackContext):
+    channel_type = update.message.chat.type
+    __log_channel(update.message.chat, "set_function")
+    chat_id = update.message.chat_id
+    query_received = update.message.text.split(' ')
+    if __is_user_admin(context, update) or channel_type == "private":
+        if len(query_received) == 2:
+            arg = query_received[1]
+            if arg.lower() == "meme":
+                _update_meme_status_on_channel(chat_id, not _is_meme_authorized_on_channel(chat_id))    
+        else:
+            context.bot.send_message(chat_id=chat_id, text="Wrongly formatted query")
+    else:
+        context.bot.send_message(chat_id=chat_id, text="This function is only available to admins or in private chat")
+
+
 def set_monitor(update: Update, context: CallbackContext):
     channel_type = update.message.chat.type
     __log_channel(update.message.chat, "set_monitor")
@@ -867,6 +895,14 @@ def get_chart_supply(update: Update, context: CallbackContext):
                                photo=open(ticker_supply_chart_path, 'rb'),
                                caption=caption,
                                parse_mode="html")
+
+
+def _is_meme_authorized_on_channel(channel_id: int) -> bool: 
+    return zerorpc_client_data_aggregator.get_meme_channel_value(channel_id)
+
+
+def _update_meme_status_on_channel(channel_id: int, status: bool):
+    return zerorpc_client_data_aggregator.update_meme_channel_value(channel_id, status)
 
 
 @cached(cache=TTLCache(maxsize=1024, ttl=120))
@@ -1246,6 +1282,7 @@ def main():
     dp.add_handler(CommandHandler('faq', get_the_faq, run_async=True))
     dp.add_handler(CommandHandler('chart_supply', get_chart_supply, run_async=True))
     dp.add_handler(CommandHandler('set_monitor', set_monitor, run_async=False))
+    dp.add_handler(CommandHandler('set_function', set_monitor, run_async=False))
     # dp.add_handler(CommandHandler('stop_monitor', stop_monitor, run_async=False))
     # callbacks queries
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
