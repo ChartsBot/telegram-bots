@@ -278,10 +278,7 @@ def handle_new_video(update: Update, context: CallbackContext):
             chat_id = update.message.chat_id
 
             try:
-                pprint.pprint(update.message)
-                pprint.pprint(update.message.video)
-                pprint.pprint(update.message.video[-1])
-                file_as_bytes = general_end_functions.download_image_bytearray(update, context)
+                file_as_bytes = general_end_functions.download_video_bytearray(update, context)
                 chat_id = update.message.chat_id
                 chat_title = update.message.chat.title
                 file_classification = "meme"
