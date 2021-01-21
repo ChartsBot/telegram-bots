@@ -245,6 +245,30 @@ def get_price_token(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text='Please specify the ticker of the desired token.')
 
 
+def delete_meme(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    query_received = update.message.text.split(' ')
+    can_delete = False
+    if update.message.chat.type == 'private':
+        can_delete = True
+    elif __is_user_admin(context, update):
+        can_delete = True
+    if can_delete:
+        if len(query_received) == 2:
+            meme_to_delete = query_received[1]
+            file_type = "image" if ".jpg" in meme_to_delete else "video"  # todo: quick hack, fix
+            delRequest = filehandler_pb2.FileGetRequest(chatId=chat_id,
+                                                         fileClassification="meme",
+                                                         fileType=file_type,
+                                                         name=meme_to_delete)
+            response = grpc_file_handler_client.DeleteFile(delRequest)
+            context.bot.send_message(chat_id=chat_id, text=response.message)
+        else:
+            context.bot.send_message(chat_id=chat_id, text="Please specify which meme you wish to delete (like /delete_meme EminentOldEgret.jpg) or reply /delete_meme to it directly")
+    else:
+        context.bot.send_message(chat_id=chat_id, text="You don't have the rights to delete a meme. Only admins can do that you silly")
+
+
 def get_meme(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "get_meme")
     chat_id = update.message.chat_id
@@ -257,18 +281,12 @@ def get_meme(update: Update, context: CallbackContext):
     if response.status:
         if response.fileType == "image":
             tmp_meme_path = TMP_FOLDER + 'tmp_meme.png'
-            f = open(tmp_meme_path, 'wb')
-            f.write(response.file)
-            f.close()
             context.bot.send_photo(chat_id=chat_id,
                                    photo=io.BytesIO(response.file),
                                    caption="Dank meme " + response.name
                                    )
         elif response.fileType == "video":
             tmp_meme_path = TMP_FOLDER + 'tmp_meme.mp4'
-            f = open(tmp_meme_path, 'wb')
-            f.write(response.file)
-            f.close()
             context.bot.send_video(chat_id=chat_id,
                                    video=io.BytesIO(response.file),
                                    caption="Dank meme " + response.name
@@ -326,7 +344,6 @@ def _add_meme_photo(message, context: CallbackContext):
 
 def add_meme_reply(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
-    query_received = update.message.text.split(' ')
     # check if quoted message
     if update.message.reply_to_message is not None:
         original_message = update.message.reply_to_message
@@ -335,14 +352,14 @@ def add_meme_reply(update: Update, context: CallbackContext):
         if original_message.photo:
             response = _add_meme_photo(original_message, context)
             pprint.pprint(response)
-            if response.status == False:
+            if not response.status:
                 context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
             else:
                 context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
         elif original_message.video:
             response = _add_meme_video(original_message, context)
             pprint.pprint(response)
-            if response.status == False:
+            if not response.status:
                 context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
             else:
                 context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
