@@ -248,7 +248,6 @@ def get_price_token(update: Update, context: CallbackContext):
 def get_meme(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "get_meme")
     chat_id = update.message.chat_id
-    query_received = update.message.text.split(' ')
     fileRequest = filehandler_pb2.FileGetRequest(chatId=chat_id,
                                                  fileClassification="meme",
                                                  fileType="image",
@@ -272,6 +271,43 @@ def get_meme(update: Update, context: CallbackContext):
                                  text="No meme found in this chat")
 
 
+def handle_new_video(update: Update, context: CallbackContext):
+    try:
+        caption = update['message']['caption']
+        if caption == "/add_meme":
+            try:
+                pprint.pprint(update.message)
+                pprint.pprint(update.message.video[-1])
+                # file_as_bytes = general_end_functions.download_image_bytearray(update, context)
+                # chat_id = update.message.chat_id
+                # chat_title = update.message.chat.title
+                # file_classification = "meme"
+                # file_type = "image"
+                # author = update.message.from_user.name
+                # time_creation = int(time.time())
+                # logging.info("adding dank meme")
+                # file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
+                #                                          chatTitle=chat_title,
+                #                                          fileClassification=file_classification,
+                #                                          fileType=file_type,
+                #                                          author=author,
+                #                                          timeCreation=time_creation,
+                #                                          file=bytes(file_as_bytes))
+                # response = grpc_file_handler_client.UploadFile(file)
+                # pprint.pprint(response)
+                # if response.status == False:
+                #     context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
+                # else:
+                #     context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
+            except IndexError:
+                error_msg = "Adding image failed: no image provided. Make sure to send it as a file and not an image."
+                context.bot.send_message(chat_id=chat_id, text=error_msg)
+        else:
+            pass
+    except KeyError:
+        pass
+
+
 def handle_new_image(update: Update, context: CallbackContext):
     try:
         caption = update['message']['caption']
@@ -279,10 +315,10 @@ def handle_new_image(update: Update, context: CallbackContext):
             try:
                 file_as_bytes = general_end_functions.download_image_bytearray(update, context)
                 chat_id = update.message.chat_id
-                chat_title = "hey hey HEYYYY"
+                chat_title = update.message.chat.title
                 file_classification = "meme"
                 file_type = "image"
-                author = "unknown"
+                author = update.message.from_user.name
                 time_creation = int(time.time())
                 logging.info("adding dank meme")
                 file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
@@ -1141,6 +1177,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
 
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image, run_async=True))
+    dp.add_handler(MessageHandler(Filters.video, handle_new_image, run_async=True))
     # admin stuff
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
     dp.add_handler(CommandHandler('add_channel', add_channel, filters=Filters.user(username='@rotted_ben')))
