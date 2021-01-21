@@ -307,7 +307,7 @@ def _add_meme_video(message, context: CallbackContext):
 
     file_as_bytes, size = general_end_functions.download_video_bytearray(message, context)
     chat_id = message.chat_id
-    chat_title = message.chat.title
+    chat_title = str(message.chat.title)
     file_classification = "meme"
     file_type = "video"
     author = "anon"  # update.message.from_user.name
@@ -328,7 +328,7 @@ def _add_meme_photo(message, context: CallbackContext):
 
     file_as_bytes = general_end_functions.download_image_bytearray(message, context)
     chat_id = message.chat_id
-    chat_title = message.chat.title
+    chat_title = str(message.chat.title)
     file_classification = "meme"
     file_type = "image"
     author = "anon"  # update.message.from_user.name
