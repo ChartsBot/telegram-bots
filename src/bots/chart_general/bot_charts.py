@@ -332,14 +332,14 @@ def add_meme_reply(update: Update, context: CallbackContext):
         original_message = update.message.reply_to_message
         pprint.pprint(original_message.photo)
         pprint.pprint(original_message.video)
-        if original_message.photo is not []:
+        if original_message.photo:
             response = _add_meme_photo(update.message, context)
             pprint.pprint(response)
             if response.status == False:
                 context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
             else:
                 context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
-        elif original_message.video is not None:
+        elif original_message.video:
             response = _add_meme_video(update.message, context)
             pprint.pprint(response)
             if response.status == False:
