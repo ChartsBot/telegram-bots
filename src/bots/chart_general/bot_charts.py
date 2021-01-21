@@ -281,27 +281,27 @@ def handle_new_video(update: Update, context: CallbackContext):
                 pprint.pprint(update.message)
                 pprint.pprint(update.message.video)
                 pprint.pprint(update.message.video[-1])
-                # file_as_bytes = general_end_functions.download_image_bytearray(update, context)
-                # chat_id = update.message.chat_id
-                # chat_title = update.message.chat.title
-                # file_classification = "meme"
-                # file_type = "image"
-                # author = update.message.from_user.name
-                # time_creation = int(time.time())
-                # logging.info("adding dank meme")
-                # file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
-                #                                          chatTitle=chat_title,
-                #                                          fileClassification=file_classification,
-                #                                          fileType=file_type,
-                #                                          author=author,
-                #                                          timeCreation=time_creation,
-                #                                          file=bytes(file_as_bytes))
-                # response = grpc_file_handler_client.UploadFile(file)
-                # pprint.pprint(response)
-                # if response.status == False:
-                #     context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
-                # else:
-                #     context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
+                file_as_bytes = general_end_functions.download_image_bytearray(update, context)
+                chat_id = update.message.chat_id
+                chat_title = update.message.chat.title
+                file_classification = "meme"
+                file_type = "video"
+                author = update.message.from_user.name
+                time_creation = int(time.time())
+                logging.info("adding dank meme")
+                file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
+                                                         chatTitle=chat_title,
+                                                         fileClassification=file_classification,
+                                                         fileType=file_type,
+                                                         author=author,
+                                                         timeCreation=time_creation,
+                                                         file=bytes(file_as_bytes))
+                response = grpc_file_handler_client.UploadFile(file)
+                pprint.pprint(response)
+                if response.status == False:
+                    context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
+                else:
+                    context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
             except IndexError:
                 error_msg = "Adding image failed: no image provided. Make sure to send it as a file and not an image."
                 context.bot.send_message(chat_id=chat_id, text=error_msg)

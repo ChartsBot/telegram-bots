@@ -202,6 +202,13 @@ def download_image_bytearray(update: Update, context: CallbackContext):
     return image.download_as_bytearray()
 
 
+def download_video_bytearray(update: Update, context: CallbackContext):
+    video = context.bot.getFile(update.message.video[-1])
+    video_id = str(video.file_id)
+    print("file_id: " + video_id)
+    return video.download_as_bytearray()
+
+
 def ocr_image(update: Update, context: CallbackContext, tmp_path):
     img_path = download_image(update, context, tmp_path)
     ocr = Ocr(img_path)
