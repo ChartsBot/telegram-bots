@@ -822,6 +822,10 @@ def set_function(update: Update, context: CallbackContext):
                 res = not _is_meme_authorized_on_channel(chat_id)
                 pprint.pprint(res)
                 _update_meme_status_on_channel(chat_id, res)
+                if res:
+                    context.bot.send_message(chat_id=chat_id, text="Memes are now activated. You can now:\nAdd some with /add_meme\nView one random with /get_meme\nRemove one with /delete_meme (only for admins).")
+                else:
+                    context.bot.send_message(chat_id=chat_id, text="Memes are now de-activated. You can always go back with /set_function meme (only for admins)")
         else:
             context.bot.send_message(chat_id=chat_id, text="Wrongly formatted query")
     else:
