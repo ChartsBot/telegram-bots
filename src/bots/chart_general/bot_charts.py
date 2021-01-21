@@ -295,7 +295,7 @@ def handle_new_video(update: Update, context: CallbackContext):
                 chat_title = update.message.chat.title
                 file_classification = "meme"
                 file_type = "video"
-                author = update.message.from_user.name
+                author = "anon"  # update.message.from_user.name
                 time_creation = int(time.time())
                 file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
                                                          chatTitle=chat_title,
@@ -329,7 +329,7 @@ def handle_new_image(update: Update, context: CallbackContext):
                 chat_title = update.message.chat.title
                 file_classification = "meme"
                 file_type = "image"
-                author = update.message.from_user.name
+                author = "anon"  # update.message.from_user.name
                 time_creation = int(time.time())
                 logging.info("adding dank meme")
                 file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
