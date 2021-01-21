@@ -203,9 +203,10 @@ def download_image_bytearray(update: Update, context: CallbackContext):
 
 
 def download_video_bytearray(update: Update, context: CallbackContext):
-    video = context.bot.getFile(update.message.video[-1])
-    video_id = str(video.file_id)
-    print("file_id: " + video_id)
+    video = update.message.video[-1].get_file()
+    pprint(video.file_size)
+    pprint(video.file_id)
+    pprint(video.file_path)
     return video.download_as_bytearray()
 
 
