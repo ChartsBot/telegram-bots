@@ -279,6 +279,7 @@ def handle_new_video(update: Update, context: CallbackContext):
 
             try:
                 pprint.pprint(update.message)
+                pprint.pprint(update.message.video)
                 pprint.pprint(update.message.video[-1])
                 # file_as_bytes = general_end_functions.download_image_bytearray(update, context)
                 # chat_id = update.message.chat_id
