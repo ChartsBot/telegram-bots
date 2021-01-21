@@ -1233,6 +1233,7 @@ def main():
     # dank memes
     dp.add_handler(CommandHandler(['get_meme'], get_meme, run_async=True))
     dp.add_handler(CommandHandler(['add_meme'], add_meme_reply, run_async=True))
+    dp.add_handler(CommandHandler(['delete_meme'], delete_meme, run_async=True))
     # customoization stuff
     dp.add_handler(CommandHandler('set_default_token', set_default_token))
     dp.add_handler(CommandHandler('get_default_token', get_default_token))
