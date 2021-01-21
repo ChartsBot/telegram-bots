@@ -330,6 +330,8 @@ def add_meme_reply(update: Update, context: CallbackContext):
     # check if quoted message
     if update.message.reply_to_message is not None:
         original_message = update.message.reply_to_message
+        pprint.pprint(original_message.photo)
+        pprint.pprint(original_message.video)
         if original_message.photo is not None:
             response = _add_meme_photo(update.message, context)
             pprint.pprint(response)
