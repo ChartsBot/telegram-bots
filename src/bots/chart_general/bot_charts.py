@@ -253,6 +253,7 @@ def get_meme(update: Update, context: CallbackContext):
                                                  fileType="image",
                                                  author="whatever")
     response = grpc_file_handler_client.GetFile(fileRequest)
+    pprint.pprint("got nice meme")
     if response.status:
         if response.fileType == "image":
             tmp_meme_path = TMP_FOLDER + 'tmp_meme.png'
@@ -261,6 +262,15 @@ def get_meme(update: Update, context: CallbackContext):
             f.close()
             context.bot.send_photo(chat_id=chat_id,
                                    photo=io.BytesIO(response.file),
+                                   caption="Dank meme " + response.name
+                                   )
+        elif response.fileType == "video":
+            tmp_meme_path = TMP_FOLDER + 'tmp_meme.mp4'
+            f = open(tmp_meme_path, 'wb')
+            f.write(response.file)
+            f.close()
+            context.bot.send_video(chat_id=chat_id,
+                                   video=io.BytesIO(response.file),
                                    caption="Dank meme " + response.name
                                    )
         else:
@@ -280,7 +290,7 @@ def handle_new_video(update: Update, context: CallbackContext):
             try:
                 logging.info("adding dank meme")
 
-                file_as_bytes = general_end_functions.download_video_bytearray(update, context)
+                file_as_bytes, size = general_end_functions.download_video_bytearray(update, context)
                 chat_id = update.message.chat_id
                 chat_title = update.message.chat.title
                 file_classification = "meme"
