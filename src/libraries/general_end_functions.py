@@ -203,7 +203,7 @@ def download_image_bytearray(update: Update, context: CallbackContext):
 
 
 def download_video_bytearray(update: Update, context: CallbackContext):
-    video = update.message.video[-1].get_file()
+    video = update.message.video.get_file()
     pprint(video.file_size)
     pprint(video.file_id)
     pprint(video.file_path)
