@@ -819,7 +819,9 @@ def set_function(update: Update, context: CallbackContext):
         if len(query_received) == 2:
             arg = query_received[1]
             if arg.lower() == "meme":
-                _update_meme_status_on_channel(chat_id, not _is_meme_authorized_on_channel(chat_id))    
+                res = not _is_meme_authorized_on_channel(chat_id)
+                pprint.pprint(res)
+                _update_meme_status_on_channel(chat_id, res)
         else:
             context.bot.send_message(chat_id=chat_id, text="Wrongly formatted query")
     else:
