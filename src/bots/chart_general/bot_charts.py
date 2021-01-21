@@ -332,7 +332,7 @@ def add_meme_reply(update: Update, context: CallbackContext):
         original_message = update.message.reply_to_message
         pprint.pprint(original_message.photo)
         pprint.pprint(original_message.video)
-        if original_message.photo is not None:
+        if original_message.photo is not []:
             response = _add_meme_photo(update.message, context)
             pprint.pprint(response)
             if response.status == False:
