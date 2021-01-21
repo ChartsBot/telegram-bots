@@ -278,6 +278,8 @@ def handle_new_video(update: Update, context: CallbackContext):
             chat_id = update.message.chat_id
 
             try:
+                logging.info("adding dank meme")
+
                 file_as_bytes = general_end_functions.download_video_bytearray(update, context)
                 chat_id = update.message.chat_id
                 chat_title = update.message.chat.title
@@ -285,7 +287,6 @@ def handle_new_video(update: Update, context: CallbackContext):
                 file_type = "video"
                 author = update.message.from_user.name
                 time_creation = int(time.time())
-                logging.info("adding dank meme")
                 file = filehandler_pb2.FileUploadRequest(chatId=chat_id,
                                                          chatTitle=chat_title,
                                                          fileClassification=file_classification,
