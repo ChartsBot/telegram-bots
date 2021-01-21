@@ -282,7 +282,7 @@ def get_meme(update: Update, context: CallbackContext):
 
 
 def _add_meme_video(message, context: CallbackContext):
-    logging.info("adding dank meme - image")
+    logging.info("adding dank meme - video")
 
     file_as_bytes, size = general_end_functions.download_video_bytearray(message, context)
     chat_id = message.chat_id
@@ -303,7 +303,7 @@ def _add_meme_video(message, context: CallbackContext):
 
 
 def _add_meme_photo(message, context: CallbackContext):
-    logging.info("adding dank meme - video")
+    logging.info("adding dank meme - image")
 
     file_as_bytes = general_end_functions.download_image_bytearray(message, context)
     chat_id = message.chat_id
@@ -333,14 +333,14 @@ def add_meme_reply(update: Update, context: CallbackContext):
         pprint.pprint(original_message.photo)
         pprint.pprint(original_message.video)
         if original_message.photo:
-            response = _add_meme_photo(update.message, context)
+            response = _add_meme_photo(original_message, context)
             pprint.pprint(response)
             if response.status == False:
                 context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
             else:
                 context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
         elif original_message.video:
-            response = _add_meme_video(update.message, context)
+            response = _add_meme_video(original_message, context)
             pprint.pprint(response)
             if response.status == False:
                 context.bot.send_message(chat_id=chat_id, text="👎 Error uploading meme: " + response.message)
