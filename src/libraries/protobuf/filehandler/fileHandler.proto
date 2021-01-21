@@ -27,7 +27,7 @@ service FileHandlerAkkaService {
 
 // The request message containing the file to upload info.
 message FileUploadRequest {
-  int32 chatId = 1;
+  int64 chatId = 1;
   string chatTitle = 2;
   string fileClassification = 3;  // meme or doc
   string fileType = 4;  // video, image, ...
@@ -48,7 +48,7 @@ message SayHelloMessage {
 }
 
 message FileGetRequest {
-  int32 chatId = 1;
+  int64 chatId = 1;
   string fileClassification = 2;
   string fileType = 3;
   string author = 5;
@@ -65,7 +65,7 @@ message FileGetResponse {
 
 
 message FileDeleteRequest {
-  int32 chatId = 1;
+  int64 chatId = 1;
   string fileClassification = 3;  // meme or doc
   string fileType = 4;  // video, image, ...
   string name = 5;

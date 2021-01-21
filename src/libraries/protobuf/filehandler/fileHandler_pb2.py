@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=_b('\n\026com.chartsbot.servicesB\020FileHandlerProtoP\001'),
-  serialized_pb=_b('\n\x11\x66ileHandler.proto\"\x98\x01\n\x11\x46ileUploadRequest\x12\x0e\n\x06\x63hatId\x18\x01 \x01(\x05\x12\x11\n\tchatTitle\x18\x02 \x01(\t\x12\x1a\n\x12\x66ileClassification\x18\x03 \x01(\t\x12\x10\n\x08\x66ileType\x18\x04 \x01(\t\x12\x0e\n\x06\x61uthor\x18\x05 \x01(\t\x12\x14\n\x0ctimeCreation\x18\x06 \x01(\r\x12\x0c\n\x04\x66ile\x18\x07 \x01(\x0c\"5\n\x12\x46ileUploadResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\"\n\x0fSayHelloMessage\x12\x0f\n\x07message\x18\x01 \x01(\t\"^\n\x0e\x46ileGetRequest\x12\x0e\n\x06\x63hatId\x18\x01 \x01(\x05\x12\x1a\n\x12\x66ileClassification\x18\x02 \x01(\t\x12\x10\n\x08\x66ileType\x18\x03 \x01(\t\x12\x0e\n\x06\x61uthor\x18\x05 \x01(\t\"u\n\x0f\x46ileGetResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x10\n\x08\x66ileType\x18\x04 \x01(\t\x12\x0e\n\x06\x61uthor\x18\x05 \x01(\t\x12\x14\n\x0ctimeCreation\x18\x06 \x01(\r\x12\x0c\n\x04name\x18\x07 \x01(\t\x12\x0c\n\x04\x66ile\x18\x08 \x01(\x0c\"_\n\x11\x46ileDeleteRequest\x12\x0e\n\x06\x63hatId\x18\x01 \x01(\x05\x12\x1a\n\x12\x66ileClassification\x18\x03 \x01(\t\x12\x10\n\x08\x66ileType\x18\x04 \x01(\t\x12\x0c\n\x04name\x18\x05 \x01(\t\"5\n\x12\x46ileDeleteResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xe9\x01\n\x16\x46ileHandlerAkkaService\x12\x37\n\nUploadFile\x12\x12.FileUploadRequest\x1a\x13.FileUploadResponse\"\x00\x12\x37\n\nDeleteFile\x12\x12.FileDeleteRequest\x1a\x13.FileDeleteResponse\"\x00\x12.\n\x07GetFile\x12\x0f.FileGetRequest\x1a\x10.FileGetResponse\"\x00\x12-\n\x05Greet\x12\x10.SayHelloMessage\x1a\x10.SayHelloMessage\"\x00\x42,\n\x16\x63om.chartsbot.servicesB\x10\x46ileHandlerProtoP\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x11\x66ileHandler.proto\"\x98\x01\n\x11\x46ileUploadRequest\x12\x0e\n\x06\x63hatId\x18\x01 \x01(\x03\x12\x11\n\tchatTitle\x18\x02 \x01(\t\x12\x1a\n\x12\x66ileClassification\x18\x03 \x01(\t\x12\x10\n\x08\x66ileType\x18\x04 \x01(\t\x12\x0e\n\x06\x61uthor\x18\x05 \x01(\t\x12\x14\n\x0ctimeCreation\x18\x06 \x01(\r\x12\x0c\n\x04\x66ile\x18\x07 \x01(\x0c\"5\n\x12\x46ileUploadResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\"\n\x0fSayHelloMessage\x12\x0f\n\x07message\x18\x01 \x01(\t\"^\n\x0e\x46ileGetRequest\x12\x0e\n\x06\x63hatId\x18\x01 \x01(\x03\x12\x1a\n\x12\x66ileClassification\x18\x02 \x01(\t\x12\x10\n\x08\x66ileType\x18\x03 \x01(\t\x12\x0e\n\x06\x61uthor\x18\x05 \x01(\t\"u\n\x0f\x46ileGetResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x10\n\x08\x66ileType\x18\x04 \x01(\t\x12\x0e\n\x06\x61uthor\x18\x05 \x01(\t\x12\x14\n\x0ctimeCreation\x18\x06 \x01(\r\x12\x0c\n\x04name\x18\x07 \x01(\t\x12\x0c\n\x04\x66ile\x18\x08 \x01(\x0c\"_\n\x11\x46ileDeleteRequest\x12\x0e\n\x06\x63hatId\x18\x01 \x01(\x03\x12\x1a\n\x12\x66ileClassification\x18\x03 \x01(\t\x12\x10\n\x08\x66ileType\x18\x04 \x01(\t\x12\x0c\n\x04name\x18\x05 \x01(\t\"5\n\x12\x46ileDeleteResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xe9\x01\n\x16\x46ileHandlerAkkaService\x12\x37\n\nUploadFile\x12\x12.FileUploadRequest\x1a\x13.FileUploadResponse\"\x00\x12\x37\n\nDeleteFile\x12\x12.FileDeleteRequest\x1a\x13.FileDeleteResponse\"\x00\x12.\n\x07GetFile\x12\x0f.FileGetRequest\x1a\x10.FileGetResponse\"\x00\x12-\n\x05Greet\x12\x10.SayHelloMessage\x1a\x10.SayHelloMessage\"\x00\x42,\n\x16\x63om.chartsbot.servicesB\x10\x46ileHandlerProtoP\x01\x62\x06proto3')
 )
 
 
@@ -34,7 +34,7 @@ _FILEUPLOADREQUEST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='chatId', full_name='FileUploadRequest.chatId', index=0,
-      number=1, type=5, cpp_type=1, label=1,
+      number=1, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -176,7 +176,7 @@ _FILEGETREQUEST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='chatId', full_name='FileGetRequest.chatId', index=0,
-      number=1, type=5, cpp_type=1, label=1,
+      number=1, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -294,7 +294,7 @@ _FILEDELETEREQUEST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='chatId', full_name='FileDeleteRequest.chatId', index=0,
-      number=1, type=5, cpp_type=1, label=1,
+      number=1, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
