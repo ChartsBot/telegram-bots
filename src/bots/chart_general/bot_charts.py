@@ -258,16 +258,18 @@ def delete_meme(update: Update, context: CallbackContext):
         if len(query_received) == 2:
             meme_to_delete = query_received[1]
             file_type = "image" if ".jpg" in meme_to_delete else "video"  # todo: quick hack, fix
-            delRequest = filehandler_pb2.FileGetRequest(chatId=chat_id,
-                                                         fileClassification="meme",
-                                                         fileType=file_type,
-                                                         name=meme_to_delete)
+            delRequest = filehandler_pb2.FileDeleteRequest(chatId=chat_id,
+                                                           fileClassification="meme",
+                                                           fileType=file_type,
+                                                           name=meme_to_delete)
             response = grpc_file_handler_client.DeleteFile(delRequest)
             context.bot.send_message(chat_id=chat_id, text=response.message)
         else:
-            context.bot.send_message(chat_id=chat_id, text="Please specify which meme you wish to delete (like /delete_meme EminentOldEgret.jpg) or reply /delete_meme to it directly")
+            context.bot.send_message(chat_id=chat_id,
+                                     text="Please specify which meme you wish to delete (like /delete_meme EminentOldEgret.jpg) or reply /delete_meme to it directly")
     else:
-        context.bot.send_message(chat_id=chat_id, text="You don't have the rights to delete a meme. Only admins can do that you silly")
+        context.bot.send_message(chat_id=chat_id,
+                                 text="You don't have the rights to delete a meme. Only admins can do that you silly")
 
 
 def get_meme(update: Update, context: CallbackContext):
@@ -365,9 +367,11 @@ def add_meme_reply(update: Update, context: CallbackContext):
             else:
                 context.bot.send_message(chat_id=chat_id, text="👍 Added meme as " + response.message)
         else:
-            context.bot.send_message(chat_id=chat_id, text="Message replied to doesn't seem to contain accepted media (video or photo)")
+            context.bot.send_message(chat_id=chat_id,
+                                     text="Message replied to doesn't seem to contain accepted media (video or photo)")
     else:
-        context.bot.send_message(chat_id=chat_id, text="Message replied to doesn't seem to contain accepted media (video or photo)")
+        context.bot.send_message(chat_id=chat_id,
+                                 text="Message replied to doesn't seem to contain accepted media (video or photo)")
 
 
 def handle_new_video(update: Update, context: CallbackContext):
