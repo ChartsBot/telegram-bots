@@ -1248,22 +1248,12 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
                                                           graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
         results = [
             InlineQueryResultArticle(
-                id=uuid4(), title="Caps", input_message_content=InputTextMessageContent(query.upper())
-            ),
-            InlineQueryResultArticle(
                 id=uuid4(),
-                title="Price",
+                title=ticker.upper(),
                 input_message_content=InputTextMessageContent(
                     message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
                 )
-            ),
-            InlineQueryResultArticle(
-                id=uuid4(),
-                title="Italic",
-                input_message_content=InputTextMessageContent(
-                    f"_{escape_markdown(query)}_", parse_mode=ParseMode.MARKDOWN
-                ),
-            ),
+            )
         ]
         update.inline_query.answer(results, cache_time=60)
     else:
