@@ -1230,12 +1230,34 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
 
 from uuid import uuid4
 def inlinequery(update: Update, context: CallbackContext) -> None:
-    context.bot.
     query = update.inline_query.query
     pprint.pprint(query)
     ticker = query.lower()
     if len(ticker) == 0:
-        pass
+        res = zerorpc_client_data_aggregator.view_trending_raw()
+        pprint.pprint(res)
+        results = []
+        for i in range(0, 5):
+            ticker = res[i]
+            if ticker.upper() in symbol_gecko:
+                value = symbol_gecko.get(ticker.upper())
+                message = general_end_functions.get_price_gecko(value)
+            else:
+                contract_from_ticker = requests_util.get_token_contract_address(ticker)
+                pprint.pprint(contract_from_ticker)
+                if contract_from_ticker is None:
+                    message = "Ticker not found"
+                else:
+                    message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
+                                                              graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
+            results.append(InlineQueryResultArticle(
+                id=uuid4(),
+                title=ticker,
+                input_message_content=InputTextMessageContent(
+                    message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+                )
+            ))
+        update.inline_query.answer(results, cache_time=60)
     if len(ticker) > 2:
         if ticker.upper() in symbol_gecko:
             value = symbol_gecko.get(ticker.upper())
