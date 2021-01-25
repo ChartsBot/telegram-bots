@@ -29,7 +29,8 @@ symbol_gecko = {
     'XRP': 'ripple',
     'BCH': 'bitcoin-cash',
     'LTC': 'litecoin',
-    'LINK': 'chainlink'
+    'LINK': 'chainlink',
+    'DOT': 'polkadot'
 }
 
 emoji_number_dic = {

@@ -1267,9 +1267,10 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
         ]
         update.inline_query.answer(results, cache_time=60)
     else:
-        res = [["btc", "Bitcoin", "https://images-na.ssl-images-amazon.com/images/I/51O6ByIc8OL._AC_SX466_.jpg"],
-               ["eth", "Ethereum", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ethereum_logo_2014.svg/1200px-Ethereum_logo_2014.svg.png"],
-               ["link", "Chainlink", "https://cryptologos.cc/logos/chainlink-link-logo.png"]]
+        res = [["btc", "Bitcoin", "https://lebitcoin.fr/logos/BC_Logo_.png"],
+               ["eth", "Ethereum", "https://www.bitladon.fr/img/currency/ETH_groot.png"],
+               ["link", "Chainlink", "https://firebounty.com/image/939-chainlink"],
+               ["dot", "Polkadot", "https://assets.coingecko.com/coins/images/12171/small/aJGBjJFU_400x400.jpg?1597804776"]]
         results = []
         for i in range(0, len(res)):
             ticker = res[i][0]
