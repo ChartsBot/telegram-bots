@@ -1255,7 +1255,7 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
                 input_message_content=InputTextMessageContent(
                     message, parse_mode=ParseMode.HTML
                 ),
-                hide_url(True)
+                hide_url=True
             ),
             InlineQueryResultArticle(
                 id=uuid4(),
