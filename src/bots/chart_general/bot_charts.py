@@ -1234,10 +1234,9 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
     pprint.pprint(query)
     ticker = query.lower()
     if len(ticker) == 0:
-        res = zerorpc_client_data_aggregator.view_trending_raw()
-        pprint.pprint(res)
+        res = ["btc", "eth", "link"]
         results = []
-        for i in range(0, 5):
+        for i in range(0, len(res)):
             ticker = res[i]
             if ticker.upper() in symbol_gecko:
                 value = symbol_gecko.get(ticker.upper())
