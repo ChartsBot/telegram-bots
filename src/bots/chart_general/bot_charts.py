@@ -2,6 +2,10 @@ import locale
 import sys
 import os
 from gevent import monkey
+from telegram.inline.inlinequeryresultarticle import InlineQueryResultArticle
+from telegram.inline.inputtextmessagecontent import InputTextMessageContent
+from telegram.parsemode import ParseMode
+from telegram.utils.helpers import escape_markdown
 
 monkey.patch_all()  # REALLY IMPORTANT: ALLOWS ZERORPC AND TG TO WORK TOGETHER
 
@@ -20,7 +24,7 @@ import io
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler, \
-    ConversationHandler
+    ConversationHandler, InlineQueryHandler
 from telegram.ext.dispatcher import run_async
 from telegram.error import ChatMigrated, BadRequest
 import libraries.web3_calls as web3_util
@@ -1223,6 +1227,32 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
         return FIRST
 
 
+from uuid import uuid4
+def inlinequery(update: Update, context: CallbackContext) -> None:
+    query = update.inline_query.query
+    results = [
+        InlineQueryResultArticle(
+            id=uuid4(), title="Caps", input_message_content=InputTextMessageContent(query.upper())
+        ),
+        InlineQueryResultArticle(
+            id=uuid4(),
+            title="Bold",
+            input_message_content=InputTextMessageContent(
+                f"*{escape_markdown(query)}*", parse_mode=ParseMode.MARKDOWN
+            ),
+        ),
+        InlineQueryResultArticle(
+            id=uuid4(),
+            title="Italic",
+            input_message_content=InputTextMessageContent(
+                f"_{escape_markdown(query)}_", parse_mode=ParseMode.MARKDOWN
+            ),
+        ),
+    ]
+
+    update.inline_query.answer(results)
+
+
 def main():
     global TELEGRAM_KEY
     if len(sys.argv) == 2:
@@ -1302,6 +1332,9 @@ def main():
     dp.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@rotted_ben')))
     dp.add_handler(CommandHandler('add_channel', add_channel, filters=Filters.user(username='@rotted_ben')))
 
+    # inline query
+    dp.add_handler(InlineQueryHandler(inlinequery))
+
     dp.add_handler(MessageHandler(Filters.command, get_price_direct, run_async=True))
 
     j = updater.job_queue
@@ -1329,4 +1362,7 @@ last_actions - <TICKER> get the last trades / liq events of the coin.
 trending - See which coins are trending in dextrends.
 analyze_wallet - Provides analytics about a wallet (eg /analyze_wallet 0xbA1504000B5aC6cE413A1626d4833857Dd7311a0)
 translate - <LANGUAGE_TO> <TEXT> Translate a text into the desired language.
+add_meme - Add a meme
+get_meme - Get a random meme
+set_function - Admin functionalities (like /set_function meme)
 """
