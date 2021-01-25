@@ -676,13 +676,15 @@ def parse_burns(res, paired_with: PairedWith):
     burns = res['data']['burns']
     l_burns = []
     for burn in burns:
-        pprint.pprint(burn)
-        amount0 = float(burn['amount0'])
-        amount1 = float(burn['amount1'])
-        timestamp = int(burn['transaction']['timestamp'])
-        id = burn['transaction']['id']
-        token0, token1 = parse_pair(burn['pair'])
-        l_burns.append(Burn((token0, amount0), (token1, amount1), id, timestamp, paired_with))
+        try:
+            amount0 = float(burn['amount0'])
+            amount1 = float(burn['amount1'])
+            timestamp = int(burn['transaction']['timestamp'])
+            id = burn['transaction']['id']
+            token0, token1 = parse_pair(burn['pair'])
+            l_burns.append(Burn((token0, amount0), (token1, amount1), id, timestamp, paired_with))
+        except TypeError:
+            pass
     return l_burns
 
 

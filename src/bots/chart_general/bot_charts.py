@@ -1235,7 +1235,7 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
     pprint.pprint(query)
     ticker = query.lower()
     if len(ticker) == 0:
-
+        pass
     if len(ticker) > 2:
         if ticker.upper() in symbol_gecko:
             value = symbol_gecko.get(ticker.upper())
