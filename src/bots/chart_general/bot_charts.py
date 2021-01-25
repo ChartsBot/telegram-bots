@@ -1233,30 +1233,7 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     pprint.pprint(query)
     ticker = query.lower()
-    if len(ticker) == 0:
-        res = ["btc", "eth", "link"]
-        results = []
-        for i in range(0, len(res)):
-            ticker = res[i]
-            if ticker.upper() in symbol_gecko:
-                value = symbol_gecko.get(ticker.upper())
-                message = general_end_functions.get_price_gecko(value)
-            else:
-                contract_from_ticker = requests_util.get_token_contract_address(ticker)
-                pprint.pprint(contract_from_ticker)
-                if contract_from_ticker is None:
-                    message = "Ticker not found"
-                else:
-                    message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
-                                                              graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
-            results.append(InlineQueryResultArticle(
-                id=uuid4(),
-                title=ticker,
-                input_message_content=InputTextMessageContent(
-                    message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
-                )
-            ))
-        update.inline_query.answer(results, cache_time=60)
+
     if len(ticker) > 2:
         if ticker.upper() in symbol_gecko:
             value = symbol_gecko.get(ticker.upper())
@@ -1289,7 +1266,33 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
             ),
         ]
         update.inline_query.answer(results, cache_time=60)
-
+    else:
+        res = [["btc", "Bitcoin", "https://images-na.ssl-images-amazon.com/images/I/51O6ByIc8OL._AC_SX466_.jpg"],
+               ["eth", "Ethereum", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ethereum_logo_2014.svg/1200px-Ethereum_logo_2014.svg.png"],
+               ["link", "Chainlink", "https://cryptologos.cc/logos/chainlink-link-logo.png"]]
+        results = []
+        for i in range(0, len(res)):
+            ticker = res[i][0]
+            if ticker.upper() in symbol_gecko:
+                value = symbol_gecko.get(ticker.upper())
+                message = general_end_functions.get_price_gecko(value)
+            else:
+                contract_from_ticker = requests_util.get_token_contract_address(ticker)
+                pprint.pprint(contract_from_ticker)
+                if contract_from_ticker is None:
+                    message = "Ticker not found"
+                else:
+                    message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
+                                                              graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
+            results.append(InlineQueryResultArticle(
+                id=uuid4(),
+                title=res[i][1],
+                input_message_content=InputTextMessageContent(
+                    message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+                ),
+                thumb_url=res[i][2]
+            ))
+        update.inline_query.answer(results, cache_time=60)
 
 def main():
     global TELEGRAM_KEY
