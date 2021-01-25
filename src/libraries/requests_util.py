@@ -676,6 +676,7 @@ def parse_burns(res, paired_with: PairedWith):
     burns = res['data']['burns']
     l_burns = []
     for burn in burns:
+        pprint.pprint(burn)
         amount0 = float(burn['amount0'])
         amount1 = float(burn['amount1'])
         timestamp = int(burn['transaction']['timestamp'])

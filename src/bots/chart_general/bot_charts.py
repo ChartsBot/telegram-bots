@@ -1230,9 +1230,12 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
 
 from uuid import uuid4
 def inlinequery(update: Update, context: CallbackContext) -> None:
+    context.bot.
     query = update.inline_query.query
     pprint.pprint(query)
     ticker = query.lower()
+    if len(ticker) == 0:
+
     if len(ticker) > 2:
         if ticker.upper() in symbol_gecko:
             value = symbol_gecko.get(ticker.upper())
@@ -1264,7 +1267,7 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
                 ),
             ),
         ]
-        update.inline_query.answer(results)
+        update.inline_query.answer(results, cache_time=60)
 
 
 def main():
