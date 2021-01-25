@@ -2,10 +2,6 @@ import locale
 import sys
 import os
 from gevent import monkey
-from telegram.inline.inlinequeryresultarticle import InlineQueryResultArticle
-from telegram.inline.inputtextmessagecontent import InputTextMessageContent
-from telegram.parsemode import ParseMode
-from telegram.utils.helpers import escape_markdown
 
 monkey.patch_all()  # REALLY IMPORTANT: ALLOWS ZERORPC AND TG TO WORK TOGETHER
 
@@ -25,6 +21,11 @@ import io
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler, \
     ConversationHandler, InlineQueryHandler
+from telegram.inline.inlinequeryresultarticle import InlineQueryResultArticle
+from telegram.inline.inputtextmessagecontent import InputTextMessageContent
+from telegram.parsemode import ParseMode
+from telegram.utils.helpers import escape_markdown
+
 from telegram.ext.dispatcher import run_async
 from telegram.error import ChatMigrated, BadRequest
 import libraries.web3_calls as web3_util
