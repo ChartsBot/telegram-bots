@@ -1233,39 +1233,38 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     pprint.pprint(query)
     ticker = query.lower()
-
-    if ticker.upper() in symbol_gecko:
-        value = symbol_gecko.get(ticker.upper())
-        message = general_end_functions.get_price_gecko(value)
-    else:
-        contract_from_ticker = requests_util.get_token_contract_address(ticker)
-        pprint.pprint(contract_from_ticker)
-        if contract_from_ticker is None:
-            message = "Ticker not found"
+    if len(ticker) > 2:
+        if ticker.upper() in symbol_gecko:
+            value = symbol_gecko.get(ticker.upper())
+            message = general_end_functions.get_price_gecko(value)
         else:
-            message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
-                                                      graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
-    results = [
-        InlineQueryResultArticle(
-            id=uuid4(), title="Caps", input_message_content=InputTextMessageContent(query.upper())
-        ),
-        InlineQueryResultArticle(
-            id=uuid4(),
-            title="Price",
-            input_message_content=InputTextMessageContent(
-                message, parse_mode=ParseMode.HTML
+            contract_from_ticker = requests_util.get_token_contract_address(ticker)
+            pprint.pprint(contract_from_ticker)
+            if contract_from_ticker is None:
+                message = "Ticker not found"
+            else:
+                message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
+                                                          graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
+        results = [
+            InlineQueryResultArticle(
+                id=uuid4(), title="Caps", input_message_content=InputTextMessageContent(query.upper())
             ),
-        ),
-        InlineQueryResultArticle(
-            id=uuid4(),
-            title="Italic",
-            input_message_content=InputTextMessageContent(
-                f"_{escape_markdown(query)}_", parse_mode=ParseMode.MARKDOWN
+            InlineQueryResultArticle(
+                id=uuid4(),
+                title="Price",
+                input_message_content=InputTextMessageContent(
+                    message, parse_mode=ParseMode.HTML
+                ),
             ),
-        ),
-    ]
-
-    update.inline_query.answer(results)
+            InlineQueryResultArticle(
+                id=uuid4(),
+                title="Italic",
+                input_message_content=InputTextMessageContent(
+                    f"_{escape_markdown(query)}_", parse_mode=ParseMode.MARKDOWN
+                ),
+            ),
+        ]
+        update.inline_query.answer(results)
 
 
 def main():
