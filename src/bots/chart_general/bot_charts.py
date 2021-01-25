@@ -1253,9 +1253,8 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
                 id=uuid4(),
                 title="Price",
                 input_message_content=InputTextMessageContent(
-                    message, parse_mode=ParseMode.HTML
-                ),
-                hide_url=True
+                    message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+                )
             ),
             InlineQueryResultArticle(
                 id=uuid4(),
