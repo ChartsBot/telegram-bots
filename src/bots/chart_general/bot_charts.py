@@ -1231,15 +1231,28 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
 from uuid import uuid4
 def inlinequery(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
+    ticker = query.lower()
+
+    if ticker.upper() in symbol_gecko:
+        value = symbol_gecko.get(ticker.upper())
+        message = general_end_functions.get_price_gecko(value)
+    else:
+        contract_from_ticker = requests_util.get_token_contract_address(ticker)
+        pprint.pprint(contract_from_ticker)
+        if contract_from_ticker is None:
+            message = "Ticker not found"
+        else:
+            message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
+                                                      graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
     results = [
         InlineQueryResultArticle(
             id=uuid4(), title="Caps", input_message_content=InputTextMessageContent(query.upper())
         ),
         InlineQueryResultArticle(
             id=uuid4(),
-            title="Bold",
+            title="Price",
             input_message_content=InputTextMessageContent(
-                f"*{escape_markdown(query)}*", parse_mode=ParseMode.MARKDOWN
+                message, parse_mode=ParseMode.HTML
             ),
         ),
         InlineQueryResultArticle(
