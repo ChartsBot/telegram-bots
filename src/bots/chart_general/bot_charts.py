@@ -1231,6 +1231,7 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
 from uuid import uuid4
 def inlinequery(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
+    pprint.pprint(query)
     ticker = query.lower()
 
     if ticker.upper() in symbol_gecko:
