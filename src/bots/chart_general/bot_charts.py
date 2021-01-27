@@ -438,9 +438,9 @@ def handle_new_image(update: Update, context: CallbackContext):
                     context.bot.send_message(chat_id=chat_id,
                                              text="Memes are not activated on this channel. An admin can turn them on with /set_function meme")
         else:
-            __send_message_if_ocr(update, context)
+            pass
     except KeyError:
-        __send_message_if_ocr(update, context)
+        pass
 
 
 def __send_message_if_ocr(update, context):
