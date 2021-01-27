@@ -174,7 +174,7 @@ def bollinger_bands(highs, lows, closes, n=20, m=3):
 
 # Visualisation inspired by https://chart-studio.plotly.com/~jackp/17421/plotly-candlestick-chart-in-python/#/
 # Huge thanks to the author!
-def __process_and_write_candlelight(dates, openings, closes, highs, lows, volumes, file_path, token_name, options=None):
+def __process_and_write_candlelight(dates, openings, closes, highs, lows, volumes, token_name, options=None):
     data = [dict(
         type='candlestick',
         open=openings,
@@ -272,6 +272,10 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                                     marker=dict(color='#E377C2'),
                                     yaxis='y2', name='Moving Average'))
 
+        if 'finance' in options or 'f' in options:
+            fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), rangebreaks=[dict(bounds=[9, 17], pattern="hour")])
+
+
     colors_volume = []
 
     for i in range(len(closes)):
@@ -315,8 +319,10 @@ def __calculate_resolution_from_time_yahoo(t_from, t_to):
         return "5m"
     elif delta < 8:
         return "30m"
-    elif delta < 32:
+    elif delta < 15:
         return "60m"
+    elif delta < 32:
+        return "90m"
     else:
         return "1d"
 
@@ -486,7 +492,7 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
             values = requests_util.get_graphex_data(token, resolution, t_from, t_to).json()
 
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
-    chart_img_raw = __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, file_path, token,
+    chart_img_raw = __process_and_write_candlelight(date_list, opens, closes, highs, lows, volumes, token,
                                                     options)
     chart_img = Image.open(chart_img_raw)
     if txt is not None:
@@ -536,11 +542,11 @@ def test_print_candlestick(token, t_from, t_to, resolution=1):
 
 
 def main():
-    token = "coin"
+    token = "gme"
     t_to = int(time.time())
     t_from = int(time.time()) - 3600 * 24 * 3
     # print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["bband"])
-    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark"])
+    print_candlestick(token, t_from, t_to, "testaaa2.png", "coucou", ["dark", "f"])
 
 
 if __name__ == '__main__':
