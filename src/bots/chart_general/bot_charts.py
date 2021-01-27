@@ -53,6 +53,7 @@ import libraries.protobuf.filehandler.fileHandler_pb2_grpc as filehandler_pb2_gr
 import grpc
 
 # from py_w3c.validators.html.validator import HTMLValidator
+from uuid import uuid4
 
 import zerorpc
 
@@ -1228,7 +1229,6 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
         return FIRST
 
 
-from uuid import uuid4
 def inlinequery(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     pprint.pprint(query)

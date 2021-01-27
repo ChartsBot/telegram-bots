@@ -36,16 +36,17 @@ def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, t
     path = charts_path + token + '.png'
     last_price = graphs_util.print_candlestick(token, t_from, t_to, path, txt, options)
 
-    callback_message = 'refresh_chart_' + "h:" + str(k_hours) + "d:" + str(k_days) + "t:" + token
-    callback_message_1_w = 'refresh_chart_' + "h:" + str(0) + "d:" + str(7) + "t:" + token
-    callback_message_1_d = 'refresh_chart_' + "h:" + str(0) + "d:" + str(1) + "t:" + token
-    callback_message_1_m = 'refresh_chart_' + "h:" + str(0) + "d:" + str(30) + "t:" + token
-    callback_message_2_h = 'refresh_chart_' + "h:" + str(2) + "d:" + str(0) + "t:" + token
+    options = "o:" if options is None else "o:" + '//'.join(options)
+    pprint(options)
+    callback_message = 'refresh_chart_' + "h:" + str(k_hours) + "d:" + str(k_days) + "t:" + token + options
+    callback_message_1_w = 'refresh_chart_' + "h:" + str(0) + "d:" + str(7) + "t:" + token + options
+    callback_message_1_d = 'refresh_chart_' + "h:" + str(0) + "d:" + str(1) + "t:" + token + options
+    callback_message_1_m = 'refresh_chart_' + "h:" + str(0) + "d:" + str(30) + "t:" + token + options
+    callback_message_2_h = 'refresh_chart_' + "h:" + str(2) + "d:" + str(0) + "t:" + token + options
     refresh_button = InlineKeyboardButton('Refresh ⌛', callback_data=callback_message)
     # delete_button = InlineKeyboardButton('Delete 🗑️', callback_data='delete_message')
     button_list_chart = [[
                             refresh_button
-                            # delete_button
                          ],
                          [
                             InlineKeyboardButton('2 hours', callback_data=callback_message_2_h),
