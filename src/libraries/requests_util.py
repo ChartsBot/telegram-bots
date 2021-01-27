@@ -250,7 +250,8 @@ def get_stock_data(ticker, resolution: int, t_from, t_to):
     msft = yf.Ticker(ticker)
 
     # get historical market data
-    hist = msft.history(period=period_str)
+    hist = msft.history(period=period_str, interval=resolution_str)
+    pprint.pprint(hist)
     return hist
 
 
