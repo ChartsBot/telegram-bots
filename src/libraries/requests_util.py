@@ -247,6 +247,8 @@ def get_stock_data(ticker, resolution: int, t_from, t_to):
     resolution_str = str(resolution) + 'm'
     period = (round(t_to - t_from) / (3600 * 24)) + 1
     period_str = str(period) + 'd'
+    pprint.pprint(period_str)
+    pprint.pprint(resolution_str)
     msft = yf.Ticker(ticker)
 
     # get historical market data
