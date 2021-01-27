@@ -511,7 +511,7 @@ def refresh_chart(update: Update, context: CallbackContext):
     token = re.search(r'([A-Za-z0-9-]+)', query.split('t:')[1]).group()[:-1]
     pprint.pprint(token)
     # token = query.split('t:')[1]
-    options = re.search(r'\d+', query.split('o:')[1]).group().split("//")
+    options = query.split('o:')[1].split("//")
     pprint.pprint(options)
     token_chat_id = str(chat_id) + "_" + token
 
