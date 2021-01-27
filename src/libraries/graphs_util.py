@@ -276,7 +276,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
             pprint(dates)
             pprint(fig['layout']['xaxis'])
             # fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), rangebreaks=[dict(bounds=[9, 17], pattern="hour")])
-            fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), type='category')
+            fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), type='category', dtick=6)
 
     colors_volume = []
 
