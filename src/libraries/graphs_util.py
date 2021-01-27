@@ -186,6 +186,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
         name='OHLC',
         increasing=dict(line=dict(color=INCREASING_COLOR)),
         decreasing=dict(line=dict(color=DECREASING_COLOR)),
+        connectgaps=True,
     )]
 
     # max_price = max(highs)
