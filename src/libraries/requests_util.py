@@ -16,6 +16,8 @@ from libraries.util import float_to_str, pretty_number, keep_significant_number_
 import libraries.time_util as time_util
 import libraries.web3_calls as web3_util
 import libraries.general_end_functions as general_end_functions
+import yfinance as yf
+
 from web3 import Web3
 
 API_KEY_ETHEXPLORER = os.environ.get('API_KEY_ETHEXPLORER')
@@ -239,6 +241,17 @@ def get_binance_chart_data(token_name, t_from, t_to):
 
     candles = client_binance.get_klines(symbol=token_name, interval=res, startTime=t_from_ms, endTime=t_to_ms)
     return candles
+
+
+def get_stock_data(ticker, resolution: int, t_from, t_to):
+    resolution_str = str(resolution) + 'm'
+    period = (round(t_to - t_from) / (3600 * 24)) + 1
+    period_str = str(period) + 'd'
+    msft = yf.Ticker(ticker)
+
+    # get historical market data
+    hist = msft.history(period=period_str, interval=resolution_str)
+    return hist
 
 
 def get_graphex_data(token, resolution, t_from, t_to):

@@ -509,10 +509,7 @@ def refresh_chart(update: Update, context: CallbackContext):
     k_hours = int(re.search(r'\d+', query.split('h:')[1]).group())
     k_days = int(re.search(r'\d+', query.split('d:')[1]).group())
     token = re.search(r'([A-Za-z0-9-]+)', query.split('t:')[1]).group()[:-1]
-    pprint.pprint(token)
-    # token = query.split('t:')[1]
     options = query.split('o:')[1].split("//")
-    pprint.pprint(options)
     token_chat_id = str(chat_id) + "_" + token
 
     t_to = int(time.time())
