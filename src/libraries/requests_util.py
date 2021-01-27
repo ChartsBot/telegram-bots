@@ -243,16 +243,14 @@ def get_binance_chart_data(token_name, t_from, t_to):
     return candles
 
 
-def get_stock_data(ticker, resolution: int, t_from, t_to):
-    resolution_str = str(resolution) + 'm'
+def get_stock_data(ticker, resolution: str, t_from, t_to):
     period = int((round(t_to - t_from) / (3600 * 24)))
     period_str = str(period) + 'd'
     pprint.pprint(period_str)
-    pprint.pprint(resolution_str)
     msft = yf.Ticker(ticker)
 
     # get historical market data
-    hist = msft.history(period=period_str, interval=resolution_str)
+    hist = msft.history(period=period_str, interval=resolution)
     return hist
 
 

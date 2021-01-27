@@ -312,17 +312,13 @@ def __calculate_resolution_from_time_yahoo(t_from, t_to):
     delta = round(t_to - t_from) / (3600 * 24)
     pprint(delta)
     if delta < 2:
-        return 5
-    elif delta < 7:
-        return 30
-    # elif delta < 24 * 3600:
-    #     return 5
-    # elif delta < 24 * 3600 * 4 + 100:
-    #     return 15
-    # elif delta < 24 * 3600 * 10 + 100:
-    #     return 30
+        return "5m"
+    elif delta < 8:
+        return "30m"
+    elif delta < 32:
+        return "60m"
     else:
-        return 60
+        return "1d"
 
 
 def __preprocess_yahoo_data(values):
