@@ -273,9 +273,6 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
                                     yaxis='y2', name='Moving Average'))
 
         if 'finance' in options or 'f' in options:
-            pprint(dates)
-            pprint(fig['layout']['xaxis'])
-            # fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), rangebreaks=[dict(bounds=[9, 17], pattern="hour")])
             fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), type='category', dtick=6, tickformat="%b-%d-%H-%M")
 
     colors_volume = []
