@@ -508,7 +508,8 @@ def refresh_chart(update: Update, context: CallbackContext):
 
     k_hours = int(re.search(r'\d+', query.split('h:')[1]).group())
     k_days = int(re.search(r'\d+', query.split('d:')[1]).group())
-    token = re.search(r'\d+', query.split('t:')[1]).group()
+    token = re.search(r'([A-Za-z0-9-]+)', query.split('t:')[1]).group()
+    pprint.pprint(token)
     # token = query.split('t:')[1]
     options = re.search(r'\d+', query.split('o:')[1]).group().split("//")
     pprint.pprint(options)
