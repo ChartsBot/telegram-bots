@@ -157,17 +157,17 @@ def bollinger_bands(highs, lows, closes, n=20, m=3):
     ls_fib = dict(color='rgb(169,169,169,0.5)', width=1)
     l = []
     l.append((ma, ls_mid, True, "Middle Band"))
-    l.append((ma + (0.236 * sd), ls_fib, False, "Fib band"))
-    l.append((ma + (0.382 * sd), ls_fib, False, "Fib band"))
-    l.append((ma + (0.5 * sd), ls_fib, False, "Fib band"))
-    l.append((ma + (0.618 * sd), ls_fib, False, "Fib band"))
-    l.append((ma + (0.764 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma + (0.236 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma + (0.382 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma + (0.5 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma + (0.618 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma + (0.764 * sd), ls_fib, False, "Fib band"))
     l.append((ma + (1 * sd), ls_up, True, "Upper Band"))
-    l.append((ma - (0.236 * sd), ls_fib, False, "Fib band"))
-    l.append((ma - (0.382 * sd), ls_fib, False, "Fib band"))
-    l.append((ma - (0.5 * sd), ls_fib, False, "Fib band"))
-    l.append((ma - (0.618 * sd), ls_fib, False, "Fib band"))
-    l.append((ma - (0.764 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma - (0.236 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma - (0.382 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma - (0.5 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma - (0.618 * sd), ls_fib, False, "Fib band"))
+    # l.append((ma - (0.764 * sd), ls_fib, False, "Fib band"))
     l.append((ma - (1 * sd), ls_low, True, "Lower Band"))
     return l
 
@@ -276,7 +276,7 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
             pprint(dates)
             pprint(fig['layout']['xaxis'])
             # fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), rangebreaks=[dict(bounds=[9, 17], pattern="hour")])
-            fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), type='category', dtick=6)
+            fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), type='category', dtick=6, tickformat="%b-%d %H-%M")
 
     colors_volume = []
 
