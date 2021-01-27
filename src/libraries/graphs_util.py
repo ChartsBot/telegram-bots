@@ -457,7 +457,7 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
         elif "finance" in options or "f" in options:
             check_others = False
-            values = requests_util.get_stock_data(token.upper(), t_from, t_to)
+            values = requests_util.get_stock_data(token.upper(), resolution, t_from, t_to)
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_yahoo_data(values)
     if check_others:
         if token.upper() in chart_dictionary:
