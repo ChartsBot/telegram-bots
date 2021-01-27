@@ -308,6 +308,22 @@ def __calculate_resolution_from_time(t_from, t_to):
         return 60
 
 
+def __calculate_resolution_from_time_yahoo(t_from, t_to):
+    delta = round(t_to - t_from) * 3600 * 24
+    if delta < 2:
+        return 5
+    elif delta < 7:
+        return 30
+    # elif delta < 24 * 3600:
+    #     return 5
+    # elif delta < 24 * 3600 * 4 + 100:
+    #     return 15
+    # elif delta < 24 * 3600 * 10 + 100:
+    #     return 30
+    else:
+        return 60
+
+
 def __preprocess_yahoo_data(values):
     opens = values['Open'].tolist()
     closes = values['Close'].tolist()
@@ -457,7 +473,7 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_binance_charts_data(values)
         elif "finance" in options or "f" in options:
             check_others = False
-            values = requests_util.get_stock_data(token.upper(), resolution, t_from, t_to)
+            values = requests_util.get_stock_data(token.upper(), __calculate_resolution_from_time_yahoo(t_from, t_to), t_from, t_to)
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_yahoo_data(values)
     if check_others:
         if token.upper() in chart_dictionary:
