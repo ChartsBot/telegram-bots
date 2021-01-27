@@ -309,7 +309,8 @@ def __calculate_resolution_from_time(t_from, t_to):
 
 
 def __calculate_resolution_from_time_yahoo(t_from, t_to):
-    delta = round(t_to - t_from) * 3600 * 24
+    delta = round(t_to - t_from) / (3600 * 24)
+    pprint(delta)
     if delta < 2:
         return 5
     elif delta < 7:
