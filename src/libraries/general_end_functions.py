@@ -53,6 +53,23 @@ def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, t
                             InlineKeyboardButton('1 week', callback_data=callback_message_1_w),
                             InlineKeyboardButton('1 month', callback_data=callback_message_1_m)
                          ]]
+    if "f" in options or "finance" in options:
+        callback_message = 'refresh_chart_' + "h:" + str(k_hours) + "d:" + str(k_days) + "t:" + token + options
+        callback_message_1_w = 'refresh_chart_' + "h:" + str(0) + "d:" + str(7) + "t:" + token + options
+        callback_message_1_d = 'refresh_chart_' + "h:" + str(0) + "d:" + str(1) + "t:" + token + options
+        callback_message_1_m = 'refresh_chart_' + "h:" + str(0) + "d:" + str(30) + "t:" + token + options
+        callback_message_1_y = 'refresh_chart_' + "h:" + str(0) + "d:" + str(360) + "t:" + token + options
+        refresh_button = InlineKeyboardButton('Refresh ⌛', callback_data=callback_message)
+        # delete_button = InlineKeyboardButton('Delete 🗑️', callback_data='delete_message')
+        button_list_chart = [[
+                refresh_button
+            ],
+            [
+                InlineKeyboardButton('1 day', callback_data=callback_message_1_d),
+                InlineKeyboardButton('1 week', callback_data=callback_message_1_w),
+                InlineKeyboardButton('1 month', callback_data=callback_message_1_m),
+                InlineKeyboardButton('1 year', callback_data=callback_message_1_y),
+            ]]
     reply_markup_chart = InlineKeyboardMarkup(button_list_chart)
     msg_time = " " + str(k_days) + " day(s) " if k_days > 0 else " last " + str(k_hours) + " hour(s) "
     if with_ad is None:
