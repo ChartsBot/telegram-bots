@@ -274,8 +274,8 @@ def __process_and_write_candlelight(dates, openings, closes, highs, lows, volume
 
         if 'finance' in options or 'f' in options:
             pprint(dates)
+            pprint(fig['layout']['xaxis'])
             fig['layout']['xaxis'] = dict(rangeslider=dict(visible=False), rangebreaks=[dict(bounds=[9, 17], pattern="hour")])
-
 
     colors_volume = []
 
