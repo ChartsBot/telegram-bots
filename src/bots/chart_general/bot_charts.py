@@ -181,9 +181,11 @@ def get_candlestick(update: Update, context: CallbackContext):
                                                                                         t_to, txt=trending,
                                                                                         options=options,
                                                                                         with_ad=maybe_bottom_text)
-
-    if "f" in options or "finance" in options:
-        logging.info("finance: not sending vote")
+    if options is not None:
+        if "f" in options or "finance" in options:
+            logging.info("finance: not sending vote")
+        else:
+            util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
     else:
         util.create_and_send_vote(token, "chart", update.message.from_user.name, zerorpc_client_data_aggregator)
     token_chat_id = str(chat_id) + "_" + token
