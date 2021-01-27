@@ -66,6 +66,8 @@ logging.basicConfig(level=logging.INFO,
 
 APP_KEY_WOLFRAM = os.environ.get('WOLFRAM_API')
 
+IS_TEST_ENV = False
+
 try:
     wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
 except Exception:
@@ -506,7 +508,10 @@ def refresh_chart(update: Update, context: CallbackContext):
 
     k_hours = int(re.search(r'\d+', query.split('h:')[1]).group())
     k_days = int(re.search(r'\d+', query.split('d:')[1]).group())
-    token = query.split('t:')[1]
+    token = re.search(r'\d+', query.split('t:')[1]).group()
+    # token = query.split('t:')[1]
+    options = re.search(r'\d+', query.split('o:')[1]).group().split("//")
+    pprint.pprint(options)
     token_chat_id = str(chat_id) + "_" + token
 
     t_to = int(time.time())
@@ -519,6 +524,7 @@ def refresh_chart(update: Update, context: CallbackContext):
         (message, path, reply_markup_chart) = general_end_functions.send_candlestick_pyplot(token, charts_path, k_days,
                                                                                             k_hours, t_from, t_to,
                                                                                             txt=trending,
+                                                                                            options=options,
                                                                                             with_ad=maybe_bottom_text)
         context.bot.send_photo(chat_id=chat_id, photo=open(path, 'rb'), caption=message, parse_mode="html",
                                reply_markup=reply_markup_chart)
@@ -829,9 +835,11 @@ def set_function(update: Update, context: CallbackContext):
                 pprint.pprint(res)
                 _update_meme_status_on_channel(chat_id, res)
                 if res:
-                    context.bot.send_message(chat_id=chat_id, text="Memes are now activated. You can now:\nAdd some with /add_meme\nView one random with /get_meme\nRemove one with /delete_meme (only for admins).")
+                    context.bot.send_message(chat_id=chat_id,
+                                             text="Memes are now activated. You can now:\nAdd some with /add_meme\nView one random with /get_meme\nRemove one with /delete_meme (only for admins).")
                 else:
-                    context.bot.send_message(chat_id=chat_id, text="Memes are now de-activated. You can always go back with /set_function meme (only for admins)")
+                    context.bot.send_message(chat_id=chat_id,
+                                             text="Memes are now de-activated. You can always go back with /set_function meme (only for admins)")
         else:
             context.bot.send_message(chat_id=chat_id, text="Wrongly formatted query")
     else:
@@ -910,7 +918,7 @@ def get_chart_supply(update: Update, context: CallbackContext):
                                parse_mode="html")
 
 
-def _is_meme_authorized_on_channel(channel_id: int) -> bool: 
+def _is_meme_authorized_on_channel(channel_id: int) -> bool:
     return zerorpc_client_data_aggregator.get_meme_channel_value(channel_id)
 
 
@@ -952,6 +960,8 @@ def __did_user_vote_too_much(username, method, token):
 
 
 def callback_minute(context: CallbackContext):
+    if IS_TEST_ENV:
+        return
     channels_to_check = zerorpc_client_data_aggregator.get_all_monitors()
     print("checking monitors")
     now = round(time.time())
@@ -1260,7 +1270,8 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
         res = [["btc", "Bitcoin", "https://lebitcoin.fr/logos/BC_Logo_.png"],
                ["eth", "Ethereum", "https://www.bitladon.fr/img/currency/ETH_groot.png"],
                ["link", "Chainlink", "https://firebounty.com/image/939-chainlink"],
-               ["dot", "Polkadot", "https://assets.coingecko.com/coins/images/12171/small/aJGBjJFU_400x400.jpg?1597804776"]]
+               ["dot", "Polkadot",
+                "https://assets.coingecko.com/coins/images/12171/small/aJGBjJFU_400x400.jpg?1597804776"]]
         results = []
         for i in range(0, len(res)):
             ticker = res[i][0]
@@ -1285,10 +1296,13 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
             ))
         update.inline_query.answer(results, cache_time=60)
 
+
 def main():
     global TELEGRAM_KEY
+    global IS_TEST_ENV
     if len(sys.argv) == 2:
         TELEGRAM_KEY = sys.argv[1]
+        IS_TEST_ENV = True
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
     dp = updater.dispatcher
 
