@@ -245,7 +245,7 @@ def get_binance_chart_data(token_name, t_from, t_to):
 
 def get_stock_data(ticker, resolution: int, t_from, t_to):
     resolution_str = str(resolution) + 'm'
-    period = int((round(t_to - t_from) / (3600 * 24)) + 1)
+    period = int((round(t_to - t_from) / (3600 * 24)))
     period_str = str(period) + 'd'
     pprint.pprint(period_str)
     pprint.pprint(resolution_str)
@@ -253,7 +253,6 @@ def get_stock_data(ticker, resolution: int, t_from, t_to):
 
     # get historical market data
     hist = msft.history(period=period_str, interval=resolution_str)
-    pprint.pprint(hist)
     return hist
 
 
