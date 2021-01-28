@@ -1371,9 +1371,9 @@ def main():
     dp.add_handler(CommandHandler('set_function', set_function, run_async=False))
     # dp.add_handler(CommandHandler('stop_monitor', stop_monitor, run_async=False))
     # callbacks queries
-    dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
-    dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
-    dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
+    dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)', run_async=True))
+    dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)', run_async=True))
+    dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message', run_async=True))
 
     dp.add_handler(MessageHandler(Filters.photo, handle_new_image, run_async=True))
     dp.add_handler(MessageHandler(Filters.video, handle_new_video, run_async=True))
