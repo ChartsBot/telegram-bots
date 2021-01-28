@@ -124,7 +124,7 @@ graphql_client_eth = GraphQLClient('https://api.thegraph.com/subgraphs/name/bloc
 rejection_no_default_ticker_message = "No default token found for this chat. Please ask an admin to add one with /set_default_token <TICKER>"
 
 # CONFIG OPTION repeated task
-check_big_buys_interval_seconds = 60
+check_big_buys_interval_seconds = 60 * 5
 
 # grpc stuff
 if os.environ.get('https_proxy'):
@@ -968,7 +968,7 @@ def callback_minute(context: CallbackContext):
     channels_to_check = zerorpc_client_data_aggregator.get_all_monitors()
     print("checking monitors")
     now = round(time.time())
-    last_min = now - 80
+    last_min = now - (60 * 5) -20
 
     new_list = dict()
     if channels_to_check is not None:
