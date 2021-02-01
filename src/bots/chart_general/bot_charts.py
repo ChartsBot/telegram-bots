@@ -1302,14 +1302,17 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
 def main():
     global TELEGRAM_KEY
     global IS_TEST_ENV
-    webhook_url = 'https://' + SERVER_IP + ':8443/' + TELEGRAM_KEY
+    webhook_port = 8443
+    webhook_url = 'https://' + SERVER_IP + ':' + str(webhook_port) + '/' + TELEGRAM_KEY
     if len(sys.argv) == 2:
         TELEGRAM_KEY = sys.argv[1]
-        webhook_url = 'https://' + SERVER_IP + ':88/' + TELEGRAM_KEY
+        webhook_port = 88
+        webhook_url = 'https://' + SERVER_IP + ':' + str(webhook_port) + '/' + TELEGRAM_KEY
         IS_TEST_ENV = True
+    logging.info("webhook url is: " + webhook_url)
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=16)
     updater.start_webhook(listen='0.0.0.0',
-                          port=8443,
+                          port=webhook_port,
                           url_path=TELEGRAM_KEY,
                           key=TELEGRAM_WEBHOOK_PRIVATE_KEY_PATH,
                           cert=TELEGRAM_WEBHOOK_CERT_PATH,
