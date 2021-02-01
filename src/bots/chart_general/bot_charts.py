@@ -1309,7 +1309,9 @@ def main():
         webhook_port = 88
         webhook_url = 'https://' + SERVER_IP + ':' + str(webhook_port) + '/' + TELEGRAM_KEY
         IS_TEST_ENV = True
-    logging.info("webhook url is: " + webhook_url)
+    logging.info("webhook url is: " + webhook_url + " on port: " + str(webhook_port))
+    pprint.pprint(TELEGRAM_WEBHOOK_PRIVATE_KEY_PATH)
+    pprint.pprint(TELEGRAM_WEBHOOK_CERT_PATH)
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=16)
     updater.start_webhook(listen='0.0.0.0',
                           port=webhook_port,
