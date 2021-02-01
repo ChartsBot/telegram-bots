@@ -93,6 +93,9 @@ twitter = Twython(APP_KEY, APP_SECRET, ACCESS_TOKEN, ACCESS_SECRET_TOKEN)
 
 # ENV FILES
 TELEGRAM_KEY = os.environ.get('CHART_TELEGRAM_KEY')
+TELEGRAM_WEBHOOK_PRIVATE_KEY_PATH = os.environ.get('TG_FOMO_WEBHOOK_PRIV_PATH')
+TELEGRAM_WEBHOOK_CERT_PATH = os.environ.get('TG_FOMO_WEBHOOK_CERT_PATH')
+SERVER_IP = os.environ.get('SERVER_IP')
 pair_contract = "0x5a265315520696299fa1ece0701c3a1ba961b888"
 decimals = 1000000000000000000  # that's 18
 TMP_FOLDER = BASE_PATH + 'tmp/'
@@ -709,16 +712,12 @@ def get_latest_actions(update: Update, context: CallbackContext):
             ticker, addr = None, None
         token, options = queries_parser.analyze_query_last_actions(update.message.text, ticker)
         if token is not None:
-            if addr is not None:
-                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper,
-                                                                                                 graphql_client_uni,
-                                                                                                 graphql_client_eth,
-                                                                                                 None, options)
-            else:
-                latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper,
-                                                                                                 graphql_client_uni,
-                                                                                                 graphql_client_eth,
-                                                                                                 None, options)
+
+            latest_actions_pretty = general_end_functions.get_last_actions_token_in_eth_pair(token, uni_wrapper,
+                                                                                             graphql_client_uni,
+                                                                                             graphql_client_eth,
+                                                                                             None, options)
+
             util.create_and_send_vote(token, "actions", update.message.from_user.name, zerorpc_client_data_aggregator)
             context.bot.send_message(chat_id=chat_id, text=latest_actions_pretty, disable_web_page_preview=True,
                                      parse_mode='html')
@@ -968,7 +967,7 @@ def callback_minute(context: CallbackContext):
     channels_to_check = zerorpc_client_data_aggregator.get_all_monitors()
     print("checking monitors")
     now = round(time.time())
-    last_min = now - (60 * 5) -20
+    last_min = now - (60 * 5) - 20
 
     new_list = dict()
     if channels_to_check is not None:
@@ -1303,10 +1302,18 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
 def main():
     global TELEGRAM_KEY
     global IS_TEST_ENV
+    webhook_url = 'https://' + SERVER_IP + ':8443/' + TELEGRAM_KEY
     if len(sys.argv) == 2:
         TELEGRAM_KEY = sys.argv[1]
+        webhook_url = 'https://' + SERVER_IP + ':88/' + TELEGRAM_KEY
         IS_TEST_ENV = True
-    updater = Updater(TELEGRAM_KEY, use_context=True, workers=8)
+    updater = Updater(TELEGRAM_KEY, use_context=True, workers=16)
+    updater.start_webhook(listen='0.0.0.0',
+                          port=8443,
+                          url_path=TELEGRAM_KEY,
+                          key=TELEGRAM_WEBHOOK_PRIVATE_KEY_PATH,
+                          cert=TELEGRAM_WEBHOOK_CERT_PATH,
+                          webhook_url=webhook_url)
     dp = updater.dispatcher
 
     def stop_and_restart():

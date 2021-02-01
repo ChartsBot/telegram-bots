@@ -29,31 +29,32 @@ client_binance = Client(clef, secret)
 jwt = os.environ.get('JWT')
 
 query_get_latest = """
-query {  mints(first: $AMOUNT, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
-    transaction {
-      id
-      timestamp
-      __typename
-    }
-    pair {
-      token0 {
-        id
-        symbol
+query {  
+    mints(first: $AMOUNT, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
+        transaction {
+          id
+          timestamp
+          __typename
+        }
+        pair {
+          token0 {
+            id
+            symbol
+            __typename
+          }
+          token1 {
+            id
+            symbol
+            __typename
+          }
+          __typename
+        }
+        to
+        liquidity
+        amount0
+        amount1
+        amountUSD
         __typename
-      }
-      token1 {
-        id
-        symbol
-        __typename
-      }
-      __typename
-    }
-    to
-    liquidity
-    amount0
-    amount1
-    amountUSD
-    __typename
   }
   burns(first: $AMOUNT, where: {pair_in: $PAIR}, orderBy: timestamp, orderDirection: desc) {
     transaction {
@@ -266,7 +267,7 @@ def get_graphex_data(token, resolution, t_from, t_to):
     return resp
 
 
-def get_price_raw_now(graphql_client_eth, graphql_client_uni, token_contract):  # TODO: use infura for it to be faster
+def get_price_raw_now(graphql_client_eth, graphql_client_uni, token_contract):  # TODO: use web3 for it to be faster
     now = int(time.time())
 
     updated_eth_query = query_eth_now % now
