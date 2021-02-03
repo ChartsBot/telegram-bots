@@ -412,7 +412,7 @@ def get_gas_price(full: bool = False):
         price_one_tx_asap_eth = asap * 21000 / 1000000000
         price_one_tx_asap_usd = price_one_tx_asap_eth * eth_price
         price_one_swap_asap_eth = asap * 220000 / 1000000000
-        price_one_swap_asap_usd = price_one_tx_asap_eth * eth_price
+        price_one_swap_asap_usd = price_one_swap_asap_eth * eth_price
         return asap, fast, average, low, price_one_tx_asap_eth, price_one_tx_asap_usd, price_one_swap_asap_eth, price_one_swap_asap_usd
     else:
         return asap, fast, average, low
