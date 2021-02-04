@@ -1311,8 +1311,11 @@ def inline_query(update: Update, context: CallbackContext) -> None:
             futures = []
             for coin in coins_to_watch:
                 ticker = coin[0]
+
                 title = coin[1]
                 url = coin[2]
+                res = get_token_price_inline_query_full(ticker, title, url)
+                pprint.pprint(res.input_message_content.message_text)
                 futures.append(executor.submit(get_token_price_inline_query_full(ticker, title, url)))
             results = []
             for future in concurrent.futures.as_completed(futures):
