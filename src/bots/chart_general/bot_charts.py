@@ -1257,7 +1257,7 @@ def get_token_price_inline_query(ticker):
     return message
 
 
-def get_token_price_inline_query_full(ticker, title, url):
+def get_token_price_inline_query_full(ticker, title, url) -> InlineQueryResultArticle:
     message = get_token_price_inline_query(ticker)
     return InlineQueryResultArticle(
         id=uuid4(),
@@ -1313,7 +1313,7 @@ def inline_query(update: Update, context: CallbackContext) -> None:
                 ticker = coin[0]
                 title = coin[1]
                 url = coin[2]
-                futures.append(get_token_price_inline_query_full(ticker, title, url))
+                futures.append(executor.submit(get_token_price_inline_query_full(ticker, title, url)))
             results = []
             for future in concurrent.futures.as_completed(futures):
                 results.append(future.result())
