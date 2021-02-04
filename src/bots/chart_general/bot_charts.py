@@ -656,14 +656,7 @@ def balance_token_in_wallet(update: Update, context: CallbackContext):
 def get_gas_average(update: Update, context: CallbackContext):
     __log_channel(update.message.chat, "gas")
     chat_id = update.message.chat_id
-    asap, fast, average, low, price_one_tx_asap_eth, price_one_tx_asap_usd, price_one_swap_asap_eth, price_one_swap_asap_usd = general_end_functions.get_gas_price(True)
-    message = "<b>Gas price:</b><code>" + \
-              "\nASAP: " + str(asap) + \
-              "\nFast: " + str(fast) + \
-              "\nAvg : " + str(average) + \
-              "\nSlow: " + str(low) + \
-              "\nASAP tx : Ξ" + str(price_one_tx_asap_eth)[0:8] + " | $" + str(price_one_tx_asap_usd)[0:4] + \
-              "\nUni swap~ Ξ" + str(price_one_swap_asap_eth)[0:8] + " | $" + str(price_one_swap_asap_usd)[0:4] + "</code>"
+    message = general_gas_message()
     context.bot.send_message(chat_id=chat_id, text=message, disable_web_page_preview=True, parse_mode='html')
     context.bot.send_message(chat_id=announcement_channel_id, text=message, disable_web_page_preview=True,
                              parse_mode='html')
@@ -1206,17 +1199,23 @@ def view_trending(update: Update, context: CallbackContext):
     return FIRST
 
 
+def general_gas_message():
+    asap, fast, average, low, price_one_tx_asap_eth, price_one_tx_asap_usd, price_one_swap_asap_eth, price_one_swap_asap_usd = general_end_functions.get_gas_price(True)
+    message = "<b>Gas price:</b><code>" + \
+          "\nASAP: " + str(asap) + \
+          "\nFast: " + str(fast) + \
+          "\nAvg : " + str(average) + \
+          "\nSlow: " + str(low) + \
+          "\nASAP tx : Ξ" + str(price_one_tx_asap_eth)[0:8] + " | $" + str(price_one_tx_asap_usd)[0:4] + \
+          "\nUni swap~ Ξ" + str(price_one_swap_asap_eth)[0:8] + " | $" + str(price_one_swap_asap_usd)[0:4] + "</code>"
+    return message
+
+
 def view_gas(update: Update, context: CallbackContext):
     """Show new choice of buttons"""
     logging.info("Viewing gas price")
     chat_id = update.message.chat_id
-    asap, fast, average, low, price_one_tx_asap_eth, price_one_tx_asap_usd = general_end_functions.get_gas_price(True)
-    message = "<b>Gas price:</b><code>" + \
-              "\nASAP: " + str(asap) + \
-              "\nFast: " + str(fast) + \
-              "\nAvg : " + str(average) + \
-              "\nSlow: " + str(low) + \
-              "\nASAP tx: Ξ" + str(price_one_tx_asap_eth)[0:8] + " | $" + str(price_one_tx_asap_usd)[0:4] + "</code>"
+    message = general_gas_message()
     context.bot.send_message(text=message, chat_id=chat_id, parse_mode="html")
     return FIRST
 
@@ -1242,23 +1241,28 @@ def start_menu_private_conv(update: Update, context: CallbackContext) -> None:
         return FIRST
 
 
-def inlinequery(update: Update, context: CallbackContext) -> None:
+def get_token_price_inline_query(ticker):
+    if ticker.upper() in symbol_gecko:
+        value = symbol_gecko.get(ticker.upper())
+        message = general_end_functions.get_price_gecko(value)
+    else:
+        contract_from_ticker = requests_util.get_token_contract_address(ticker)
+        pprint.pprint(contract_from_ticker)
+        if contract_from_ticker is None:
+            message = "Ticker not found"
+        else:
+            message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
+                                                      graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
+    return message
+
+
+def inline_query(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     pprint.pprint(query)
     ticker = query.lower()
 
     if len(ticker) > 2:
-        if ticker.upper() in symbol_gecko:
-            value = symbol_gecko.get(ticker.upper())
-            message = general_end_functions.get_price_gecko(value)
-        else:
-            contract_from_ticker = requests_util.get_token_contract_address(ticker)
-            pprint.pprint(contract_from_ticker)
-            if contract_from_ticker is None:
-                message = "Ticker not found"
-            else:
-                message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
-                                                          graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
+        message = get_token_price_inline_query(ticker)
         results = [
             InlineQueryResultArticle(
                 id=uuid4(),
@@ -1278,17 +1282,7 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
         results = []
         for i in range(0, len(res)):
             ticker = res[i][0]
-            if ticker.upper() in symbol_gecko:
-                value = symbol_gecko.get(ticker.upper())
-                message = general_end_functions.get_price_gecko(value)
-            else:
-                contract_from_ticker = requests_util.get_token_contract_address(ticker)
-                pprint.pprint(contract_from_ticker)
-                if contract_from_ticker is None:
-                    message = "Ticker not found"
-                else:
-                    message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth,
-                                                              graphql_client_uni, ticker.upper(), decimals, uni_wrapper)
+            message = get_token_price_inline_query(ticker)
             results.append(InlineQueryResultArticle(
                 id=uuid4(),
                 title=res[i][1],
@@ -1297,6 +1291,15 @@ def inlinequery(update: Update, context: CallbackContext) -> None:
                 ),
                 thumb_url=res[i][2]
             ))
+        message_gas = "Query <code>@TheFomo_Bot gas</code>:\n" + general_gas_message()
+        results.append(InlineQueryResultArticle(
+            id=uuid4(),
+            title="Gas price",
+            input_message_content=InputTextMessageContent(
+                message_gas, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+            ),
+            thumb_url="https://miro.medium.com/max/512/1*9NXyQgPke0RG_w-X3kGNXw.png"
+        ))
         update.inline_query.answer(results, cache_time=60)
 
 
@@ -1393,7 +1396,7 @@ def main():
     dp.add_handler(CommandHandler('add_channel', add_channel, filters=Filters.user(username='@rotted_ben')))
 
     # inline query
-    dp.add_handler(InlineQueryHandler(inlinequery))
+    dp.add_handler(InlineQueryHandler(inline_query))
 
     dp.add_handler(MessageHandler(Filters.command, get_price_direct, run_async=True))
 
