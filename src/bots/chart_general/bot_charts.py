@@ -1288,7 +1288,7 @@ def inline_query(update: Update, context: CallbackContext) -> None:
         update.inline_query.answer(results, cache_time=60)
     elif len(ticker) > 2:
         message = get_token_price_inline_query(ticker)
-        pprint.pprint(message)
+
         results = [
             InlineQueryResultArticle(
                 id=uuid4(),
@@ -1316,6 +1316,8 @@ def inline_query(update: Update, context: CallbackContext) -> None:
                 futures.append(executor.submit(get_token_price_inline_query_full(ticker, title, url)))
             results = []
             for future in concurrent.futures.as_completed(futures):
+                pprint.pprint(future)
+                pprint.pprint(future.result())
                 results.append(future.result())
         #
         # results = []
