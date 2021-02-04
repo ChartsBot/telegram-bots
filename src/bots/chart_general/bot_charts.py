@@ -1260,8 +1260,19 @@ def inline_query(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     pprint.pprint(query)
     ticker = query.lower()
-
-    if len(ticker) > 2:
+    if ticker.lower() == "gas":
+        message_gas = "Query <code>@TheFomo_Bot gas</code>:\n" + general_gas_message()
+        results = [
+            InlineQueryResultArticle(
+                id=uuid4(),
+                title="Gas price",
+                input_message_content=InputTextMessageContent(
+                    message_gas, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+                ),
+                thumb_url="https://miro.medium.com/max/512/1*9NXyQgPke0RG_w-X3kGNXw.png"
+        )]
+        update.inline_query.answer(results, cache_time=60)
+    elif len(ticker) > 2:
         message = get_token_price_inline_query(ticker)
         results = [
             InlineQueryResultArticle(
