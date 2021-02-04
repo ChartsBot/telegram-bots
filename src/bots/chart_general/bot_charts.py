@@ -17,6 +17,7 @@ import pprint
 import os.path
 import re
 import io
+import concurrent.futures
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler, \
@@ -1256,6 +1257,19 @@ def get_token_price_inline_query(ticker):
     return message
 
 
+def get_token_price_inline_query_full(ticker, title, url):
+    message = get_token_price_inline_query(ticker)
+    return InlineQueryResultArticle(
+        id=uuid4(),
+        title=title,
+        input_message_content=InputTextMessageContent(
+            message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+        ),
+        thumb_url=url
+    )
+    
+
+
 def inline_query(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     pprint.pprint(query)
@@ -1285,32 +1299,45 @@ def inline_query(update: Update, context: CallbackContext) -> None:
         ]
         update.inline_query.answer(results, cache_time=60)
     else:
-        res = [["btc", "Bitcoin", "https://lebitcoin.fr/logos/BC_Logo_.png"],
+
+        coins_to_watch = [["btc", "Bitcoin", "https://lebitcoin.fr/logos/BC_Logo_.png"],
                ["eth", "Ethereum", "https://www.bitladon.fr/img/currency/ETH_groot.png"],
                ["link", "Chainlink", "https://firebounty.com/image/939-chainlink"],
                ["dot", "Polkadot",
                 "https://assets.coingecko.com/coins/images/12171/small/aJGBjJFU_400x400.jpg?1597804776"]]
-        results = []
-        for i in range(0, len(res)):
-            ticker = res[i][0]
-            message = get_token_price_inline_query(ticker)
-            results.append(InlineQueryResultArticle(
-                id=uuid4(),
-                title=res[i][1],
-                input_message_content=InputTextMessageContent(
-                    message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
-                ),
-                thumb_url=res[i][2]
-            ))
-        message_gas = "Query <code>@TheFomo_Bot gas</code>:\n" + general_gas_message()
-        results.append(InlineQueryResultArticle(
-            id=uuid4(),
-            title="Gas price",
-            input_message_content=InputTextMessageContent(
-                message_gas, parse_mode=ParseMode.HTML, disable_web_page_preview=True
-            ),
-            thumb_url="https://miro.medium.com/max/512/1*9NXyQgPke0RG_w-X3kGNXw.png"
-        ))
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            futures = []
+            for coin in coins_to_watch:
+                ticker = coin[0]
+                title = coin[1]
+                url = coin[2]
+                futures.append(get_token_price_inline_query_full(ticker, title, url))
+            results = []
+            for future in concurrent.futures.as_completed(futures):
+                results.append(future.result())
+        #
+        # results = []
+        # for i in range(0, len(coins_to_watch)):
+        #     ticker = coins_to_watch[i][0]
+        #     message = get_token_price_inline_query(ticker)
+        #     results.append(InlineQueryResultArticle(
+        #         id=uuid4(),
+        #         title=coins_to_watch[i][1],
+        #         input_message_content=InputTextMessageContent(
+        #             message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+        #         ),
+        #         thumb_url=coins_to_watch[i][2]
+        #     ))
+        # message_gas = "Query <code>@TheFomo_Bot gas</code>:\n" + general_gas_message()
+        # results.append(InlineQueryResultArticle(
+        #     id=uuid4(),
+        #     title="Gas price",
+        #     input_message_content=InputTextMessageContent(
+        #         message_gas, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+        #     ),
+        #     thumb_url="https://miro.medium.com/max/512/1*9NXyQgPke0RG_w-X3kGNXw.png"
+        # ))
         update.inline_query.answer(results, cache_time=60)
 
 
