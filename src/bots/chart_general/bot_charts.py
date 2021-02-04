@@ -1328,31 +1328,8 @@ def inline_query(update: Update, context: CallbackContext) -> None:
             futures.append(executor.submit(get_gas_price_future))
             results = []
             for future in concurrent.futures.as_completed(futures):
-                pprint.pprint(future)
-                pprint.pprint(future.result())
                 results.append(future.result())
-        #
-        # results = []
-        # for i in range(0, len(coins_to_watch)):
-        #     ticker = coins_to_watch[i][0]
-        #     message = get_token_price_inline_query(ticker)
-        #     results.append(InlineQueryResultArticle(
-        #         id=uuid4(),
-        #         title=coins_to_watch[i][1],
-        #         input_message_content=InputTextMessageContent(
-        #             message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
-        #         ),
-        #         thumb_url=coins_to_watch[i][2]
-        #     ))
-        # message_gas = "Query <code>@TheFomo_Bot gas</code>:\n" + general_gas_message()
-        # results.append(InlineQueryResultArticle(
-        #     id=uuid4(),
-        #     title="Gas price",
-        #     input_message_content=InputTextMessageContent(
-        #         message_gas, parse_mode=ParseMode.HTML, disable_web_page_preview=True
-        #     ),
-        #     thumb_url="https://miro.medium.com/max/512/1*9NXyQgPke0RG_w-X3kGNXw.png"
-        # ))
+
         update.inline_query.answer(results, cache_time=60)
 
 
