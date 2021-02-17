@@ -139,8 +139,17 @@ def view_wallets(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text=message)
 
 
-@cached(cache=TTLCache(maxsize=1024, ttl=10))
 def get_list_watch_user(user):
+    l_dict = get_list_watch_all()
+    l_wallets_watch = []
+    for key in l_dict.keys():
+        if user in l_dict[key]:
+            l_wallets_watch.append(key)
+    return l_wallets_watch
+
+
+@cached(cache=TTLCache(maxsize=1024, ttl=10))
+def get_list_watch_user_cached(user):
     l_dict = get_list_watch_all()
     l_wallets_watch = []
     for key in l_dict.keys():
