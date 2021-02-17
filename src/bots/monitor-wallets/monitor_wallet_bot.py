@@ -47,15 +47,22 @@ with open(BASE_PATH + "telegram-bots/src/libraries/uniswap/assets/uniswap-v2/pai
     abi_pair = json.load(f)
 
 
-start_message = """Welcome to the wallet watcher bot, your best fren when it comes to monitor whales / ruggers / andre's wallet.
+start_message = """Welcome to <b>the FOMO wallet watcher bot</b>, your best fren when it comes to monitor whales / ruggers / andre's wallet.
+
 How does it work?
-1/ You add an address to your watch list with the <b>/monitor_wallet</b> command (for example: /monitor_wallet 0xa14964479ebf9cd336011ad80652b08cd83dfe3a)
-2/ When the bot detects that the wallet made a new tx, it'll send you a message with the details of it.
-That's it!
-You can <b>monitor multiple address</b> by simply calling the /monitor_wallet command multiple times
-Too many messages? You can stop monitoring an address with /remove_wallet
-Want more kick-ass bots? Check out @TheFomo_Bot
+<b>1/ Add an address to your watch list</b>
+You add an address to your watch list with the <b>/monitor_wallet</b> command (for example: /monitor_wallet 0xa14964479ebf9cd336011ad80652b08cd83dfe3a)
+(you can also <b>give it a name</b> by adding whatever you want after the address, like /monitor_wallet 0xa14964479ebf9cd336011ad80652b08cd83dfe3a big ape )
+<b>2/ That's it!</b>
+When the bot detects that the wallet made a new tx, it'll send you a message with the details of it.
+
+You can <b>monitor multiple address</b> by simply calling the /monitor_wallet command multiple times.
+Too many messages? You can stop monitoring an address with /remove_wallet.
+Want to rename one wallet? Simply delete it and add it again!
+
+<b>Want more kick-ass bots?</b> Check out @TheFomo_Bot
 """
+
 
 def get_start_message(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
@@ -106,7 +113,7 @@ class Swap:
 def monitor_wallet(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     query = update.message.text.split(' ')
-    if len(query) != 2:
+    if len(query) < 2:
         context.bot.send_message(chat_id=chat_id, text="Error: wrong number of arguments. Please use the format /monitor_wallet ADDRESS")
     else:
         try:
@@ -114,8 +121,16 @@ def monitor_wallet(update: Update, context: CallbackContext):
         except Exception:
             context.bot.send_message(chat_id=chat_id, text="Error adding this wallet, please make sure that your're sending a correct eth address")
             return
-        add_watch_user(str(chat_id), query[1])
-        context.bot.send_message(chat_id=chat_id, text="Added this wallet to your list of watched wallets.")
+        if len(query) > 2:
+            custom_wallet_name = ' '.join(query[2:])
+        else:
+            custom_wallet_name = 'wallet'
+        (res, res_message) = add_watch_user(str(chat_id), query[1], custom_wallet_name)
+        if res:
+            context.bot.send_message(chat_id=chat_id, text="Added this wallet to your list of watched wallets.")
+        else:
+            context.bot.send_message(chat_id=chat_id, text="Error adding this wallet: " +  res_message)
+
 
 
 def remove_wallet(update: Update, context: CallbackContext):
@@ -145,7 +160,7 @@ def view_wallets(update: Update, context: CallbackContext):
         else:
             message = "You are currently monitoring the following wallets:\n"
             for wallet in list_wallets:
-                message += str(wallet) + '\n'
+                message += json.dumps(wallet) + '\n'
             context.bot.send_message(chat_id=chat_id, text=message)
 
 
@@ -168,22 +183,22 @@ def get_list_watch_user_cached(user):
     return l_wallets_watch
 
 
-def add_watch_user(user, address) -> (bool, str):
+def add_watch_user(user, address, custom_wallet_name) -> (bool, str):
     l_dict = get_list_watch_all()
     address = address.lower()
-    user = user.lower()
+    user_dict = {user.lower(): {'name': custom_wallet_name}}
     if address in l_dict:
         old_value = l_dict[address]
         if user in old_value:
-            logging.warning("User " + user + " tries to monitor the add " + address + " even though he already watches it")
+            logging.warning("User " + user.lower() + " tries to monitor the add " + address + " even though he already watches it")
             return False, "Address already registered by the user"
         else:
-            old_value.append(user)
+            old_value.append(user_dict)
             l_dict.update({address: old_value})
             update_list_wallet_watch(l_dict)
             return True, ""
     else:
-        l_dict.update({address: [user]})
+        l_dict.update({address: [user_dict]})
         update_list_wallet_watch(l_dict)
         return True, ""
 
@@ -302,14 +317,18 @@ def callback_get_block(context: CallbackContext):
                         tx_to = res['to'].lower()
                         watch_list = get_list_watch_all()
                         if tx_from in watch_list and watch_list[tx_from]:
-                            message = 'Looks like one of your watched address (' + tx_from + ') just made a tx (<a href="etherscan.com/tx/' + tx_hash + '">etherscan</a> | <a href="https://app.zerion.io/' + tx_from + '/history">zerion</a>)'
+                            message_second = ""
                             if tx_to == uniswap_router_addr:
                                 tx_receipt = web3.eth.getTransactionReceipt(tx)
                                 swap = parse_uniswap_tx(tx_receipt, tx_from)
-                                message += "\n" + swap.to_string(True)
-                                message += ' ( <a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + '&?outputCurrency=' + swap.sell[0].addr + \
+                                message_second = "\n" + swap.to_string(True)
+                                message_second += ' ( <a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + '&?outputCurrency=' + swap.sell[0].addr + \
                                            '">swap on uniswap</a> )'
                             for tg_account in watch_list[tx_from]:
+                                watched_add_name = watch_list[tx_from][tg_account]['name']
+                                message = 'Looks like one of your watched address <b>' + watched_add_name + '</b>(' + tx_from + ') just made a tx (<a href="etherscan.com/tx/' + tx_hash + '">etherscan</a> | <a href="https://app.zerion.io/' + tx_from + '/history">zerion</a>)'
+                                if message_second is not "":
+                                    message = message + message_second
                                 context.bot.send_message(chat_id=int(tg_account), text=message, parse_mode='html', disable_web_page_preview=True)
                                 logging.info("Sent a message to " + tg_account)
                 except Exception as e:
