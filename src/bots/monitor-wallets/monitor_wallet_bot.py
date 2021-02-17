@@ -291,7 +291,7 @@ def callback_get_block(context: CallbackContext):
                         # pprint(tx_from)
                         tx_to = res['to'].lower()
                         watch_list = get_list_watch_all()
-                        if tx_from in watch_list:
+                        if tx_from in watch_list and watch_list[tx_from]:
                             message = 'Looks like one of your watched address (' + tx_from + ') just made a tx (<a href="etherscan.com/tx/' + tx_hash + '">etherscan</a> | <a href="https://app.zerion.io/' + tx_from + '/history">zerion</a>)'
                             if tx_to == uniswap_router_addr:
                                 tx_receipt = web3.eth.getTransactionReceipt(tx)
