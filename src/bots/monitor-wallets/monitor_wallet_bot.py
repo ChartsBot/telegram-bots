@@ -17,11 +17,10 @@ import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler, \
     ConversationHandler, InlineQueryHandler
-from src.libraries.uniswap import Uniswap
 from dataclasses import dataclass
-from src.libraries.uniswap import Uniswap
-import src.libraries.web3_calls as web3_utils
-import src.libraries.util as lib_util
+from libraries.uniswap import Uniswap
+import libraries.web3_calls as web3_utils
+import libraries.util as lib_util
 
 TELEGRAM_KEY = os.environ.get('MONITOR_WALLETS_TELEGRAM_KEY')
 DICT_PATH = os.environ.get('WALLET_MONITOR_PATH')
