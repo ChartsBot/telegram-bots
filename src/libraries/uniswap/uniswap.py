@@ -195,12 +195,13 @@ class Uniswap:
         try:
             symbol = token_contract.functions.symbol().call()
             name = token_contract.functions.name().call()
+            decimals = token_contract.functions.decimals().call()
         except Exception as e:
             logger.warning(
                 f"Exception occurred while trying to get token {_addr_to_str(address)}: {e}"
             )
             raise InvalidToken(address)
-        return {"name": name, "symbol": symbol}
+        return {"name": name, "symbol": symbol, 'decimals': int(decimals)}
 
     @supports([1])
     def exchange_address_from_token(self, token_addr: AddressLike) -> AddressLike:
