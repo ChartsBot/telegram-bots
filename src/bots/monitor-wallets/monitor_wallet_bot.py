@@ -169,7 +169,9 @@ def get_list_watch_user(user):
     l_dict = get_list_watch_all()
     l_wallets_watch = []
     for key in l_dict.keys():
+        pprint(key)
         if user in l_dict[key]:
+
             l_wallets_watch.append(key)
     return l_wallets_watch
 
