@@ -161,7 +161,7 @@ def view_wallets(update: Update, context: CallbackContext):
         else:
             message = "You are currently monitoring the following wallets:\n"
             for wallet in list_wallets:
-                message += wallet.keys()[0] + ' - ' + wallet['name'] + '\n'
+                message += list(wallet.keys())[0] + ' - ' + wallet['name'] + '\n'
             context.bot.send_message(chat_id=chat_id, text=message)
 
 
