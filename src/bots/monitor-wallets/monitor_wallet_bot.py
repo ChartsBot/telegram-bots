@@ -155,7 +155,7 @@ def view_wallets(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text="Error: wrong number of arguments. Please use the format /view_wallets")
     else:
         list_wallets = get_list_watch_user(str(chat_id))
-        if list_wallets == []:
+        if not list_wallets:
             context.bot.send_message(chat_id=chat_id, text="Not watching any wallet now")
         else:
             message = "You are currently monitoring the following wallets:\n"
@@ -327,7 +327,7 @@ def callback_get_block(context: CallbackContext):
                             for tg_account in watch_list[tx_from]:
                                 watched_add_name = watch_list[tx_from][tg_account]['name']
                                 message = 'Looks like one of your watched address <b>' + watched_add_name + '</b>(' + tx_from + ') just made a tx (<a href="etherscan.com/tx/' + tx_hash + '">etherscan</a> | <a href="https://app.zerion.io/' + tx_from + '/history">zerion</a>)'
-                                if message_second is not "":
+                                if message_second != "":
                                     message = message + message_second
                                 context.bot.send_message(chat_id=int(tg_account), text=message, parse_mode='html', disable_web_page_preview=True)
                                 logging.info("Sent a message to " + tg_account)
