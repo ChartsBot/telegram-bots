@@ -251,35 +251,37 @@ def parse_uniswap_tx(tx_receipt, tx_from):
 def callback_get_block(context: CallbackContext):
     global last_block_num
     block = web3.eth.getBlock('latest')
-    if last_block_num != int(block['number']):
-        logging.info("analysing new block: " + str(block['number']))
-        txs = block['transactions']
-        for tx in txs:
-            try:
-                res = web3.eth.getTransaction(tx)
-                if res is not None:
-                    tx_hash = res['hash'].hex()
-                    tx_from = res['from'].lower()
-                    # pprint(tx_from)
-                    tx_to = res['to'].lower()
-                    watch_list = get_list_watch_all()
-                    if tx_from in watch_list:
-                        message = 'Looks like one of your watched address (' + tx_from + ') just made a tx (<a href="etherscan.com/tx/' + tx_hash + '">etherscan</a> | <a href="https://app.zerion.io/' + tx_from + '/history">zerion</a>)'
-                        if tx_to == uniswap_router_addr:
-                            tx_receipt = web3.eth.getTransactionReceipt(tx)
-                            swap = parse_uniswap_tx(tx_receipt, tx_from)
-                            message += "\n" + swap.to_string(True)
-                            message += ' (<a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + \
-                                       '">buy</a> | <a href="app.uniswap.org/#/swap?outputCurrency=' \
-                                       + swap.sell[0].addr + '">sell</a>)'
-                        for tg_account in watch_list[tx_from]:
-                            context.bot.send_message(chat_id=int(tg_account), text=message, parse_mode='html', disable_web_page_preview=True)
-                            logging.info("Sent a message to " + tg_account)
-            except Exception as e:
-                pass
+    latest_block = int(block['number'])
+    if last_block_num != latest_block:
+        for i in range(last_block_num + 1, latest_block + 1):
+            logging.info("analysing new block: " + str(block['number']))
+            txs = block['transactions']
+            for tx in txs:
+                try:
+                    res = web3.eth.getTransaction(tx)
+                    if res is not None:
+                        tx_hash = res['hash'].hex()
+                        tx_from = res['from'].lower()
+                        # pprint(tx_from)
+                        tx_to = res['to'].lower()
+                        watch_list = get_list_watch_all()
+                        if tx_from in watch_list:
+                            message = 'Looks like one of your watched address (' + tx_from + ') just made a tx (<a href="etherscan.com/tx/' + tx_hash + '">etherscan</a> | <a href="https://app.zerion.io/' + tx_from + '/history">zerion</a>)'
+                            if tx_to == uniswap_router_addr:
+                                tx_receipt = web3.eth.getTransactionReceipt(tx)
+                                swap = parse_uniswap_tx(tx_receipt, tx_from)
+                                message += "\n" + swap.to_string(True)
+                                message += ' (<a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + \
+                                           '">buy</a> | <a href="app.uniswap.org/#/swap?outputCurrency=' \
+                                           + swap.sell[0].addr + '">sell</a>)'
+                            for tg_account in watch_list[tx_from]:
+                                context.bot.send_message(chat_id=int(tg_account), text=message, parse_mode='html', disable_web_page_preview=True)
+                                logging.info("Sent a message to " + tg_account)
+                except Exception as e:
+                    pass
 
-        last_block_num = int(block['number'])
-        logging.info("done analysing block")
+            last_block_num = int(block['number'])
+            logging.info("done analysing block")
 
 
 def main():
