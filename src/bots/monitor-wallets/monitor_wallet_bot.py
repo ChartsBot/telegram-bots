@@ -155,6 +155,7 @@ def view_wallets(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=chat_id, text="Error: wrong number of arguments. Please use the format /view_wallets")
     else:
         list_wallets = get_list_watch_user(str(chat_id))
+        pprint(list_wallets)
         if not list_wallets:
             context.bot.send_message(chat_id=chat_id, text="Not watching any wallet now")
         else:
