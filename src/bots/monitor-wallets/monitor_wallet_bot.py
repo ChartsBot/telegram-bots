@@ -119,7 +119,7 @@ def remove_wallet(update: Update, context: CallbackContext):
     if len(query) != 2:
         context.bot.send_message(chat_id=chat_id, text="Error: wrong number of arguments. Please use the format /remove_wallet ADDRESS")
     else:
-        add_watch_user(str(chat_id), query[1])
+        remove_wallet_from_user(str(chat_id), query[1])
         context.bot.send_message(chat_id=chat_id, text="Removed this wallet to your list of watched wallets.")
 
 
@@ -288,9 +288,8 @@ def callback_get_block(context: CallbackContext):
                                 tx_receipt = web3.eth.getTransactionReceipt(tx)
                                 swap = parse_uniswap_tx(tx_receipt, tx_from)
                                 message += "\n" + swap.to_string(True)
-                                message += ' ( <a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + \
-                                           '">buy</a> | <a href="app.uniswap.org/#/swap?outputCurrency=' \
-                                           + swap.sell[0].addr + '">sell</a> )'
+                                message += ' ( <a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + '&?outputCurrency=' + swap.sell[0].addr + \
+                                           '">swap on uniswap</a> )'
                             for tg_account in watch_list[tx_from]:
                                 context.bot.send_message(chat_id=int(tg_account), text=message, parse_mode='html', disable_web_page_preview=True)
                                 logging.info("Sent a message to " + tg_account)
