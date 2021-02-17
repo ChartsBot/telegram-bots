@@ -47,6 +47,21 @@ with open(BASE_PATH + "telegram-bots/src/libraries/uniswap/assets/uniswap-v2/pai
     abi_pair = json.load(f)
 
 
+start_message = """Welcome to the wallet watcher bot, your best fren when it comes to monitor whales / ruggers / andre's wallet.
+How does it work?
+1/ You add an address to your watch list with the <b>/monitor_wallet</b> command (for example: /monitor_wallet 0xa14964479ebf9cd336011ad80652b08cd83dfe3a)
+2/ When the bot detects that the wallet made a new tx, it'll send you a message with the details of it.
+That's it!
+You can <b>monitor multiple address</b> by simply calling the /monitor_wallet command multiple times
+Too many messages? You can stop monitoring an address with /remove_wallet
+Want more kick-ass bots? Check out @TheFomo_Bot
+"""
+
+def get_start_message(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    context.bot.send_message(chat_id=chat_id, text=start_message, parse_mode='html', disable_web_page_preview=True)
+
+
 @dataclass(frozen=True)
 class TokenInfo:
     addr: str
@@ -290,6 +305,7 @@ def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=2)
     dp = updater.dispatcher
 
+    dp.add_handler(CommandHandler('start', get_start_message))
     dp.add_handler(CommandHandler('monitor_wallet', monitor_wallet))
     dp.add_handler(CommandHandler('view_wallets', view_wallets))
     dp.add_handler(CommandHandler('remove_wallet', remove_wallet))
