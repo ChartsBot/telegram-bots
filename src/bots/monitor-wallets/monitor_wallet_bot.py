@@ -144,8 +144,11 @@ def remove_wallet(update: Update, context: CallbackContext):
         except Exception:
             context.bot.send_message(chat_id=chat_id, text="Error removing this wallet, please make sure that your're sending a correct eth address")
             return
-        remove_wallet_from_user(str(chat_id), query[1])
-        context.bot.send_message(chat_id=chat_id, text="Removed this wallet to your list of watched wallets.")
+        res, res_message = remove_wallet_from_user(str(chat_id), query[1])
+        if not res:
+            context.bot.send_message(chat_id=chat_id, text="Error removing this wallet from your list of wallets: " + res_message)
+        else:
+            context.bot.send_message(chat_id=chat_id, text="Removed this wallet to your list of watched wallets.")
 
 
 def view_wallets(update: Update, context: CallbackContext):
