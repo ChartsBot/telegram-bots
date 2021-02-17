@@ -109,6 +109,11 @@ def monitor_wallet(update: Update, context: CallbackContext):
     if len(query) != 2:
         context.bot.send_message(chat_id=chat_id, text="Error: wrong number of arguments. Please use the format /monitor_wallet ADDRESS")
     else:
+        try:
+            Web3.toChecksumAddress(query[1].lower())
+        except Exception:
+            context.bot.send_message(chat_id=chat_id, text="Error adding this wallet, please make sure that your're sending a correct eth address")
+            return
         add_watch_user(str(chat_id), query[1])
         context.bot.send_message(chat_id=chat_id, text="Added this wallet to your list of watched wallets.")
 
@@ -119,6 +124,11 @@ def remove_wallet(update: Update, context: CallbackContext):
     if len(query) != 2:
         context.bot.send_message(chat_id=chat_id, text="Error: wrong number of arguments. Please use the format /remove_wallet ADDRESS")
     else:
+        try:
+            Web3.toChecksumAddress(query[1].lower())
+        except Exception:
+            context.bot.send_message(chat_id=chat_id, text="Error removing this wallet, please make sure that your're sending a correct eth address")
+            return
         remove_wallet_from_user(str(chat_id), query[1])
         context.bot.send_message(chat_id=chat_id, text="Removed this wallet to your list of watched wallets.")
 
