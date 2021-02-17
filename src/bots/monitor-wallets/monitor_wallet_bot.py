@@ -273,9 +273,9 @@ def callback_get_block(context: CallbackContext):
                                 tx_receipt = web3.eth.getTransactionReceipt(tx)
                                 swap = parse_uniswap_tx(tx_receipt, tx_from)
                                 message += "\n" + swap.to_string(True)
-                                message += ' (<a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + \
+                                message += ' ( <a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + \
                                            '">buy</a> | <a href="app.uniswap.org/#/swap?outputCurrency=' \
-                                           + swap.sell[0].addr + '">sell</a>)'
+                                           + swap.sell[0].addr + '">sell</a> )'
                             for tg_account in watch_list[tx_from]:
                                 context.bot.send_message(chat_id=int(tg_account), text=message, parse_mode='html', disable_web_page_preview=True)
                                 logging.info("Sent a message to " + tg_account)
