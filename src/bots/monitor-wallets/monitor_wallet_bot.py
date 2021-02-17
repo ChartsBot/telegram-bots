@@ -32,7 +32,7 @@ uni_wrapper = Uniswap(web3=web3)
 weth_raw = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".lower()
 weth_checksum = Web3.toChecksumAddress(weth_raw)
 
-last_block_num = 0
+last_block_num = web3.eth.getBlock('latest')['number']
 
 uniswap_router_addr = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D".lower()
 
@@ -252,6 +252,7 @@ def callback_get_block(context: CallbackContext):
     global last_block_num
     block = web3.eth.getBlock('latest')
     latest_block = int(block['number'])
+
     if last_block_num < latest_block:
         for block_num in range(last_block_num + 1, latest_block + 1):
             logging.info("analysing new block: " + str(block_num))
