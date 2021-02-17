@@ -170,6 +170,7 @@ def get_list_watch_user(user):
     l_wallets_watch = []
     for key in l_dict.keys():
         pprint(key)
+        pprint(l_dict[key])
         if user in l_dict[key]:
 
             l_wallets_watch.append(key)
@@ -196,12 +197,12 @@ def add_watch_user(user, address, custom_wallet_name) -> (bool, str):
             logging.warning("User " + user.lower() + " tries to monitor the add " + address + " even though he already watches it")
             return False, "Address already registered by the user"
         else:
-            old_value.append(user_dict)
+            old_value.update(user_dict)
             l_dict.update({address: old_value})
             update_list_wallet_watch(l_dict)
             return True, ""
     else:
-        l_dict.update({address: [user_dict]})
+        l_dict.update({address: user_dict})
         update_list_wallet_watch(l_dict)
         return True, ""
 
@@ -220,7 +221,7 @@ def remove_wallet_from_user(user, address):
     if address in l_dict:
         old_value = l_dict[address]
 
-        if user in old_value:
+        if user in old_value.keys():
             old_value.remove(user)
             l_dict.update({address: old_value})
             update_list_wallet_watch(l_dict)
