@@ -252,9 +252,10 @@ def callback_get_block(context: CallbackContext):
     global last_block_num
     block = web3.eth.getBlock('latest')
     latest_block = int(block['number'])
-    if last_block_num != latest_block:
-        for i in range(last_block_num + 1, latest_block + 1):
-            logging.info("analysing new block: " + str(block['number']))
+    if last_block_num < latest_block:
+        for block_num in range(last_block_num + 1, latest_block + 1):
+            logging.info("analysing new block: " + str(block_num))
+            block = web3.eth.getBlock(block_num)
             txs = block['transactions']
             for tx in txs:
                 try:
