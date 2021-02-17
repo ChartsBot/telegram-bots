@@ -5,6 +5,7 @@ from gevent import monkey
 monkey.patch_all()  # REALLY IMPORTANT: ALLOWS ZERORPC AND TG TO WORK TOGETHER
 
 BASE_PATH = os.environ.get('BASE_PATH')
+sys.path.insert(1, BASE_PATH + '/telegram-bots')
 
 import eth_event
 
@@ -18,9 +19,9 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKe
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, Filters, MessageHandler, \
     ConversationHandler, InlineQueryHandler
 from dataclasses import dataclass
-from libraries.uniswap import Uniswap
-import libraries.web3_calls as web3_utils
-import libraries.util as lib_util
+from src.libraries.uniswap import Uniswap
+import src.libraries.web3_calls as web3_utils
+import src.libraries.util as lib_util
 
 TELEGRAM_KEY = os.environ.get('MONITOR_WALLETS_TELEGRAM_KEY')
 DICT_PATH = os.environ.get('WALLET_MONITOR_PATH')
