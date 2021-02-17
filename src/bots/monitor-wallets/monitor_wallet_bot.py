@@ -161,7 +161,7 @@ def view_wallets(update: Update, context: CallbackContext):
         else:
             message = "You are currently monitoring the following wallets:\n"
             for wallet in list_wallets:
-                message += json.dumps(wallet) + '\n'
+                message += wallet.keys()[0] + ' - ' + wallet['name'] + '\n'
             context.bot.send_message(chat_id=chat_id, text=message)
 
 
@@ -173,7 +173,7 @@ def get_list_watch_user(user):
         pprint(l_dict[key])
         if user in l_dict[key]:
 
-            l_wallets_watch.append(key)
+            l_wallets_watch.append({key: l_dict[key][user]})
     return l_wallets_watch
 
 
