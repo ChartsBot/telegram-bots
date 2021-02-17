@@ -222,9 +222,10 @@ def remove_wallet_from_user(user, address):
     user = user.lower()
     if address in l_dict:
         old_value = l_dict[address]
-
+        pprint('old value: ')
+        pprint(old_value)
         if user in old_value.keys():
-            old_value.remove(user)
+            old_value.pop(user, None)
             l_dict.update({address: old_value})
             update_list_wallet_watch(l_dict)
             return True, ""
