@@ -218,10 +218,43 @@ def get_gas_spent_test(address, options=None):
                     (error_number, total_cost_fail), since)
 
 
+url_graphex_backend = "https://chartex.pro/api/history?symbol=$EXCHANGE%3A$SYMBOL&resolution=$RESOLUTION&from=$TFROM&to=$TTO"
+
+jwt='''token=9e2c54ee-d1d5-4605-91fc-25ffabfae31e; chartex_connection_string=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHhkMDg1MTdjZDAzNzJjRDEyQjcxMGE1NTRGNTAyNWNGRDQxOUI0M2ZGIiwiYmFsYW5jZSI6IjEwMTE3LjcyIiwidGllciI6ImV4cGVydCIsImlhdCI6MTYwNjI0MTI3NH0.P13JNbjNA--Mwd2SK0GRGU777rCmZMmBJvWEVlUCv4E'''
+
+
+def create_url_request_graphex(symbol, resolution, t_from, t_to, exchange):
+    return url_graphex_backend \
+        .replace('$EXCHANGE', exchange) \
+        .replace("$SYMBOL", symbol) \
+        .replace("$RESOLUTION", str(resolution)) \
+        .replace("$TFROM", str(t_from)) \
+        .replace("$TTO", str(t_to))
+
+
+def get_graphex_data(token, resolution, t_from, t_to, exchange='UNISWAP'):
+
+    symbol = token
+    url = create_url_request_graphex(symbol, resolution, t_from, t_to, exchange)
+    name = 'cookie'
+    header = {name: jwt}
+    resp = requests.get(url, headers=header)
+    return resp
+
+
 if __name__ == '__main__':
+    t_to = int(time.time())
+    t_from = int(time.time()) - 3600 * 24 * 3
+    exchange = 'BSC_PANCAKESWAP'
+    res = get_graphex_data("BBOO", 5, t_from, t_to, exchange)
+    pprint(res.text)
+    pprint(res.status_code)
+    res2 = res.json()
+    pprint(res2)
+
     # res = get_gas_spent_test("0x56B082C827b61dD481A06240e604a13eD4738Ec4", ["5"])
-    res = get_balance_wallet("0x56B082C827b61dD481A06240e604a13eD4738Ec4")
-    pprint(res.to_string())
+    # res = get_balance_wallet("0x56B082C827b61dD481A06240e604a13eD4738Ec4")
+    # pprint(res.to_string())
     # url = "https://api.ethplorer.io/getTokenInfo/0xd08517cd0372cD12B710a554F5025cFD419B43fF"
     # res = requests.get(url).json()
     # pprint(res)

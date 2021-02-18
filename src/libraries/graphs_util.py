@@ -477,6 +477,10 @@ def print_candlestick(token, t_from, t_to, file_path, txt: str = None, options=N
             check_others = False
             values = requests_util.get_stock_data(token.upper(), __calculate_resolution_from_time_yahoo(t_from, t_to), t_from, t_to)
             (date_list, opens, closes, highs, lows, volumes) = __preprocess_yahoo_data(values)
+        elif "bsc" in options:
+            check_others = False
+            values = requests_util.get_graphex_data(token, resolution, t_from, t_to, 'BSC_PANCAKESWAP').json()
+            (date_list, opens, closes, highs, lows, volumes) = __preprocess_chartex_data(values, resolution)
     if check_others:
         if token.upper() in chart_dictionary:
             token_entry = chart_dictionary[token.upper()]

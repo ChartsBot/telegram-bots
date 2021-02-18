@@ -126,7 +126,7 @@ etherscan_api_key = os.environ.get('ETH_API_KEY')
 
 ethexplorer_holder_base_url = "https://ethplorer.io/service/service.php?data="
 
-url_graphex_backend = "https://chartex.pro/api/history?symbol=UNISWAP%3A$SYMBOL&resolution=$RESOLUTION&from=$TFROM&to=$TTO"
+url_graphex_backend = "https://chartex.pro/api/history?symbol=$EXCHANGE%3A$SYMBOL&resolution=$RESOLUTION&from=$TFROM&to=$TTO"
 
 gecko_chart_url = "https://api.coingecko.com/api/v3/coins/$TOKEN/market_chart/range?vs_currency=usd&from=$T_FROM&to=$T_TO"
 
@@ -201,8 +201,9 @@ req_graphql_vol24h_rot = '''{
 
 # t_from and t_to should be in epoch seconds.
 # Resolution should be 1, 5, 15, 30, 60, 240, 720, 1D
-def create_url_request_graphex(symbol, resolution, t_from, t_to):
+def create_url_request_graphex(symbol, resolution, t_from, t_to, exchange):
     return url_graphex_backend \
+        .replace('$EXCHANGE', exchange) \
         .replace("$SYMBOL", symbol) \
         .replace("$RESOLUTION", str(resolution)) \
         .replace("$TFROM", str(t_from)) \
@@ -255,12 +256,12 @@ def get_stock_data(ticker, resolution: str, t_from, t_to):
     return hist
 
 
-def get_graphex_data(token, resolution, t_from, t_to):
+def get_graphex_data(token, resolution, t_from, t_to, exchange='UNISWAP'):
     if token in symbol_chartex:
         symbol = symbol_chartex.get(token)
     else:
         symbol = token
-    url = create_url_request_graphex(symbol, resolution, t_from, t_to)
+    url = create_url_request_graphex(symbol, resolution, t_from, t_to, exchange)
     name = 'cookie'
     header = {name: jwt}
     resp = requests.get(url, headers=header)
