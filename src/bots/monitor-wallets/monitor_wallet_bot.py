@@ -36,6 +36,12 @@ last_block_num = web3.eth.getBlock('latest')['number']
 
 uniswap_router_addr = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D".lower()
 
+oneinch_router_addr = "0x111111125434b319222cdbf8c261674adb56f3ae".lower()
+
+sushiswap_router_addr = "0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F".lower()
+
+dex_contract_addr = [uniswap_router_addr, oneinch_router_addr, sushiswap_router_addr]
+
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -328,12 +334,13 @@ def callback_get_block(context: CallbackContext):
                         watch_list = get_list_watch_all()
                         if tx_from in watch_list and watch_list[tx_from]:
                             message_second = ""
-                            if tx_to == uniswap_router_addr:
+                            if tx_to in dex_contract_addr:
                                 tx_receipt = web3.eth.getTransactionReceipt(tx)
                                 swap = parse_uniswap_tx(tx_receipt, tx_from)
                                 message_second = "\n" + swap.to_string(True)
                                 message_second += ' ( <a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + '&?outputCurrency=' + swap.sell[0].addr + \
                                            '">swap on uniswap</a> )'
+
                             for tg_account in watch_list[tx_from]:
                                 watched_add_name = watch_list[tx_from][tg_account]['name']
                                 message = 'Looks like one of your watched address <b>' + watched_add_name + '</b>(' + tx_from + ') just made a tx (<a href="etherscan.com/tx/' + tx_hash + '">etherscan</a> | <a href="https://app.zerion.io/' + tx_from + '/history">zerion</a>)'
