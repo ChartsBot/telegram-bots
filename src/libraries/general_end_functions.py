@@ -33,7 +33,7 @@ last_time_checked_4chan = 0
 def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, txt: str = None, options=[], with_ad=None):
     print("requesting coin " + token + " from " + str(k_days) + " days and " + str(k_hours) + " hours")
 
-    path = charts_path + token + '.png'
+    path = charts_path + token.replace('/', '-') + '.png'
     last_price = graphs_util.print_candlestick(token, t_from, t_to, path, txt, options)
 
     options_str = "o:" if options is None else "o:" + '//'.join(options)
