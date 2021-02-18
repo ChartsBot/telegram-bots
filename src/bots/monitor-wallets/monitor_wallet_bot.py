@@ -343,7 +343,7 @@ def callback_get_block(context: CallbackContext):
 
                             for tg_account in watch_list[tx_from]:
                                 watched_add_name = watch_list[tx_from][tg_account]['name']
-                                message = 'Looks like one of your watched address <b>' + watched_add_name + '</b>(' + tx_from + ') just made a tx (<a href="etherscan.com/tx/' + tx_hash + '">etherscan</a> | <a href="https://app.zerion.io/' + tx_from + '/history">zerion</a>)'
+                                message = '<b>' + watched_add_name + '</b>(' + tx_from[0:6] + '...' + tx_from[-4:-1] + ') just made a tx (<a href="etherscan.com/tx/' + tx_hash + '">etherscan</a> | <a href="https://app.zerion.io/' + tx_from + '/history">zerion</a>)'
                                 if message_second != "":
                                     message = message + message_second
                                 context.bot.send_message(chat_id=int(tg_account), text=message, parse_mode='html', disable_web_page_preview=True)
