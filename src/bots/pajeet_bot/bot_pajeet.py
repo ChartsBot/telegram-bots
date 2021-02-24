@@ -30,15 +30,17 @@ logging.basicConfig(level=logging.INFO,
 def inline_query(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     message_start = "I am "
+    message_end = "are you?"
     if query != "":
         message_start = query + " is "
+        message_end = "is " + query + "?"
 
     n = random.randint(0, 100)
     message = message_start + str(n) + "% pajeet!"
     results = [
         InlineQueryResultArticle(
             id=uuid4(),
-            title="How pajeet are you?",
+            title="How pajeety " + message_end,
             description="Send you current pajeet level to the chat",
             input_message_content=InputTextMessageContent(
                 message, parse_mode=ParseMode.HTML, disable_web_page_preview=True
@@ -46,14 +48,14 @@ def inline_query(update: Update, context: CallbackContext) -> None:
             thumb_url='https://blog.umamiparis.com/wp-content/uploads/2020/01/shutterstock_197567537-2.jpg'
         )
     ]
-    update.inline_query.answer(results, cache_time=60)
+    update.inline_query.answer(results, cache_time=1)
 
 
 def main():
     updater = Updater(TELEGRAM_KEY, use_context=True, workers=1)
     dp = updater.dispatcher
-    dp.add_handler(InlineQueryHandler(inline_query))
 
+    dp.add_handler(InlineQueryHandler(inline_query))
 
     updater.start_polling()
     updater.idle()
