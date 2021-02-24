@@ -232,7 +232,7 @@ def create_url_request_graphex(symbol, resolution, t_from, t_to, exchange):
         .replace("$TTO", str(t_to))
 
 
-def get_graphex_data(token, resolution, t_from, t_to, exchange='UNISWAP'):
+def get_graphex_data(token, resolution, t_from, t_to, with_exchange=True, exchange='UNISWAP'):
 
     symbol = token
     url = create_url_request_graphex(symbol, resolution, t_from, t_to, exchange)
@@ -242,11 +242,26 @@ def get_graphex_data(token, resolution, t_from, t_to, exchange='UNISWAP'):
     return resp
 
 
+def get_chartex_symbol(symbol):
+    url = 'https://chartex.pro/api/symbols?symbol=WYNAUT'
+    name = 'cookie'
+    header = {name: jwt}
+    resp = requests.get(url, headers=header)
+    return resp
+
+
 if __name__ == '__main__':
+    token = 'BSC_PANCAKESWAP:wynaut'
+    res = get_chartex_symbol(token)
+    jres = res.json()
+    pprint(jres)
+    ticker = jres['ticker']
+    print(ticker)
+
     t_to = int(time.time())
     t_from = int(time.time()) - 3600 * 24 * 3
     exchange = 'BSC_PANCAKESWAP'
-    res = get_graphex_data("BBOO", 5, t_from, t_to, exchange)
+    res = get_graphex_data("wynaut", 5, t_from, t_to, exchange)
     pprint(res.text)
     pprint(res.status_code)
     res2 = res.json()

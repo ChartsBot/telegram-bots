@@ -284,6 +284,7 @@ def parse_swap(log):
     else:
         return Swap((t0_info, amount0Out), (t1_info, amount1In), sender=sender, to=to)
 
+
 def get_swaps_of_tx_receipt(tx_receipt):
     tx_logs = tx_receipt['logs']
     swaps = []
@@ -336,6 +337,7 @@ def callback_get_block(context: CallbackContext):
                             message_second = ""
                             if tx_to in dex_contract_addr:
                                 tx_receipt = web3.eth.getTransactionReceipt(tx)
+
                                 swap = parse_uniswap_tx(tx_receipt, tx_from)
                                 message_second = "\n" + swap.to_string(True)
                                 message_second += ' ( <a href="app.uniswap.org/#/swap?inputCurrency=' + swap.buy[0].addr + '&?outputCurrency=' + swap.sell[0].addr + \
