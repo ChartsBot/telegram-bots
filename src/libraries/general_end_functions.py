@@ -6,6 +6,7 @@ import sys
 BASE_PATH = os.environ.get('BASE_PATH')
 sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
 
+import bots.chart_general.bot_charts_values
 import libraries.commands_util as commands_util
 import libraries.graphs_util as graphs_util
 import libraries.scrap_websites_util as scrap_websites_util
@@ -355,6 +356,9 @@ def convert_to_usd_raw(amount, currency_ticker, graphqlclient_uni, graphqlclient
     elif currency_ticker.lower() == 'eth' or currency_ticker.lower() == 'weth':
         eth_price = requests_util.get_eth_price_now()
         return amount * eth_price
+    elif currency_ticker.upper() in bot_charts_values.symbol_gecko:
+        coin_price = requests_util.get_price_now_full(bot_charts_values.symbol_gecko.get(currency_ticker.upper()))
+        return coin_price * amount
     elif currency_ticker.lower() == "lambo":
         return float(lambo_price_usd) * amount
     else:

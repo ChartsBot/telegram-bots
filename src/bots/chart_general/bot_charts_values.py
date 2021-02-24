@@ -30,7 +30,8 @@ symbol_gecko = {
     'BCH': 'bitcoin-cash',
     'LTC': 'litecoin',
     'LINK': 'chainlink',
-    'DOT': 'polkadot'
+    'DOT': 'polkadot',
+    'BNB': 'binance-coin'
 }
 
 emoji_number_dic = {
