@@ -6,7 +6,7 @@ import sys
 BASE_PATH = os.environ.get('BASE_PATH')
 sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
 
-import bots.chart_general.bot_charts_values
+import bots.chart_general.bot_charts_values as bot_charts_values
 import libraries.commands_util as commands_util
 import libraries.graphs_util as graphs_util
 import libraries.scrap_websites_util as scrap_websites_util
