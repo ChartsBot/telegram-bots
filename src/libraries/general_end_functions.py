@@ -357,7 +357,7 @@ def convert_to_usd_raw(amount, currency_ticker, graphqlclient_uni, graphqlclient
         eth_price = requests_util.get_eth_price_now()
         return amount * eth_price
     elif currency_ticker.upper() in bot_charts_values.symbol_gecko:
-        coin_price = requests_util.get_price_now_full(currency_ticker.upper())
+        coin_price = requests_util.get_price_now_full(bot_charts_values.symbol_gecko.get(currency_ticker.upper()))
         return coin_price * amount
     elif currency_ticker.lower() == "lambo":
         return float(lambo_price_usd) * amount
