@@ -22,6 +22,8 @@ def pretty_translate(text_to_translate: str, language_to: str, language_from: st
         return text_to_owo(text_to_translate)
     elif language_to.lower() == "clap":
         return text_to_clap(text_to_translate)
+    elif language_to.lower() == "yell" or language_to.lower() == "yelling":
+        return text_to_translate.upper()
     translation = translate_text_to(text_to_translate, language_to, language_from)
     txt = translation[0][0][0]
     language_src = language_from if language_from is not None else translation[2]
