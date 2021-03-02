@@ -11,4 +11,4 @@ import pkg_resources
 import libraries.emojipasta.data
 
 DATA_DIRECTORY_NAME = libraries.emojipasta.data.__name__
-PATH_TO_MAPPINGS_FILE = pkg_resources.resource_filename(DATA_DIRECTORY_NAME, "emoji-mappings.json")
+PATH_TO_MAPPINGS_FILE = BASE_PATH + '/telegram-bots/src/libraries/emojipasta/data/emoji-mappings.json'
