@@ -487,7 +487,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
 
     too_many_tokens = False
     if len(tokens_that_were_owned) > 100:
-        logging.info("Shitton of shitcoins in this wallet (" + str(too_many_tokens) + ")")
+        logging.info("Shitton of shitcoins in this wallet (" + str(len(tokens_that_were_owned)) + ")")
         tokens_that_were_owned = tokens_that_were_owned[0:100]
         too_many_tokens = True
 
@@ -531,7 +531,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
 
     graphs_util.get_piechart(tokens_owned_sorted, path)
 
-    return (message_top + message).replace("-", "\-").replace("(", "\(").replace(")", "\)")
+    return (message_top + message).replace("-", "\-").replace("(", "\(").replace(")", "\)").replace(".", "\.")
 
 
 def get_price_token(maybe_token):
