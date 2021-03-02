@@ -30,6 +30,10 @@ from dataclasses import dataclass
 
 last_time_checked_4chan = 0
 
+import logging
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 def send_candlestick_pyplot(token, charts_path, k_days, k_hours, t_from, t_to, txt: str = None, options=[], with_ad=None):
     print("requesting coin " + token + " from " + str(k_days) + " days and " + str(k_hours) + " hours")
@@ -482,8 +486,9 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
     tokens_that_were_owned = res['tokens']
 
     too_many_tokens = False
-    if len(tokens_that_were_owned) > 500:
-        tokens_that_were_owned = tokens_that_were_owned[0:500]
+    if len(tokens_that_were_owned) > 100:
+        logging.info("Shitton of shitcoins in this wallet (" + str(too_many_tokens) + ")")
+        tokens_that_were_owned = tokens_that_were_owned[0:100]
         too_many_tokens = True
 
     tokens_owned = []
