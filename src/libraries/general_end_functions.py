@@ -463,12 +463,12 @@ class TokenOwned:
             return default
 
     def to_string(self, complex=False):
-        top = "*(" + self.ticker[:6].replace(".", "\.") + ") " + self.name[:15].replace(".", "\.") + "*"
+        top = "*(" + self.ticker[:6] + ") " + self.name[:15] + "*"
         if self.get_amount_usd_token() is not None:
-            top += "   -   `$" + util.pretty_number(self.get_amount_usd_token()).replace(".", "\.") + "`"
-        bottom = "`" + util.pretty_number(self.amount_owned).replace(".", "\.") + "` " + self.ticker[:6].replace(".", "\.")
+            top += "   -   `$" + util.pretty_number(self.get_amount_usd_token()) + "`"
+        bottom = "`" + util.pretty_number(self.amount_owned) + "` " + self.ticker[:6]
         if self.value_usd is not None:
-            bottom += " - `$" + util.pretty_number(self.value_usd).replace(".", "\.") + "`"
+            bottom += " - `$" + util.pretty_number(self.value_usd) + "`"
         return top + '\n' + bottom
 
     def get_percent(self, total_usd):
