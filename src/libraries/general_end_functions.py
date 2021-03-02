@@ -523,9 +523,9 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]  # For some reasons filtering on the tokens remove the order
         tokens_owned_sorted = [eth_token] + sorted(tokens_owned_sorted, key=lambda x: x.get_amount_usd_token(0.0), reverse=True)
-        message_top = "Overview of wallet " + wallet[0:10] + "\.\.\.:\n"
+        message_top = "Overview of wallet " + wallet[0:10] + "...:\n"
     else:
-        message_top = "Full view of wallet " + wallet[0:10] + "\.\.\.:\n"
+        message_top = "Full view of wallet " + wallet[0:10] + "...:\n"
     for token in tokens_owned_sorted:
         message += token.to_string() + "\n"
 
