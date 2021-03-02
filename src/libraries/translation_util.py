@@ -35,7 +35,7 @@ def pretty_translate(text_to_translate: str, language_to: str, language_from: st
         return text_to_clap(text_to_translate)
     elif language_to.lower() == "yell" or language_to.lower() == "yelling":
         return text_to_translate.upper()
-    elif language_to.lower() == "past" or language_to.lower() == "emojipasta":
+    elif language_to.lower() == "pasta" or language_to.lower() == "emojipasta":
         return text_to_pasta(text_to_translate)
     translation = translate_text_to(text_to_translate, language_to, language_from)
     txt = translation[0][0][0]
