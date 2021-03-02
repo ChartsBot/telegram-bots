@@ -3,7 +3,6 @@ from TextToOwO.owo import text_to_owo
 
 
 def translate_text_to(text_to_translate: str, language_to: str, language_from: str = None):
-
     correct_language_to = language_to
     if language_to == "cn":
         correct_language_to = "zh-CN"
@@ -15,9 +14,14 @@ def translate_text_to(text_to_translate: str, language_to: str, language_from: s
     return translation
 
 
+def text_to_clap(text_to: str):
+    return '👏'.join(text_to.split(' '))
+
 def pretty_translate(text_to_translate: str, language_to: str, language_from: str = None):
     if language_to.lower() == "owo" or language_to.lower() == "uwu":
         return text_to_owo(text_to_translate)
+    elif language_to.lower() == "clap":
+        return text_to_clap(text_to_translate)
     translation = translate_text_to(text_to_translate, language_to, language_from)
     txt = translation[0][0][0]
     language_src = language_from if language_from is not None else translation[2]
