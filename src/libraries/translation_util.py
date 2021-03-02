@@ -6,9 +6,9 @@ import sys
 BASE_PATH = os.environ.get('BASE_PATH')
 sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
 
-import libraries.emojipasta.generator.EmojipastaGenerator as EmojipastaGenerator
+import libraries.emojipasta.generator
 
-pastafarad = EmojipastaGenerator()
+pastafarad = libraries.emojipasta.generator.EmojipastaGenerator()
 
 def translate_text_to(text_to_translate: str, language_to: str, language_from: str = None):
     correct_language_to = language_to
