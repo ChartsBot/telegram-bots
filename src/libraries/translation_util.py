@@ -1,6 +1,14 @@
 import translators as ts
 from TextToOwO.owo import text_to_owo
+import os
+import sys
 
+BASE_PATH = os.environ.get('BASE_PATH')
+sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
+
+import libraries.emojipasta.generator.EmojipastaGenerator as EmojipastaGenerator
+
+pastafarad = EmojipastaGenerator()
 
 def translate_text_to(text_to_translate: str, language_to: str, language_from: str = None):
     correct_language_to = language_to
@@ -17,6 +25,9 @@ def translate_text_to(text_to_translate: str, language_to: str, language_from: s
 def text_to_clap(text_to: str):
     return '👏'.join(text_to.split(' '))
 
+def text_to_pasta(text_to: str):
+    return pastafarad.generate_emojipasta(text_to)
+
 def pretty_translate(text_to_translate: str, language_to: str, language_from: str = None):
     if language_to.lower() == "owo" or language_to.lower() == "uwu":
         return text_to_owo(text_to_translate)
@@ -24,6 +35,8 @@ def pretty_translate(text_to_translate: str, language_to: str, language_from: st
         return text_to_clap(text_to_translate)
     elif language_to.lower() == "yell" or language_to.lower() == "yelling":
         return text_to_translate.upper()
+    elif language_to.lower() == "past" or language_to.lower() == "emojipasta":
+        return text_to_pasta(text_to_translate)
     translation = translate_text_to(text_to_translate, language_to, language_from)
     txt = translation[0][0][0]
     language_src = language_from if language_from is not None else translation[2]
