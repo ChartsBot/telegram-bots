@@ -486,9 +486,9 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
     tokens_that_were_owned = res['tokens']
 
     too_many_tokens = False
-    if len(tokens_that_were_owned) > 100:
+    if len(tokens_that_were_owned) > 250:
         logging.info("Shitton of shitcoins in this wallet (" + str(len(tokens_that_were_owned)) + ")")
-        tokens_that_were_owned = tokens_that_were_owned[0:100]
+        tokens_that_were_owned = tokens_that_were_owned[0:250]
         too_many_tokens = True
 
     tokens_owned = []
@@ -518,7 +518,7 @@ def get_balance_wallet(wallet: str, path: str, simple=False):
         total_value += token.get_amount_usd_token(0.0)
     message = ""
     if too_many_tokens:
-        message = "Too many coins in wallet (" + str(len(tokens_owned_sorted)) + ") limiting view to 100 random tokens. \n"
+        message = "Too many coins in wallet (" + str(len(tokens_owned_sorted)) + ") limiting view to 250 random tokens. \n"
     message += "*Total value of wallet:* `$" + util.pretty_number(total_value) + "`\n"
     if simple:
         tokens_owned_sorted = [x for x in tokens_owned if x.get_amount_usd_token(0.0) > 0.01]  # For some reasons filtering on the tokens remove the order
