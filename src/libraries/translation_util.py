@@ -8,7 +8,7 @@ sys.path.insert(1, BASE_PATH + '/telegram-bots/src')
 
 import libraries.emojipasta.generator
 
-pastafarad = libraries.emojipasta.generator.EmojipastaGenerator()
+pastafarad = libraries.emojipasta.generator.EmojipastaGenerator.of_default_mappings()
 
 def translate_text_to(text_to_translate: str, language_to: str, language_from: str = None):
     correct_language_to = language_to
