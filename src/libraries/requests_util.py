@@ -134,7 +134,12 @@ symbol_chartex = {
     'ROT': 'ROT.5AE9E2',
     'SAV3': 'SAV3',
     'HOT': 'HOT.4D5DDC',
-    '7ADD': '7ADD.A2DF92'
+    '7ADD': '7ADD.A2DF92',
+    'COIN': 'COIN.CFA850'
+}
+
+ticker_hardcoded = {
+    'COIN': '0xE61fDAF474Fac07063f2234Fb9e60C1163Cfa850'
 }
 
 # Graph QL requests
@@ -410,6 +415,8 @@ def get_number_holder_token(token):
 def get_token_contract_address(token_ticker):
     if token_ticker == "eth" or token_ticker == "ETH":
         return "0x0000000000000000000000000000000000000000"
+    elif token_ticker.upper() in ticker_hardcoded:
+        return ticker_hardcoded[token_ticker.upper()]
     url = get_address_endpoint + token_ticker
     pprint.pprint("start getting contract from token" + token_ticker)
     res = requests.get(url).json()
