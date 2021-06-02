@@ -69,11 +69,11 @@ APP_KEY_WOLFRAM = os.environ.get('WOLFRAM_API')
 
 IS_TEST_ENV = False
 
-try:
-    wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
-except Exception:
-    logging.info("Worlfram struggling to connect, trying again")
-    wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
+# try:
+#     wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
+# except Exception:
+#     logging.info("Worlfram struggling to connect, trying again")
+#     wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
 
 announcement_channel_id = -1001478326834
 
@@ -1026,15 +1026,15 @@ def translate_text(update: Update, context: CallbackContext):
                                      disable_web_page_preview=True)
 
 
-def ask_wolfram(update: Update, context: CallbackContext):
-    chat_id = update.message.chat_id
-    query_received = update.message.text.split(' ')
-    if len(query_received) == 1:
-        context.bot.send_message(chat_id=chat_id, text="To use this method, please use /ask YOUR QUESTION")
-    else:
-        query = ' '.join(query_received[1:])
-        res = wolfram_queries.ask_wolfram_raw(query, wolfram_client)
-        context.bot.send_message(chat_id=chat_id, text=res[:4055], parse_mode='html', disable_web_page_preview=True)
+# def ask_wolfram(update: Update, context: CallbackContext):
+#     chat_id = update.message.chat_id
+#     query_received = update.message.text.split(' ')
+#     if len(query_received) == 1:
+#         context.bot.send_message(chat_id=chat_id, text="To use this method, please use /ask YOUR QUESTION")
+#     else:
+#         query = ' '.join(query_received[1:])
+#         res = wolfram_queries.ask_wolfram_raw(query, wolfram_client)
+#         context.bot.send_message(chat_id=chat_id, text=res[:4055], parse_mode='html', disable_web_page_preview=True)
 
 
 def get_price_direct(update: Update, context: CallbackContext):
@@ -1401,7 +1401,7 @@ def main():
     dp.add_handler(CommandHandler('trending', get_trending, run_async=True))
     dp.add_handler(CommandHandler('gas_spent', get_gas_spent, run_async=True))
     dp.add_handler(CommandHandler(['tr', 'translate'], translate_text, run_async=True))
-    dp.add_handler(CommandHandler(['ask'], ask_wolfram, run_async=True))
+    # dp.add_handler(CommandHandler(['ask'], ask_wolfram, run_async=True))
     dp.add_handler(CommandHandler(['analyze_wallet'], analyze_wallet, run_async=True))
     # dank memes
     dp.add_handler(CommandHandler(['get_meme'], get_meme, run_async=True))

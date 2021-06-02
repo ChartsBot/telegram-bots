@@ -37,11 +37,13 @@ def pretty_translate(text_to_translate: str, language_to: str, language_from: st
         return text_to_translate.upper()
     elif language_to.lower() == "pasta" or language_to.lower() == "emojipasta":
         return text_to_pasta(text_to_translate)
-    translation = translate_text_to(text_to_translate, language_to, language_from)
-    txt = translation[0][0][0]
-    language_src = language_from if language_from is not None else translation[2]
-    message = "From <b>" + language_src + "</b>:\n" + txt
-    return message
+    else:
+        return "Translation function deactivated for now"
+    # translation = translate_text_to(text_to_translate, language_to, language_from)
+    # txt = translation[0][0][0]
+    # language_src = language_from if language_from is not None else translation[2]
+    # message = "From <b>" + language_src + "</b>:\n" + txt
+    # return message
 
 
 if __name__ == '__main__':
