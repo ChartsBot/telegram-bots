@@ -583,7 +583,7 @@ def get_price_maggot(update: Update, context: CallbackContext):
 def get_price_rot(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     ticker = "ROT"
-    contract_from_ticker = requests_util.get_token_contract_address(ticker)
+    contract_from_ticker = rot_contract_formatted_uni
     pprint.pprint(contract_from_ticker)
     button_list_price = [[InlineKeyboardButton('refresh', callback_data='r_p_' + contract_from_ticker + "_t_" + ticker)]]
     reply_markup_price = InlineKeyboardMarkup(button_list_price)

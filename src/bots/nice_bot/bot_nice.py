@@ -617,7 +617,7 @@ def get_volume_24h_nice():
 def get_price_nice(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     ticker = "NICE"
-    contract_from_ticker = requests_util.get_token_contract_address(ticker)
+    contract_from_ticker = nice_contract_formatted_uni
     button_list_price = [[InlineKeyboardButton('refresh', callback_data='r_p_' + contract_from_ticker + "_t_" + ticker)]]
     reply_markup_price = InlineKeyboardMarkup(button_list_price)
     message = general_end_functions.get_price(contract_from_ticker, "", graphql_client_eth, graphql_client_uni, ticker.upper(), 10**18, uni_wrapper)
