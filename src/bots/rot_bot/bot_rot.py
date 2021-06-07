@@ -104,7 +104,8 @@ VIPER_1ROT_ADDY = util.to_checksumaddr('0xd5bf1118e1892db6a966fe624c711e72ad260c
 
 ONEUSDC_ADDY = util.to_checksumaddr('0x985458e523db3d53125813ed68c274899e9dfab4')
 
-ROT_HARMONY_ADDY = util.to_checksumaddr('0xfd2a8f8cf7cffea4a613f1dff39b22881d4a1f92')
+ROT_HARMONY_ADDY_RAW = '0xfd2a8f8cf7cffea4a613f1dff39b22881d4a1f92'
+ROT_HARMONY_ADDY = util.to_checksumaddr(ROT_HARMONY_ADDY_RAW)
 
 # API PROPOSAL
 api_proposal_url = 'https://rotapi.xyz/governance/getProposals'
@@ -622,9 +623,12 @@ def get_price_onerot(update: Update, context: CallbackContext):
     # onerot_contract = w3_harmony.eth.contract(address=ROT_HARMONY_ADDY, abi=ERC_20_ABI)
     price_1rot_viper, price_1rot_usdc = _get_1rot_price()
     name_header = "<b>(" + '1ROT' + ') ' + 'RottenToken' + '</b>'
+    links = '<a https://explorer.harmony.one/#/address/' + ROT_HARMONY_ADDY_RAW + '">HarmonyExplorer</a>|<a href="https://viper.exchange/#/swap?inputCurrency=' + ROT_HARMONY_ADDY_RAW + '">Viperswap</a>'
     message = name_header + '<code>' \
               + "\nVIPER:" + util.float_to_str(price_1rot_viper/10**18)[0:10] \
-              + "\nUSD: $" + util.float_to_str(price_1rot_usdc/10**6)[0:10] + "</code>"#\
+              + "\nUSD: $" + util.float_to_str(price_1rot_usdc/10**6)[0:10] + "</code>" \
+              + "\n" + links \
+              # + "\n" + ad
               # + var_1d_msg \
               # + var_7d_msg \
               # + msg_one_eth \
@@ -633,8 +637,6 @@ def get_price_onerot(update: Update, context: CallbackContext):
               # + "\nS.  Cap = " + supply_cat_pretty \
               # + "\nM.  Cap = $" + market_cap \
               # + holders_str + "</code>" \
-              # + "\n" + links \
-              # + "\n" + ad
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
 
