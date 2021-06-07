@@ -621,7 +621,7 @@ def _get_1rot_price():
     return price_1rot_viper, price_1rot_usdc
 
 def _get_1maggot_price():
-    price_1maggot_viper = web3_calls.get_token_token_input_price(MAGGOT_HARMONY_ADDY_RAW, 1 * 10 ** 18, VIPER_TOKEN_ADDY, viperswap_contract)
+    price_1maggot_viper = web3_calls.get_token_token_input_price(MAGGOT_HARMONY_ADDY, 1 * 10 ** 18, VIPER_TOKEN_ADDY, viperswap_contract)
     price_1maggot_usdc = web3_calls.get_token_token_input_price(VIPER_TOKEN_ADDY, price_1maggot_viper, ONEUSDC_ADDY, viperswap_contract)
     return price_1maggot_viper, price_1maggot_usdc
 
