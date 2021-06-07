@@ -623,7 +623,7 @@ def get_price_onerot(update: Update, context: CallbackContext):
     # onerot_contract = w3_harmony.eth.contract(address=ROT_HARMONY_ADDY, abi=ERC_20_ABI)
     price_1rot_viper, price_1rot_usdc = _get_1rot_price()
     name_header = "<b>(" + '1ROT' + ') ' + 'RottenToken' + '</b>'
-    links = '<a https://explorer.harmony.one/#/address/' + ROT_HARMONY_ADDY_RAW + '">HarmonyExplorer</a>|<a href="https://viper.exchange/#/swap?inputCurrency=' + ROT_HARMONY_ADDY_RAW + '">Viperswap</a>'
+    links = '<a href="https://explorer.harmony.one/#/address/' + ROT_HARMONY_ADDY_RAW + '">HarmonyExplorer</a>|<a href="https://viper.exchange/#/swap?inputCurrency=' + ROT_HARMONY_ADDY_RAW + '">Viperswap</a>'
     message = name_header + '<code>' \
               + "\nVIPER:" + util.float_to_str(price_1rot_viper/10**18)[0:10] \
               + "\nUSD: $" + util.float_to_str(price_1rot_usdc/10**6)[0:10] + "</code>" \
