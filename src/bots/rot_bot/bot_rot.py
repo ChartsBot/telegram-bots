@@ -107,6 +107,9 @@ ONEUSDC_ADDY = util.to_checksumaddr('0x985458e523db3d53125813ed68c274899e9dfab4'
 ROT_HARMONY_ADDY_RAW = '0xfd2a8f8cf7cffea4a613f1dff39b22881d4a1f92'
 ROT_HARMONY_ADDY = util.to_checksumaddr(ROT_HARMONY_ADDY_RAW)
 
+MAGGOT_HARMONY_ADDY_RAW = '0xbfd4f1699b83edba1106b6e224b7ac599a40be1f'
+MAGGOT_HARMONY_ADDY = util.to_checksumaddr(MAGGOT_HARMONY_ADDY_RAW)
+
 # API PROPOSAL
 api_proposal_url = 'https://rotapi.xyz/governance/getProposals'
 last_proposal_received_id = -1
@@ -617,6 +620,11 @@ def _get_1rot_price():
     price_1rot_usdc = web3_calls.get_token_token_input_price(VIPER_TOKEN_ADDY, price_1rot_viper, ONEUSDC_ADDY, viperswap_contract)
     return price_1rot_viper, price_1rot_usdc
 
+def _get_1maggot_price():
+    price_1maggot_viper = web3_calls.get_token_token_input_price(MAGGOT_HARMONY_ADDY_RAW, 1 * 10 ** 18, VIPER_TOKEN_ADDY, viperswap_contract)
+    price_1maggot_usdc = web3_calls.get_token_token_input_price(VIPER_TOKEN_ADDY, price_1maggot_viper, ONEUSDC_ADDY, viperswap_contract)
+    return price_1maggot_viper, price_1maggot_usdc
+
 
 def get_price_onerot(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
@@ -639,6 +647,27 @@ def get_price_onerot(update: Update, context: CallbackContext):
               # + holders_str + "</code>" \
     context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
+
+def get_price_onemaggot(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    # onerot_contract = w3_harmony.eth.contract(address=ROT_HARMONY_ADDY, abi=ERC_20_ABI)
+    price_1rot_viper, price_1rot_usdc = _get_1maggot_price()
+    name_header = "<b>(" + '1MAGGOT' + ') ' + 'MaggotToken' + '</b>'
+    links = '<a href="https://explorer.harmony.one/#/address/' + MAGGOT_HARMONY_ADDY_RAW + '">HarmonyExplorer</a>|<a href="https://viper.exchange/#/swap?inputCurrency=' + MAGGOT_HARMONY_ADDY_RAW + '">Viperswap</a>'
+    message = name_header + '<code>' \
+              + "\nVIPER:" + util.float_to_str(price_1rot_viper/10**18)[0:10] \
+              + "\nUSD: $" + util.float_to_str(price_1rot_usdc/10**6)[0:10] + "</code>" \
+              + "\n" + links \
+        # + "\n" + ad
+    # + var_1d_msg \
+    # + var_7d_msg \
+    # + msg_one_eth \
+    # + "\n" \
+    # + msg_vol_24 \
+    # + "\nS.  Cap = " + supply_cat_pretty \
+    # + "\nM.  Cap = $" + market_cap \
+    # + holders_str + "</code>" \
+    context.bot.send_message(chat_id=chat_id, text=message, parse_mode='html', disable_web_page_preview=True)
 
 def log_current_price_rot_per_usd():
     global price_file_path
@@ -1032,6 +1061,7 @@ def main():
     dp.add_handler(CommandHandler('last_actions', get_latest_actions))
     dp.add_handler(CommandHandler('trending', get_trending))
     dp.add_handler(CommandHandler('1rot', get_price_onerot))
+    dp.add_handler(CommandHandler('1maggot', get_price_onemaggot))
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
