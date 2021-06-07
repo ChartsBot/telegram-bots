@@ -314,14 +314,14 @@ def parse_uniswap_tx(tx_receipt, tx_from):
     return concatenanted_swap
 
 
-def callback_get_block(context: CallbackContext):
+def callback_get_block_eth(context: CallbackContext):
     global last_block_num
     block = web3.eth.getBlock('latest')
     latest_block = int(block['number'])
 
     if last_block_num < latest_block:
         for block_num in range(last_block_num + 1, latest_block + 1):
-            logging.info("analysing new block: " + str(block_num))
+            logging.info("ETH | analysing new block: " + str(block_num))
             block = web3.eth.getBlock(block_num)
             txs = block['transactions']
             for tx in txs:
@@ -349,12 +349,12 @@ def callback_get_block(context: CallbackContext):
                                 if message_second != "":
                                     message = message + message_second
                                 context.bot.send_message(chat_id=int(tg_account), text=message, parse_mode='html', disable_web_page_preview=True)
-                                logging.info("Sent a message to " + tg_account)
+                                logging.info("ETH | Sent a message to " + tg_account)
                 except Exception as e:
                     pass
 
             last_block_num = int(block['number'])
-            logging.info("done analysing block")
+            logging.info("ETH | done analysing block")
 
 
 def main():
@@ -366,7 +366,8 @@ def main():
     dp.add_handler(CommandHandler('view_wallets', view_wallets))
     dp.add_handler(CommandHandler('remove_wallet', remove_wallet))
     j = updater.job_queue
-    j.run_repeating(callback_get_block, interval=15, first=5)
+    j.run_repeating(callback_get_block_eth, interval=15, first=5)
+    j.run_repeating(callback_get_block_bsc, interval=15, first=10)
     updater.start_polling()
     updater.idle()
 

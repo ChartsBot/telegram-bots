@@ -82,3 +82,19 @@ def get_token_info(uni_wrapper, token_address) -> dict:
     token_checksum = Web3.toChecksumAddress(token_address)
     token_info = uni_wrapper.get_token(token_checksum)
     return token_info
+
+
+def get_token_token_input_price(token, qty, token_to, router_contract, block='latest'):
+    '''
+    :param token: checksummed address of the token
+    :param qty: WITH DECIMALS (so usually 1*10**18)
+    :param token_to: address of the token to convert to
+    :param router_contract: contract of the token (some w3.eth.contract)
+    :param block: block on which to operate
+    :return:
+    '''
+
+    price = router_contract.functions.getAmountsOut(
+        qty, [token, token_to]
+    ).call(block_identifier=block)[-1]
+    return price
