@@ -647,7 +647,7 @@ def _get_rot_price():
 def _get_maggot_price():
     price_rot_eth, price_rot_usdc = _get_rot_price()
     price_maggot_rot = web3_calls.get_token_token_input_price(MAGGOT_ETH_ADDY, 1*10**18, ROT_ETH_ADDY, uniswap_contract)
-    price_maggot_usdc = price_maggot_rot * price_rot_usdc
+    price_maggot_usdc = price_maggot_rot * (price_rot_usdc / 10**6)
     return price_maggot_rot, price_maggot_usdc
 
 
