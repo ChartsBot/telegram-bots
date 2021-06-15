@@ -663,14 +663,14 @@ def get_arb(update: Update, context: CallbackContext):
     price_rot_eth, price_rot_usdc = _get_rot_price()
     price_maggot_rot, price_maggot_usdc = _get_maggot_price()
     diff_rot_eth_one = util.get_change(price_rot_usdc, price_1rot_usdc)
-    diff_maggot_eth_one = util.get_change(price_maggot_usdc, price_1maggot_usdc)
+    diff_maggot_eth_one = util.get_change(price_maggot_usdc, price_1maggot_usdc / 10**6)
     msg = "<code>Possible arbitrage:\n\n" \
     + "---- $ROT ---- \n" \
     + "ETH: $" + util.float_to_str(price_rot_usdc/10**6)[0:10] + '\n' \
     + "ONE: $" + util.float_to_str(price_1rot_usdc/10**6)[0:10] + '\n' \
     + "Diff: " + util.float_to_str(diff_rot_eth_one)[0:4] + '\n\n' \
     + "--- $MAGGOT --- \n" \
-    + "ETH: $" + util.float_to_str(price_maggot_usdc/10**6)[0:10] + '\n' \
+    + "ETH: $" + util.float_to_str(price_maggot_usdc)[0:10] + '\n' \
     + "ONE: $" + util.float_to_str(price_1maggot_usdc/10**6)[0:10] + '\n' \
     + "Diff: " + util.float_to_str(diff_maggot_eth_one)[0:4] \
     + "</code>"
