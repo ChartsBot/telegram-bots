@@ -164,7 +164,7 @@ WETH_ETH_ADDY_RAW = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 WETH_ETH_ADDY = util.to_checksumaddr(WETH_ETH_ADDY_RAW)
 
 UNISWAP_CONTRACT_ADDRESS = util.to_checksumaddr('0x7a250d5630b4cf539739df2c5dacb4c659f2488d')
-uniswap_contract = w3_harmony.eth.contract(address=UNISWAP_CONTRACT_ADDRESS, abi=SWAP_ABI)
+uniswap_contract = w3.eth.contract(address=UNISWAP_CONTRACT_ADDRESS, abi=SWAP_ABI)
 
 # messages
 rot_101_text = '''<br>ROT IN A NUTSHELL
