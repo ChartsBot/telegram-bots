@@ -671,8 +671,9 @@ def get_arb(update: Update, context: CallbackContext):
     + "--- $MAGGOT --- \n" \
     + "ETH: $" + util.float_to_str(price_maggot_usdc/10**6)[0:10] + '\n' \
     + "ONE: $" + util.float_to_str(price_1maggot_usdc/10**6)[0:10] + '\n' \
-    + "Diff: " + util.float_to_str(diff_maggot_eth_one)[0:4] + '\n\n' \
+    + "Diff: " + util.float_to_str(diff_maggot_eth_one)[0:4] \
     + "</code>"
+    pprint.pprint(msg)
     #         msg = "v-rot: " + util.float_to_str(price_1rot_usdc/10**6)[0:10] + '\n' \
     # + "v-maggot: " + util.float_to_str(price_1maggot_usdc/10**6)[0:10] + '\n\n' \
     #       + "e-rot: " + util.float_to_str(price_rot_usdc/10**6)[0:10] + '\n' \
