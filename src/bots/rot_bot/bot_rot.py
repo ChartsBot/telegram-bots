@@ -661,10 +661,21 @@ def get_arb(update: Update, context: CallbackContext):
     price_1maggot_viper, price_1maggot_usdc = _get_1maggot_price()
     price_rot_eth, price_rot_usdc = _get_rot_price()
     price_maggot_rot, price_maggot_usdc = _get_maggot_price()
-    msg = "v-rot: " + util.float_to_str(price_1rot_usdc/10**6)[0:10] + '\n' \
-    + "v-maggot: " + util.float_to_str(price_1maggot_usdc/10**6)[0:10] + '\n\n' \
-          + "e-rot: " + util.float_to_str(price_rot_usdc/10**6)[0:10] + '\n' \
-          + "e-maggot: " + util.float_to_str(price_maggot_usdc)[0:10] + '\n'
+    diff_rot_eth_one = util.get_change(price_rot_usdc, price_1rot_usdc)
+    diff_maggot_eth_one = util.get_change(price_maggot_usdc, price_1maggot_usdc)
+    msg = "<code>Possible arbitrage:\n\n" \
+    + "---- $ROT ---- \n" \
+    + "ETH: $" + util.float_to_str(price_rot_usdc/10**6)[0:10] + '\n' \
+    + "ONE: $" + util.float_to_str(price_1rot_usdc/10**6)[0:10] + '\n' \
+    + "Diff: " + util.float_to_str(diff_rot_eth_one)[0:4] + '\n\n' \
+    + "--- $MAGGOT --- \n" \
+    + "ETH: $" + util.float_to_str(price_maggot_usdc/10**6)[0:10] + '\n' \
+    + "ONE: $" + util.float_to_str(price_1maggot_usdc/10**6)[0:10] + '\n' \
+    + "Diff: " + util.float_to_str(diff_maggot_eth_one)[0:4] + '\n\n' \
+    #         msg = "v-rot: " + util.float_to_str(price_1rot_usdc/10**6)[0:10] + '\n' \
+    # + "v-maggot: " + util.float_to_str(price_1maggot_usdc/10**6)[0:10] + '\n\n' \
+    #       + "e-rot: " + util.float_to_str(price_rot_usdc/10**6)[0:10] + '\n' \
+    #       + "e-maggot: " + util.float_to_str(price_maggot_usdc)[0:10] + '\n'
     context.bot.send_message(chat_id=chat_id, text=msg, parse_mode='html', disable_web_page_preview=True)
 
 

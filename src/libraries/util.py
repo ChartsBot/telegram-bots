@@ -122,3 +122,12 @@ def cleanhtml(raw_html):
 
 def to_checksumaddr(addr):
     return Web3.toChecksumAddress(addr)
+
+
+def get_change(current, previous):
+    if current == previous:
+        return 0
+    try:
+        return (abs(current - previous) / previous) * 100.0
+    except ZeroDivisionError:
+        return 0
