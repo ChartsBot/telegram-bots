@@ -1100,6 +1100,7 @@ def main():
     dp.add_handler(CommandHandler('trending', get_trending))
     dp.add_handler(CommandHandler('1rot', get_price_onerot))
     dp.add_handler(CommandHandler('1maggot', get_price_onemaggot))
+    dp.add_handler(CommandHandler('arb', get_arb))
     dp.add_handler(CallbackQueryHandler(refresh_chart, pattern='refresh_chart(.*)'))
     dp.add_handler(CallbackQueryHandler(refresh_price, pattern='r_p_(.*)'))
     dp.add_handler(CallbackQueryHandler(delete_message, pattern='delete_message'))
