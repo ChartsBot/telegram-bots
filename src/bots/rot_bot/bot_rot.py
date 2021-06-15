@@ -652,6 +652,7 @@ def _get_maggot_price():
     pprint.pprint("price_rot_usdc = " + str(price_rot_usdc))
     price_maggot_usdc = (price_maggot_rot / 10**18) * (price_rot_usdc / 10**6)
     pprint.pprint("price_maggot_usdc = " + str(price_maggot_usdc))
+    pprint.pprint(price_maggot_usdc)
     return price_maggot_rot, price_maggot_usdc
 
 
