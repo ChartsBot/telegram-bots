@@ -657,10 +657,10 @@ def get_arb(update: Update, context: CallbackContext):
     price_1maggot_viper, price_1maggot_usdc = _get_1maggot_price()
     price_rot_eth, price_rot_usdc = _get_rot_price()
     price_maggot_rot, price_maggot_usdc = _get_maggot_price()
-    msg = "v-rot: " + util.float_to_str(price_1rot_usdc/10**18)[0:10] + '\n' \
-    + "v-maggot: " + util.float_to_str(price_1maggot_usdc/10**18)[0:10] + '\n\n' \
-          + "e-rot: " + util.float_to_str(price_rot_usdc/10**18)[0:10] + '\n' \
-          + "e-maggot: " + util.float_to_str(price_maggot_usdc/10**18)[0:10] + '\n'
+    msg = "v-rot: " + util.float_to_str(price_1rot_usdc/10**6)[0:10] + '\n' \
+    + "v-maggot: " + util.float_to_str(price_1maggot_usdc/10**6)[0:10] + '\n\n' \
+          + "e-rot: " + util.float_to_str(price_rot_usdc/10**6)[0:10] + '\n' \
+          + "e-maggot: " + util.float_to_str(price_maggot_usdc/10**6)[0:10] + '\n'
     context.bot.send_message(chat_id=chat_id, text=msg, parse_mode='html', disable_web_page_preview=True)
 
 
