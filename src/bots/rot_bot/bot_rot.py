@@ -650,7 +650,7 @@ def _get_maggot_price():
     pprint.pprint("price_maggot_rot = " + str(price_maggot_rot))
     pprint.pprint("price_rot_eth = " + str(price_rot_eth))
     pprint.pprint("price_rot_usdc = " + str(price_rot_usdc))
-    price_maggot_usdc = price_maggot_rot * (price_rot_usdc / 10**6)
+    price_maggot_usdc = (price_maggot_rot / 10**18) * (price_rot_usdc / 10**6)
     pprint.pprint("price_maggot_usdc = " + str(price_maggot_usdc))
     return price_maggot_rot, price_maggot_usdc
 
@@ -664,7 +664,7 @@ def get_arb(update: Update, context: CallbackContext):
     msg = "v-rot: " + util.float_to_str(price_1rot_usdc/10**6)[0:10] + '\n' \
     + "v-maggot: " + util.float_to_str(price_1maggot_usdc/10**6)[0:10] + '\n\n' \
           + "e-rot: " + util.float_to_str(price_rot_usdc/10**6)[0:10] + '\n' \
-          + "e-maggot: " + util.float_to_str(price_maggot_usdc/10**6)[0:10] + '\n'
+          + "e-maggot: " + util.float_to_str(price_maggot_usdc)[0:10] + '\n'
     context.bot.send_message(chat_id=chat_id, text=msg, parse_mode='html', disable_web_page_preview=True)
 
 
