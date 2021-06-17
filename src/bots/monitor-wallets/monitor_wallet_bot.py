@@ -315,6 +315,7 @@ def parse_uniswap_tx(tx_receipt, tx_from):
 
 
 def callback_get_block_eth(context: CallbackContext):
+    pprint("coucou")
     global last_block_num
     block = web3.eth.getBlock('latest')
     latest_block = int(block['number'])
