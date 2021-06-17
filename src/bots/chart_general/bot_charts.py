@@ -1044,7 +1044,7 @@ def get_price_direct(update: Update, context: CallbackContext):
                     "restart", "ban"]
     chat_id = update.message.chat_id
     ticker = update.message.text.split(' ')[0][1:]
-    if ticker not in command_list:  # should not be needed but keeping it just in case
+    if ticker not in command_list and '_' not in ticker and len(ticker) < 6:  # should not be needed but keeping it just in case
         __log_channel(update.message.chat, "price_direct")
         if ticker.upper() in symbol_gecko:
             value = symbol_gecko.get(ticker.upper())
