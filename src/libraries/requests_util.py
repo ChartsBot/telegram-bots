@@ -16,6 +16,7 @@ from libraries.util import float_to_str, pretty_number, keep_significant_number_
 import libraries.time_util as time_util
 import libraries.web3_calls as web3_util
 import libraries.general_end_functions as general_end_functions
+import libraries.token_address_converter as token_addy_converter
 import yfinance as yf
 
 from web3 import Web3
@@ -417,6 +418,9 @@ def get_token_contract_address(token_ticker):
         return "0x0000000000000000000000000000000000000000"
     elif token_ticker.upper() in ticker_hardcoded:
         return ticker_hardcoded[token_ticker.upper()]
+    maybe_res = token_addy_converter.convert_ticker_address(token_ticker)
+    if maybe_res:
+        return maybe_res['address'].lower()
     url = get_address_endpoint + token_ticker
     pprint.pprint("start getting contract from token" + token_ticker)
     res = requests.get(url).json()
