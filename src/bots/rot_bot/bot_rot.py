@@ -1149,4 +1149,7 @@ chartsupply - Display a graph of the supply cap
 candlestick - Candlestick chart 
 airdropinfo - Info about the airdrop
 trending - See which coins are trending in dextrends
+1rot - Display the $ROT price on harmony
+1maggot - Display the $MAGGOT price on harmony
+arb - Display the arbitrage possibility
 """

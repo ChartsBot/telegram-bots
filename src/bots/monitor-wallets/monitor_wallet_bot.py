@@ -367,7 +367,7 @@ def main():
     dp.add_handler(CommandHandler('remove_wallet', remove_wallet))
     j = updater.job_queue
     j.run_repeating(callback_get_block_eth, interval=15, first=5)
-    j.run_repeating(callback_get_block_bsc, interval=15, first=10)
+    # j.run_repeating(callback_get_block_bsc, interval=15, first=10)
     updater.start_polling()
     updater.idle()
 
