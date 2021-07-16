@@ -26,7 +26,7 @@ from telegram.inline.inlinequeryresultarticle import InlineQueryResultArticle
 from telegram.inline.inputtextmessagecontent import InputTextMessageContent
 from telegram.parsemode import ParseMode
 from telegram.utils.helpers import escape_markdown
-
+import json
 from telegram.ext.dispatcher import run_async
 from telegram.error import ChatMigrated, BadRequest
 import libraries.web3_calls as web3_util
@@ -58,16 +58,34 @@ from uuid import uuid4
 
 import zerorpc
 
-import wolframalpha
+# import wolframalpha
 
 import logging
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-APP_KEY_WOLFRAM = os.environ.get('WOLFRAM_API')
+# APP_KEY_WOLFRAM = os.environ.get('WOLFRAM_API')
 
 IS_TEST_ENV = False
+
+SECRETS_PATH = os.environ.get('SECRETS_PATH')
+
+with open(SECRETS_PATH + "fomo-bot-python/config.json") as f:
+    config = json.load(f)
+
+matic_node_addy = config['matic']['address']
+matic_node_port = config['matic']['port']
+
+from web3.middleware import geth_poa_middleware
+
+w3_matic = Web3(Web3.WebsocketProvider('ws://' + matic_node_addy + ':' + matic_node_port))
+
+w3_matic.middleware_onion.inject(geth_poa_middleware, layer=0)
+
+ORACLE_CONTRACT_ADDRESS = util.to_checksumaddr(config['contracts']['oracle']['matic']['address'])
+SWAP_ABI = json.loads(config['contracts']['oracle']['matic']['abi'])
+oracle_contract = w3_matic.eth.contract(address=ORACLE_CONTRACT_ADDRESS, abi=SWAP_ABI)
 
 # try:
 #     wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
@@ -106,7 +124,6 @@ pie_chart_wallet_path = BASE_PATH + 'log_files/boo_bot/pie_chart_wallet.png'
 
 # grpc
 GRPC_FILE_HANDLER_CA_PATH = os.environ.get('GRPC_FILE_HANDLER_CA_PATH')
-GRPC_FILE_HANDLER_HOST = os.environ.get('GRPC_FILE_HANDLER_HOST')
 
 # web3
 infura_url = os.environ.get('INFURA_URL')
@@ -140,6 +157,9 @@ with open(GRPC_FILE_HANDLER_CA_PATH, 'rb') as f:
 grpc_file_handler_channel = grpc.secure_channel('localhost:8081', grpc_file_handler_creds,
                                                 options=(('grpc.ssl_target_name_override', 'foo.test.google.fr'),
                                                          ('grpc.enable_http_proxy', 0),))
+
+
+
 
 # create a stub (client)
 grpc_file_handler_client = filehandler_pb2_grpc.FileHandlerAkkaServiceStub(grpc_file_handler_channel)
@@ -540,6 +560,7 @@ def refresh_chart(update: Update, context: CallbackContext):
 
 # sends the current biz threads
 def get_biz(update: Update, context: CallbackContext):
+
     __log_channel(update.message.chat, "biz")
     chat_id = update.message.chat_id
     query_received = update.message.text.split(' ')

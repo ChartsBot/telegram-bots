@@ -123,6 +123,9 @@ def cleanhtml(raw_html):
 def to_checksumaddr(addr):
     return Web3.toChecksumAddress(addr)
 
+def is_checksumaddr(addr):
+    return Web3.isChecksumAddress(addr)
+
 
 def get_change(current, previous):
     if current == previous:

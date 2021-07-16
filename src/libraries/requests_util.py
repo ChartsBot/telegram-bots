@@ -17,6 +17,7 @@ import libraries.time_util as time_util
 import libraries.web3_calls as web3_util
 import libraries.general_end_functions as general_end_functions
 import libraries.token_address_converter as token_addy_converter
+import libraries.util as util
 import yfinance as yf
 
 from web3 import Web3
@@ -414,7 +415,9 @@ def get_number_holder_token(token):
 # cache weather data for no longer than ten minutes
 @cached(cache=TTLCache(maxsize=1024, ttl=3600))
 def get_token_contract_address(token_ticker):
-    if token_ticker == "eth" or token_ticker == "ETH":
+    if util.is_checksumaddr(token_ticker):
+        return token_ticker
+    elif token_ticker == "eth" or token_ticker == "ETH":
         return "0x0000000000000000000000000000000000000000"
     elif token_ticker.upper() in ticker_hardcoded:
         return ticker_hardcoded[token_ticker.upper()]

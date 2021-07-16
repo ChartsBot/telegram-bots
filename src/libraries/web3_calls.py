@@ -98,3 +98,8 @@ def get_token_token_input_price(token, qty, token_to, router_contract, block='la
         qty, [token, token_to]
     ).call(block_identifier=block)[-1]
     return price
+
+
+def get_token_price_from_oracle_contract(token_address, oracle_contract, block='latest'):
+    res = oracle_contract.functions.computePrice(token_address).call(block_identifier=block)
+    return res
