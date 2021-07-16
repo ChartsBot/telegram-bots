@@ -76,16 +76,16 @@ with open(SECRETS_PATH + "fomo-bot-python/config.json") as f:
 
 matic_node_addy = config['matic']['address']
 matic_node_port = config['matic']['port']
-
-from web3.middleware import geth_poa_middleware
-
-w3_matic = Web3(Web3.WebsocketProvider('ws://' + matic_node_addy + ':' + str(matic_node_port)))
-
-w3_matic.middleware_onion.inject(geth_poa_middleware, layer=0)
-
-ORACLE_CONTRACT_ADDRESS = util.to_checksumaddr(config['contracts']['oracle']['matic']['address'])
-SWAP_ABI = json.loads(config['contracts']['oracle']['matic']['abi'])
-oracle_contract = w3_matic.eth.contract(address=ORACLE_CONTRACT_ADDRESS, abi=SWAP_ABI)
+#
+# from web3.middleware import geth_poa_middleware
+#
+# w3_matic = Web3(Web3.WebsocketProvider('ws://' + matic_node_addy + ':' + str(matic_node_port)))
+#
+# w3_matic.middleware_onion.inject(geth_poa_middleware, layer=0)
+#
+# ORACLE_CONTRACT_ADDRESS = util.to_checksumaddr(config['contracts']['oracle']['matic']['address'])
+# SWAP_ABI = json.loads(config['contracts']['oracle']['matic']['abi'])
+# oracle_contract = w3_matic.eth.contract(address=ORACLE_CONTRACT_ADDRESS, abi=SWAP_ABI)
 
 # try:
 #     wolfram_client = wolframalpha.Client(APP_KEY_WOLFRAM)
