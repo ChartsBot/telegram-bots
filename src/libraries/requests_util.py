@@ -984,26 +984,11 @@ def get_token_info(contract):
 
 
 def main():
-    # token_info = get_token_info("0x78571accaf24052795f98b11f093b488a2d9eaa4")
-    # pprint.pprint(token_info)
-    # supply_cap_token, holders = 0, 0
-    # if token_info is not None and 'error' not in token_info:
-    #     supply_cap_token = int(token_info['totalSupply']) / 10 ** int(token_info['decimals'])
-    #     holders = int(token_info['holdersCount'])
-    # pprint.pprint(supply_cap_token)
-    # pprint.pprint(holders)
-
-    token = "bbv"
-    k_hours = 0
-    k_days = 1
-    t_to = int(time.time())
-    t_from = t_to - (k_days * 3600 * 24) - (k_hours * 3600)
-    resolution = 5
-    res = get_graphex_data(token, resolution, t_from, t_to)
-    pprint.pprint(res.text)
-    pprint.pprint(res.status_code)
-    res2 = res.json()
-    pprint.pprint(res2)
+    token = "0x9248c485b0b80f76da451f167a8db30f33c70907"
+    if util.is_checksumaddr(token):
+        pprint.pprint("cool")
+    else:
+        pprint.pprint("not cool")
 
 
 if __name__ == '__main__':

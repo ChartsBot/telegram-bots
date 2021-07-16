@@ -124,7 +124,11 @@ def to_checksumaddr(addr):
     return Web3.toChecksumAddress(addr)
 
 def is_checksumaddr(addr):
-    return Web3.isChecksumAddress(addr)
+    try:
+        Web3.toChecksumAddress(addr)
+        return True
+    except Exception:
+        return False
 
 
 def get_change(current, previous):
