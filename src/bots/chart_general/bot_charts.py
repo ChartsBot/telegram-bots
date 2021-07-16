@@ -1454,8 +1454,8 @@ def main():
     dp.add_handler(MessageHandler(Filters.command, get_price_direct, run_async=True))
 
     j = updater.job_queue
-    if not IS_TEST_ENV:
-        j.run_repeating(callback_minute, interval=check_big_buys_interval_seconds, first=15)
+    # if not IS_TEST_ENV:
+    #     j.run_repeating(callback_minute, interval=check_big_buys_interval_seconds, first=15)
 
     updater.start_polling()
     updater.idle()
