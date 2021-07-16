@@ -79,7 +79,7 @@ matic_node_port = config['matic']['port']
 
 from web3.middleware import geth_poa_middleware
 
-w3_matic = Web3(Web3.WebsocketProvider('ws://' + matic_node_addy + ':' + matic_node_port))
+w3_matic = Web3(Web3.WebsocketProvider('ws://' + matic_node_addy + ':' + str(matic_node_port)))
 
 w3_matic.middleware_onion.inject(geth_poa_middleware, layer=0)
 
